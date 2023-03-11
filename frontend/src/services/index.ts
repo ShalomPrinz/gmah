@@ -1,0 +1,1 @@
+export { getFamiliesCount } from "./families"
