@@ -1,0 +1,64 @@
+:root {
+  --navbar-hover-color: hsl(49, 100%, 63%);
+  --navbar-color: white;
+}
+
+.nav-links:hover {
+  color: var(--navbar-hover-color) !important;
+}
+
+.navbar-brand {
+  color: var(--navbar-color) !important;
+}
+
+.navbar {
+  align-items: center;
+  display: flex;
+  font-size: 1.2rem;
+  justify-content: center;
+  position: sticky;
+  top: 0;
+  vertical-align: middle;
+}
+
+.nav-links {
+  color: var(--navbar-color);
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+}
+
+.nav-item {
+  line-height: 40px;
+  margin-right: 1rem;
+}
+
+.nav-item:after {
+  content: "";
+  background: transparent;
+  display: block;
+  height: 3px;
+  transition: width 0.7s ease, background-color 0.5s ease;
+  width: 0;
+}
+
+.nav-item:hover:after {
+  background: var(--navbar-hover-color);
+  width: 100%;
+}
+
+.nav-item .active {
+  border: 1px solid var(--navbar-hover-color);
+  color: var(--navbar-hover-color);
+}
+
+@media screen and (max-width: 960px) {
+  .nav-item .active {
+    border: none;
+    color: var(--navbar-hover-color);
+  }
+  .nav-links {
+    display: table;
+    padding: 1.5rem;
+    width: 100%;
+  }
+}

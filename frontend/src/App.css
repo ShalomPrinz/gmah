@@ -1,6 +1,9 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+:root {
+  --default-bg-color: hsl(228, 73%, 21%);
+  --default-color: white;
+}
+
+.bg-default {
+  background-color: var(--default-bg-color);
+  color: var(--default-color);
 }
