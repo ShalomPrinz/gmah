@@ -1,1 +1,1 @@
-export { getFamiliesCount } from "./families"
+export * from "./families"

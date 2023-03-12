@@ -13,3 +13,13 @@ def get_count():
     '''
     families_file = Excel(FAMILIES_FILENAME)
     return families_file.get_rows_num() - 1
+
+def search_families(query=''):
+    '''
+    Returns list of families who their name matches part of the query
+    '''
+    if query is None:
+        query = ''
+
+    families_file = Excel(FAMILIES_FILENAME)
+    return families_file.search_in_first_column(query)

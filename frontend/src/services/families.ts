@@ -4,4 +4,8 @@ async function getFamiliesCount() {
     return get('familiesCount')
 }
 
-export { getFamiliesCount }
+async function searchFamilies(query: string) {
+    return get('families', { params: { query } })
+}
+
+export { getFamiliesCount, searchFamilies }
