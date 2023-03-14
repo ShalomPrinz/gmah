@@ -66,7 +66,7 @@ function NavbarWrapper() {
     {
       id: 0,
       name: "נתמכים",
-      url: "/",
+      url: "/families",
     },
   ];
 

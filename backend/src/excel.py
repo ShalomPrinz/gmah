@@ -1,6 +1,8 @@
 import openpyxl
 from os import path
 
+from src.util import format_family_header
+
 class Excel:
     def __init__(self, filename):
         if not path.exists(filename):
@@ -12,7 +14,7 @@ class Excel:
         return self.worksheet.max_row
 
     def get_headers(self):
-        return [cell.value for cell in next(self.worksheet.rows)]
+        return [format_family_header(cell.value) for cell in next(self.worksheet.rows)]
 
     def search_in_first_column(self, query):
         matching_rows = []
