@@ -9,20 +9,42 @@ from src.families import get_count, search_families
 load_dotenv()
 FAMILIES_FILENAME = getenv('FAMILIES_FILENAME')
 
+class Family:
+    def __init__(self, fullName="פלוני פלוני", street="שפרינצק", house=10,
+        apartmentNumber=2, floor=1, homePhone="012-3456789", mobilePhone="987-6543210",
+        originalDriver="נחום נחום", referrer="רווחה", notes=""):
+
+        self.fullName = fullName
+        self.street = street
+        self.house = house
+        self.apartmentNumber = apartmentNumber
+        self.floor = floor
+        self.homePhone = homePhone
+        self.mobilePhone = mobilePhone
+        self.originalDriver = originalDriver
+        self.referrer = referrer 
+        self.notes = notes
+
+    def to_excel_row(self):
+        return [self.fullName, self.street, self.house, self.apartmentNumber, 
+            self.floor, self.homePhone, self.mobilePhone, 
+            self.originalDriver, self.referrer, self.notes]
+
 def write_families_file(families):
     workbook = openpyxl.Workbook()
     worksheet = workbook.active
-    worksheet.append(['Header 1', 'Header 2', 'Header 3'])
-    for i in range(1, len(families) + 1):
-        worksheet.append([str(families[i - 1]), 'Value 1', 'Value 2'])
+    # Families file headers
+    worksheet.append(['שם מלא', 'רחוב', 'בניין', 'דירה', 'קומה', "מס' בית", "מס' פלאפון", 'נהג במקור', 'ממליץ', 'הערות'])
+    for family in families:
+        worksheet.append(family.to_excel_row())
     workbook.save(FAMILIES_FILENAME)
 
 def write_file(rows_num):
     workbook = openpyxl.Workbook()
     worksheet = workbook.active
-    worksheet.append(['Header 1', 'Header 2', 'Header 3'])
+    worksheet.append(['שם מלא', 'רחוב', 'בניין'])
     for i in range(1, rows_num + 1):
-        worksheet.append([f'Family {i}', 'Value 1', 'Value 2'])
+        worksheet.append([f'Family {i}', 'שפרינצק', 10])
     workbook.save(FAMILIES_FILENAME)
 
 class TestExcel(unittest.TestCase):
@@ -38,8 +60,9 @@ class TestExcel(unittest.TestCase):
         write_file(rows_num=rows_num)
         self.assertEqual(rows_num, get_count())
 
-    def test_search_families(self):
-        families = ["פרינץ", "כהנא", "נתאי"]
+    def test_search_by_name(self):
+        families = [Family(fullName="פרינץ"), Family(fullName="כהנא"), Family(fullName="נתאי")]
+        
         test_cases = [
             ("None", None, 3),
             ("Empty String", "", 3),
@@ -48,9 +71,48 @@ class TestExcel(unittest.TestCase):
             ("Second Letter", "ה", 1),
             ("Not Found", "ברוזוביץ", 0)
         ]
+
         for title, query, expected_len in test_cases:
             with self.subTest(title=title):
                 write_families_file(families=families)
                 search_result = search_families(query)
-                print(search_result)
+                self.assertEqual(expected_len, len(search_result))
+    
+    def test_search_by_street(self):
+        families = [Family(fullName="פרינץ", street="הבנים"),
+            Family(fullName="כהנא", street="השופטים"),
+            Family(fullName="נתאי", street="סלינג'ר")]
+        
+        test_cases = [
+            ("None", None, 3),
+            ("Empty String", "", 3),
+            ("Two Matches", "ם", 2),
+            ("One Match", "סלי", 1),
+            ("Second Letter", "ב", 1),
+            ("Not Found", "ברוזוביץ", 0)
+        ]
+
+        for title, query, expected_len in test_cases:
+            with self.subTest(title=title):
+                write_families_file(families=families)
+                search_result = search_families(query, 'street')
+                self.assertEqual(expected_len, len(search_result))
+
+    def test_search_by_phone(self):
+        families = [Family(fullName="פרינץ", homePhone="000-1111111"),
+            Family(fullName="כהנא", homePhone="111-2222222"),
+            Family(fullName="נתאי", homePhone="222-3333333")]
+        
+        test_cases = [
+            ("None", None, 3),
+            ("Empty String", "", 3),
+            ("Two Matches", "1", 2),
+            ("One Match", "3", 1),
+            ("Not Found", "ברוזוביץ", 0)
+        ]
+
+        for title, query, expected_len in test_cases:
+            with self.subTest(title=title):
+                write_families_file(families=families)
+                search_result = search_families(query, 'phone')
                 self.assertEqual(expected_len, len(search_result))

@@ -1,7 +1,46 @@
 import openpyxl
+from openpyxl.worksheet.worksheet import Worksheet
 from os import path
+from dataclasses import dataclass
+from typing import List, Generator
+from enum import Enum
 
 from src.util import format_family_header
+
+@dataclass
+class SearchRequest:
+    rows_iter: Generator[Worksheet, None, None]
+    headers: List[str]
+    query: str
+    column_search: int
+
+class SearchBy(Enum):
+    NAME = 'name'
+    STREET = 'street'
+    PHONE = 'phone'
+
+    @classmethod
+    def get_search_column(cls, search_by):
+        search_by = getattr(SearchBy, search_by.upper(), SearchBy.NAME)
+        match search_by:
+            case SearchBy.NAME:
+                return 0
+            case SearchBy.STREET:
+                return 1
+            case SearchBy.PHONE:
+                return 5
+            case _:
+                return 0
+
+def search(request: SearchRequest):
+    matching_rows = []
+    for row in request.rows_iter:
+        cell_value = row[request.column_search].value
+        if request.query in cell_value:
+            matching_row = {
+                request.headers[index]: cell.value for index, cell in enumerate(row)}
+            matching_rows.append(matching_row)
+    return matching_rows
 
 class Excel:
     def __init__(self, filename):
@@ -15,13 +54,13 @@ class Excel:
 
     def get_headers(self):
         return [format_family_header(cell.value) for cell in next(self.worksheet.rows)]
+    
+    def search(self, query, search_by=''):
+        request = SearchRequest(
+            rows_iter=self.worksheet.iter_rows(min_row=2),
+            headers=self.get_headers(),
+            query=query,
+            column_search=SearchBy.get_search_column(search_by)
+        )
 
-    def search_in_first_column(self, query):
-        matching_rows = []
-        headers = self.get_headers()
-        for row in self.worksheet.iter_rows(min_row=2):
-            if query in row[0].value:
-                matching_row = {headers[index]: cell.value for index, cell in enumerate(row)}
-                matching_rows.append(matching_row)
-        return matching_rows
-
+        return search(request)

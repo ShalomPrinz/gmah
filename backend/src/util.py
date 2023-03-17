@@ -21,4 +21,4 @@ def format_family_header(header):
         case "הערות":
             return "notes"
     
-    return "error"
+    return "NoSuchHeader"

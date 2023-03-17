@@ -13,9 +13,12 @@ cors = CORS(app, resources={r"/*": {"origins": FRONTEND_DOMAIN}})
 
 @app.route('/familiesCount')
 def families_count():
-    return jsonify(familiesCount=families.get_count()), 200
+    count = families.get_count()
+    return jsonify(familiesCount=count), 200
 
 @app.route('/families')
 def query_family():
     query = request.args.get('query')
-    return jsonify(families=families.search_families(query)), 200
+    search_by = request.args.get('by')
+    query_result = families.search_families(query, search_by)
+    return jsonify(families=query_result), 200
