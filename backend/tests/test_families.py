@@ -135,3 +135,21 @@ class TestExcel(unittest.TestCase):
                 write_families_file(families=families)
                 search_result = search_families(query, 'street')
                 self.assertEqual(expected_len, len(search_result))
+
+    def test_search_hyphen(self):
+        families = [Family(fullName="פרינץ", street="שפרינצק", homePhone="000-1111111")]
+        
+        test_cases = [
+            ("Name Without Hyphen", "פר", "name", 1),
+            ("Name With Hyphen", "פ-ר", "name", 0),
+            ("Street Without Hyphen", "צק", "street", 1),
+            ("Street With Hyphen", "צ-ק", "street", 0),
+            ("Phone Without Hyphen", "01", "phone", 1),
+            ("Phone With Hyphen", "0-1", "phone", 1),
+        ]
+
+        for title, query, search_by, expected_len in test_cases:
+            with self.subTest(title=title):
+                write_families_file(families=families)
+                search_result = search_families(query, search_by)
+                self.assertEqual(expected_len, len(search_result))

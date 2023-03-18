@@ -22,3 +22,6 @@ def format_family_header(header):
             return "notes"
     
     return "NoSuchHeader"
+
+def without_hyphen(string: str):
+    return string.replace('-', '')
