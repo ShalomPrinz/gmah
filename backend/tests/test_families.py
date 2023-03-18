@@ -99,20 +99,39 @@ class TestExcel(unittest.TestCase):
                 self.assertEqual(expected_len, len(search_result))
 
     def test_search_by_phone(self):
-        families = [Family(fullName="פרינץ", homePhone="000-1111111"),
-            Family(fullName="כהנא", homePhone="111-2222222"),
-            Family(fullName="נתאי", homePhone="222-3333333")]
+        families = [Family(fullName="פרינץ", mobilePhone="333-4444444", homePhone="000-1111111"),
+            Family(fullName="כהנא", mobilePhone="444-5555555", homePhone="111-2222222"),
+            Family(fullName="נתאי", mobilePhone="555-6666666", homePhone="222-3333333")]
         
         test_cases = [
             ("None", None, 3),
             ("Empty String", "", 3),
-            ("Two Matches", "1", 2),
-            ("One Match", "3", 1),
-            ("Not Found", "ברוזוביץ", 0)
+            ("Home: One Match", "0", 1),
+            ("Home: Two Matches", "1", 2),
+            ("Mobile: One Match", "6", 1),
+            ("Mobile: Two Matches", "5", 2),
+            ("Both: Two Matches", "3", 2),
+            ("Not Found", "7", 0)
         ]
 
         for title, query, expected_len in test_cases:
             with self.subTest(title=title):
                 write_families_file(families=families)
                 search_result = search_families(query, 'phone')
+                self.assertEqual(expected_len, len(search_result))
+
+    def test_search_no_value_cell(self):
+        # Should not return this cell for all queries
+        families = [Family(fullName="פרינץ", street=None)]
+        
+        test_cases = [
+            ("None", None, 0),
+            ("Empty String", "", 0),
+            ("Not Found", "פ", 0)
+        ]
+
+        for title, query, expected_len in test_cases:
+            with self.subTest(title=title):
+                write_families_file(families=families)
+                search_result = search_families(query, 'street')
                 self.assertEqual(expected_len, len(search_result))

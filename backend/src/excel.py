@@ -12,7 +12,7 @@ class SearchRequest:
     rows_iter: Generator[Worksheet, None, None]
     headers: List[str]
     query: str
-    column_search: int
+    column_search: List[int]
 
 class SearchBy(Enum):
     NAME = 'name'
@@ -20,26 +20,30 @@ class SearchBy(Enum):
     PHONE = 'phone'
 
     @classmethod
-    def get_search_column(cls, search_by):
+    def get_search_columns(cls, search_by):
         search_by = getattr(SearchBy, search_by.upper(), SearchBy.NAME)
         match search_by:
             case SearchBy.NAME:
-                return 0
+                return [0]
             case SearchBy.STREET:
-                return 1
+                return [1]
             case SearchBy.PHONE:
-                return 5
+                return [5, 6]
             case _:
-                return 0
+                return [0]
 
 def search(request: SearchRequest):
     matching_rows = []
     for row in request.rows_iter:
-        cell_value = row[request.column_search].value
-        if request.query in cell_value:
-            matching_row = {
-                request.headers[index]: cell.value for index, cell in enumerate(row)}
-            matching_rows.append(matching_row)
+        for column in request.column_search:
+            cell_value = row[column].value
+            if cell_value is None:
+                continue # Don't insert no value cell into search result
+            if request.query in cell_value:
+                matching_row = {
+                    request.headers[index]: cell.value for index, cell in enumerate(row)}
+                matching_rows.append(matching_row)
+                break # Row added to matching_rows, skip to next row
     return matching_rows
 
 class Excel:
@@ -60,7 +64,7 @@ class Excel:
             rows_iter=self.worksheet.iter_rows(min_row=2),
             headers=self.get_headers(),
             query=query,
-            column_search=SearchBy.get_search_column(search_by)
+            column_search=SearchBy.get_search_columns(search_by)
         )
 
         return search(request)
