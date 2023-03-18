@@ -7,3 +7,7 @@
   background-color: var(--default-bg-color);
   color: var(--default-color);
 }
+
+.search-input:focus {
+  border-color: #49d54b !important;
+}

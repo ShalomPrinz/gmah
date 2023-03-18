@@ -1,15 +1,17 @@
 import { ConditionalList } from "../";
 import type { TableColumn } from "./types";
 
-const headerCallback = ({ label }: TableColumn) => (
-  <th className="p-3">{label}</th>
-);
-
-interface TableHeaderProps {
+export interface TableHeaderProps {
   columns: TableColumn[];
+  headerHighlight: string;
 }
 
-const TableHeader = ({ columns }: TableHeaderProps) => {
+const TableHeader = ({ columns, headerHighlight }: TableHeaderProps) => {
+  const headerCallback = ({ label }: TableColumn) => {
+    const className = `fs-5 p-3${headerHighlight === label ? ' bg-warning' : ''}`;
+    return <th className={className}>{label}</th>
+  }
+
   return (
     <thead>
       <tr>

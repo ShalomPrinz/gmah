@@ -1,10 +1,12 @@
 import TableBody, { TableBodyProps } from "./TableBody";
-import TableHeader from "./TableHeader";
+import TableHeader, { TableHeaderProps } from "./TableHeader";
 
-const Table = ({ columns, ...props }: TableBodyProps) => (
+type TableProps = TableHeaderProps & TableBodyProps;
+
+const Table = ({ headerHighlight, ...props }: TableProps) => (
   <table className="table rounded bg-white">
-    <TableHeader columns={columns} />
-    <TableBody columns={columns} {...props} />
+    <TableHeader columns={props.columns} headerHighlight={headerHighlight} />
+    <TableBody {...props} />
   </table>
 );
 
