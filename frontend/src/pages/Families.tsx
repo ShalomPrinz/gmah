@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
-import { Table } from "../components";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 
+import { RadioMenu, Table } from "../components";
 import Search from "../components/Search";
 import { searchFamilies } from "../services";
 
@@ -57,31 +59,72 @@ const columns = [
   },
 ];
 
+const buttons = [
+  {
+    id: "search-by-name",
+    text: "שם",
+    value: "name",
+  },
+  {
+    id: "search-by-street",
+    text: "רחוב",
+    value: "street",
+  },
+  {
+    id: "search-by-phone",
+    text: "מספר פלאפון",
+    value: "phone",
+  },
+];
+
+const getButtonTextByValue = (value: string) =>
+  buttons.find((b) => b.value === value)?.text || buttons[0].text;
+
 function Families() {
-  const { families, setQuery } = useFamiliesSearch();
+  const [query, setQuery] = useState("");
+  const [searchBy, setSearchBy] = useState("name");
+  const families = useFamiliesSearch(query, searchBy);
 
   return (
-    <main className="text-center w-75 mx-auto">
-      <h1 className="my-5">חיפוש משפחות</h1>
-      <Search onChange={(q: string) => setQuery(q)} />
-      <Table columns={columns} data={families} dataIdProp="fullName" />
+    <main className="container text-center w-75 mx-auto">
+      <Row>
+        <h1 className="mt-5 mb-4">חיפוש משפחות</h1>
+      </Row>
+      <Row className="mb-3">
+        <Col sm="3">
+          <h2>חפש באמצעות:</h2>
+          <RadioMenu
+            buttons={buttons}
+            menuId="search-by"
+            onSelect={(value: string) => setSearchBy(value)}
+          />
+        </Col>
+        <Col>
+          <Search
+            onChange={(q: string) => setQuery(q)}
+            placeholder={`הכנס ${getButtonTextByValue(searchBy)} של משפחה...`}
+          />
+        </Col>
+      </Row>
+      <Row>
+        <Table columns={columns} data={families} dataIdProp="fullName" />
+      </Row>
     </main>
   );
 }
 
-function useFamiliesSearch() {
-  const [query, setQuery] = useState("");
+function useFamiliesSearch(query: string, searchBy: string) {
   const [families, setFamilies] = useState([]);
 
   useEffect(() => {
-    searchFamilies(query)
+    searchFamilies(query, searchBy)
       .then((res) => setFamilies(res.data.families))
       .catch((error) =>
         console.error("Error occurred while trying to search families", error)
       );
-  }, [query]);
+  }, [query, searchBy]);
 
-  return { families, setQuery };
+  return families;
 }
 
 export default Families;
