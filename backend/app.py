@@ -22,3 +22,8 @@ def query_family():
     search_by = request.args.get('by')
     query_result = families.search_families(query, search_by)
     return jsonify(families=query_result), 200
+
+@app.route('/families', methods=["POST"])
+def add_family():
+    result = families.add_family(request.json)
+    return jsonify(result=result.name), result.value

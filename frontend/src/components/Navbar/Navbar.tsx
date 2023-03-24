@@ -65,8 +65,13 @@ function NavbarWrapper() {
   const pages = [
     {
       id: 0,
-      name: "נתמכים",
+      name: "כל המידע",
       url: "/families",
+    },
+    {
+      id: 1,
+      name: "ניהול",
+      url: "/manage",
     },
   ];
 

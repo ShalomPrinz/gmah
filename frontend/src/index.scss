@@ -1,4 +1,5 @@
-@import '~bootstrap/scss/bootstrap.scss';
+@import "~bootstrap/scss/bootstrap.scss";
+@import "react-toastify/dist/ReactToastify.css";
 
 :root {
   line-height: 1.5;
@@ -15,7 +16,7 @@
 
 body {
   direction: rtl;
-  font-family: 'Rubik';
+  font-family: "Rubik";
   min-width: 320px;
   min-height: 100vh;
 }

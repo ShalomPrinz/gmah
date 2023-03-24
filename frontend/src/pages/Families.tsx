@@ -84,8 +84,8 @@ const getHeaderByButtonValue = (value: string) =>
   ({
     name: "שם מלא",
     street: "רחוב",
-    phone: "מס' פלאפון"
-  })[value] || "NoSuchSearchOption"
+    phone: "מס' פלאפון",
+  }[value] || "NoSuchSearchOption");
 
 function Families() {
   const [query, setQuery] = useState("");
@@ -114,7 +114,9 @@ function Families() {
         </Col>
         <Col sm="3">
           <h2>מספר תוצאות</h2>
-          <p className="text-primary" style={{fontSize: "50px"}}>{families.length}</p>
+          <p className="text-primary" style={{ fontSize: "50px" }}>
+            {families.length}
+          </p>
         </Col>
       </Row>
       <Row>

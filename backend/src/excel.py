@@ -8,9 +8,14 @@ class Excel:
     def __init__(self, filename):
         if not path.exists(filename):
             raise Exception(f'No such file {filename}')
-        workbook = openpyxl.load_workbook(filename)
-        self.worksheet = workbook[workbook.sheetnames[0]]
+
+        self.filename = filename
+        self.workbook = openpyxl.load_workbook(filename)
+        self.worksheet = self.workbook[self.workbook.sheetnames[0]]
     
+    def save(self):
+        self.workbook.save(self.filename)
+
     def get_rows_num(self):
         return self.worksheet.max_row
 
@@ -26,3 +31,7 @@ class Excel:
         )
 
         return search(request)
+
+    def append_row(self, row_data):
+        self.worksheet.append(row_data)
+        self.save()

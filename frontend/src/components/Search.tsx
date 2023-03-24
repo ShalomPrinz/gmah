@@ -8,7 +8,7 @@ const Search = ({ onChange, placeholder }: SearchProps) => (
     className="form-control search-input my-3 fs-1 p-4"
     onChange={(e) => onChange(e.currentTarget.value)}
     placeholder={placeholder}
-    style={{ border: '5px solid #a4d2f5' }}
+    style={{ border: "5px solid #a4d2f5" }}
     type="text"
   />
 );

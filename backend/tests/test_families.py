@@ -4,7 +4,7 @@ from shutil import copy
 from dotenv import load_dotenv
 from os import getenv, remove
 
-from src.families import get_count, search_families
+from src.families import get_count, search_families, add_family, AddFamilyResult
 
 load_dotenv()
 FAMILIES_FILENAME = getenv('FAMILIES_FILENAME')
@@ -39,26 +39,13 @@ def write_families_file(families):
         worksheet.append(family.to_excel_row())
     workbook.save(FAMILIES_FILENAME)
 
-def write_file(rows_num):
-    workbook = openpyxl.Workbook()
-    worksheet = workbook.active
-    worksheet.append(['שם מלא', 'רחוב', 'בניין'])
-    for i in range(1, rows_num + 1):
-        worksheet.append([f'Family {i}', 'שפרינצק', 10])
-    workbook.save(FAMILIES_FILENAME)
-
-class TestExcel(unittest.TestCase):
+class TestSearch(unittest.TestCase):
     def setUpClass():
         copy(FAMILIES_FILENAME, 'temp.xlsx')
     
     def tearDownClass():
         copy('temp.xlsx', FAMILIES_FILENAME)
         remove('temp.xlsx')
-
-    def test_get_families_num(self):
-        rows_num = 10
-        write_file(rows_num=rows_num)
-        self.assertEqual(rows_num, get_count())
 
     def test_search_by_name(self):
         families = [Family(fullName="פרינץ"), Family(fullName="כהנא"), Family(fullName="נתאי")]
@@ -153,3 +140,33 @@ class TestExcel(unittest.TestCase):
                 write_families_file(families=families)
                 search_result = search_families(query, search_by)
                 self.assertEqual(expected_len, len(search_result))
+
+class TestDataManagement(unittest.TestCase):
+    def setUpClass():
+        copy(FAMILIES_FILENAME, 'temp.xlsx')
+    
+    def tearDownClass():
+        copy('temp.xlsx', FAMILIES_FILENAME)
+        remove('temp.xlsx')
+
+    def test_get_families_num(self):
+        expected_count = 10
+        families = [Family(f"משפחה מס' {i}") for i in range(expected_count)]
+        write_families_file(families)
+        self.assertEqual(expected_count, get_count())
+
+    def test_add_family(self):
+        families = [Family(fullName="שלום פרינץ")]
+
+        test_cases = [
+            ("New Name", {"fullName": "נתאי פרינץ"}, AddFamilyResult.FAMILY_ADDED),
+            ("Name Exists", {"fullName": "שלום פרינץ"}, AddFamilyResult.FAMILY_EXISTS),
+            ("Name Partially Exists", {"fullName": "שלום"}, AddFamilyResult.FAMILY_ADDED),
+            ("Missing Name", {}, AddFamilyResult.MISSING_FULL_NAME),
+        ]
+
+        for title, family, expected_result in test_cases:
+            with self.subTest(title=title):
+                write_families_file(families=families)
+                result = add_family(family)
+                self.assertEqual(expected_result, result)
