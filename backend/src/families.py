@@ -3,6 +3,7 @@ from os import getenv
 from enum import Enum
 
 from src.excel import Excel
+from src.util import without_hyphen, insert_hyphen
 
 load_dotenv()
 FAMILIES_FILENAME = getenv('FAMILIES_FILENAME')
@@ -36,9 +37,62 @@ def search_families(query='', search_by=''):
     return families_file.search(query, search_by)
 
 class AddFamilyResult(Enum):
-    FAMILY_ADDED = 200
-    MISSING_FULL_NAME = 400
-    FAMILY_EXISTS = 409
+    FAMILY_ADDED = { 
+        "status": 200 
+    }
+    MISSING_FULL_NAME = {
+        "status": 400,
+        "description": "לא ניתן להכניס משפחה ללא שם לרשימת הנתמכים"
+    }
+    FAMILY_EXISTS = {
+        "status": 409,
+        "description": "כבר קיימת משפחה עם השם הזה"
+    }
+    PHONE_NOT_DIGITS = {
+        "status": 400,
+        "description": "מספר הטלפון של המשפחה יכול להכיל ספרות בלבד"
+    }
+    PHONE_WRONG_LEN = {
+        "status": 400,
+        "description": "מספר הטלפון של המשפחה צריך להיות באורך של 9 או 10 ספרות"
+    }
+
+    @property
+    def status(self):
+        return self.value["status"]
+
+    @property
+    def description(self):
+        return self.value["description"]
+
+def format_phone(family, attr_name):
+    '''
+    Validates phone is 9 or 10 digits only.
+    
+    Returns:
+        - None: Family doesn't have attr_name
+        - AddFamilyResult key: Validation failed
+        - string (phone): Validated & formatted phone
+    '''
+    if attr_name not in family:
+        return None
+    
+    phone = family[attr_name]
+    if phone is None or phone == '':
+        return None
+        
+    phone = without_hyphen(str(phone))
+    if not phone.replace('0', '').isdigit():
+        return AddFamilyResult.PHONE_NOT_DIGITS.name
+    
+    if len(phone) == 9:
+        phone = insert_hyphen(phone, 2)
+    elif len(phone) == 10:
+        phone = insert_hyphen(phone, 3)
+    else:
+        return AddFamilyResult.PHONE_WRONG_LEN.name
+    
+    return phone
 
 def add_family(family):
     '''
@@ -56,6 +110,16 @@ def add_family(family):
         if any(found_family["fullName"] == family["fullName"] for found_family in search_result):
             return AddFamilyResult.FAMILY_EXISTS
     
+    # Validate and format phone numbers
+    for phone_type in ["homePhone", "mobilePhone"]:
+        result = format_phone(family, phone_type)
+        if result is None:
+            continue
+        elif result in [AddFamilyResult.PHONE_WRONG_LEN.name, AddFamilyResult.PHONE_NOT_DIGITS.name]:
+            return AddFamilyResult[result]
+        else:
+            family[phone_type] = result
+
     excel_row = to_excel_row(**family)
     families_file.append_row(excel_row)
     return AddFamilyResult.FAMILY_ADDED

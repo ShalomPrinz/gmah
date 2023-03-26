@@ -31,10 +31,10 @@ class Family:
             self.originalDriver, self.referrer, self.notes]
 
 def write_families_file(families):
-    workbook = openpyxl.Workbook()
-    worksheet = workbook.active
-    # Families file headers
-    worksheet.append(['שם מלא', 'רחוב', 'בניין', 'דירה', 'קומה', "מס' בית", "מס' פלאפון", 'נהג במקור', 'ממליץ', 'הערות'])
+    workbook = openpyxl.load_workbook(FAMILIES_FILENAME)
+    worksheet = workbook[workbook.sheetnames[0]]
+    worksheet.delete_rows(2, worksheet.max_row - 1)
+
     for family in families:
         worksheet.append(family.to_excel_row())
     workbook.save(FAMILIES_FILENAME)
@@ -163,6 +163,12 @@ class TestDataManagement(unittest.TestCase):
             ("Name Exists", {"fullName": "שלום פרינץ"}, AddFamilyResult.FAMILY_EXISTS),
             ("Name Partially Exists", {"fullName": "שלום"}, AddFamilyResult.FAMILY_ADDED),
             ("Missing Name", {}, AddFamilyResult.MISSING_FULL_NAME),
+            ("Phone Not Digits", {"fullName": "א", "homePhone": "שלוםפרינץ"}, AddFamilyResult.PHONE_NOT_DIGITS),
+            ("Phone Too Short", {"fullName": "א", "mobilePhone": "05253816"}, AddFamilyResult.PHONE_WRONG_LEN),
+            ("Phone Too Long", {"fullName": "א", "homePhone": "05253816480"}, AddFamilyResult.PHONE_WRONG_LEN),
+            ("Phone OK", {"fullName": "א", "mobilePhone": "0525381648"}, AddFamilyResult.FAMILY_ADDED),
+            ("Phone With Hyphen", {"fullName": "א", "homePhone": "04-5381648"}, AddFamilyResult.FAMILY_ADDED),
+            ("Phone With Hyphen", {"fullName": "א", "mobilePhone": "052-5381648"}, AddFamilyResult.FAMILY_ADDED),
         ]
 
         for title, family, expected_result in test_cases:

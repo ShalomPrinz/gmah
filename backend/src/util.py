@@ -25,3 +25,6 @@ def format_family_header(header):
 
 def without_hyphen(string: str):
     return string.replace('-', '')
+
+def insert_hyphen(string: str, index: int):
+    return string[:index] + '-' + string[index:]

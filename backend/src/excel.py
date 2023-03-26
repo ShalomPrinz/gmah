@@ -12,6 +12,18 @@ class Excel:
         self.filename = filename
         self.workbook = openpyxl.load_workbook(filename)
         self.worksheet = self.workbook[self.workbook.sheetnames[0]]
+
+        self.table_name = 'נתמכים'
+        self.cell_style = 'שורת נתמך'
+        self.last_column = 'J' # = 10 Columns
+
+        if len(self.workbook.named_styles) < 2 or \
+            self.cell_style not in self.workbook.named_styles:
+            raise Exception(f"File Malformed: Missing '{self.cell_style}' Cell Style")
+
+        if len(self.worksheet.tables) < 1 or \
+            self.table_name not in self.worksheet.tables:
+            raise Exception(f"File Malformed: Missing '{self.table_name}' Table")
     
     def save(self):
         self.workbook.save(self.filename)
@@ -33,5 +45,13 @@ class Excel:
         return search(request)
 
     def append_row(self, row_data):
-        self.worksheet.append(row_data)
+        new_row = self.get_rows_num() + 1
+        self.worksheet.insert_rows(idx=new_row, amount=1)
+
+        for column, value in enumerate(row_data, 1):
+            cell = self.worksheet.cell(row=new_row, column=column)
+            cell.value = value
+            cell.style = self.cell_style
+
+        self.worksheet.tables[self.table_name].ref = f'A1:{self.last_column}{new_row}'
         self.save()
