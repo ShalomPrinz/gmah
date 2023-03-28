@@ -11,6 +11,7 @@ import Home from "./Home";
 import Families from "./Families";
 import FamilyManager from "./FamilyManager";
 import AddFamily from "./AddFamily";
+import AddManyFamilies from "./AddManyFamilies";
 
 const Header = () => (
   <>
@@ -27,6 +28,7 @@ const router = createBrowserRouter(
       <Route path="manage">
         <Route index element={<FamilyManager />} />
         <Route path="add" element={<AddFamily />} />
+        <Route path="add-many" element={<AddManyFamilies />} />
       </Route>
     </Route>
   )
