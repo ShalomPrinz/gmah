@@ -2,11 +2,12 @@ import openpyxl
 from os import path
 
 from src.search import SearchRequest, search
+from src.errors import FileResourcesMissingError
 
 class Excel:
     def __init__(self, filename):
         if not path.exists(filename):
-            raise Exception(f'No such file {filename}')
+            raise FileNotFoundError(f'הקובץ {filename} לא נמצא')
 
         self.filename = filename
         self.workbook = openpyxl.load_workbook(filename)
@@ -18,11 +19,11 @@ class Excel:
 
         if len(self.workbook.named_styles) < 2 or \
             self.cell_style not in self.workbook.named_styles:
-            raise Exception(f"File Malformed: Missing '{self.cell_style}' Cell Style")
+            raise FileResourcesMissingError(f"חסר עיצוב תא בשם '{self.cell_style}' בקובץ {filename}")
 
         if len(self.worksheet.tables) < 1 or \
             self.table_name not in self.worksheet.tables:
-            raise Exception(f"File Malformed: Missing '{self.table_name}' Table")
+            raise FileResourcesMissingError(f"על הקובץ {filename} להכיל טבלה בשם '{self.table_name}'")
     
     def save(self):
         self.workbook.save(self.filename)
