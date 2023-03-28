@@ -1,9 +1,9 @@
 from dotenv import load_dotenv
 from os import getenv
-from enum import Enum
 
 from src.excel import Excel
 from src.util import without_hyphen, insert_hyphen
+from src.results import Result, results
 
 load_dotenv()
 FAMILIES_FILENAME = getenv('FAMILIES_FILENAME')
@@ -48,35 +48,6 @@ def search_families(families_file: Excel, query='', search_by=''):
 
     return families_file.search(query, search_by)
 
-class AddFamilyResult(Enum):
-    FAMILY_ADDED = { 
-        "status": 200 
-    }
-    MISSING_FULL_NAME = {
-        "status": 400,
-        "description": "לא ניתן להכניס משפחה ללא שם לרשימת הנתמכים"
-    }
-    FAMILY_EXISTS = {
-        "status": 409,
-        "description": "כבר קיימת משפחה עם השם הזה"
-    }
-    PHONE_NOT_DIGITS = {
-        "status": 400,
-        "description": "מספר הטלפון של המשפחה יכול להכיל ספרות בלבד"
-    }
-    PHONE_WRONG_LEN = {
-        "status": 400,
-        "description": "מספר הטלפון של המשפחה צריך להיות באורך של 9 או 10 ספרות"
-    }
-
-    @property
-    def status(self):
-        return self.value["status"]
-
-    @property
-    def description(self):
-        return self.value["description"]
-
 def format_phone(family, attr_name):
     '''
     Validates phone is 9 or 10 digits only.
@@ -95,14 +66,14 @@ def format_phone(family, attr_name):
         
     phone = without_hyphen(str(phone))
     if not phone.replace('0', '').isdigit():
-        return AddFamilyResult.PHONE_NOT_DIGITS
+        return results["PHONE_NOT_DIGITS"]
     
     if len(phone) == 9:
         phone = insert_hyphen(phone, 2)
     elif len(phone) == 10:
         phone = insert_hyphen(phone, 3)
     else:
-        return AddFamilyResult.PHONE_WRONG_LEN
+        return results["PHONE_WRONG_LEN"]
     
     return phone
 
@@ -125,7 +96,7 @@ def validate_phones(family):
         result = format_phone(family, phone_type)
         if result is None:
             continue
-        elif isinstance(result, AddFamilyResult):
+        elif isinstance(result, Result):
             return result
         else:
             family[phone_type] = result
@@ -136,14 +107,14 @@ def add_family(families_file: Excel, family):
     family should be a dictionary with family properties, "שם מלא" property required
     '''
     if not "שם מלא" in family:
-        return AddFamilyResult.MISSING_FULL_NAME
+        return results["MISSING_FULL_NAME"]
 
     if is_family_exists(families_file, family["שם מלא"]):
-        return AddFamilyResult.FAMILY_EXISTS
+        return results["FAMILY_EXISTS"]
 
     if validation_error := validate_phones(family):
         return validation_error
 
     excel_row = to_excel_row(family)
     families_file.append_row(excel_row)
-    return AddFamilyResult.FAMILY_ADDED
+    return results["FAMILY_ADDED"]

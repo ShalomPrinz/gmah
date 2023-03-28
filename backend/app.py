@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from os import getenv
 
 import src.families as families
-from src.errors import get_result
+from src.results import get_result
 
 load_dotenv()
 FRONTEND_DOMAIN = getenv('FRONTEND_DOMAIN')
@@ -36,7 +36,4 @@ def query_family():
 @app.route('/families', methods=["POST"])
 def add_family():
     result = families.add_family(g.families_file, request.json)
-    if "description" in result.value:
-        return jsonify(result=result.name, description=result.description), result.status
-    else:
-        return jsonify(result=result.name), result.status
+    return jsonify(title=result.title, description=result.description), result.status

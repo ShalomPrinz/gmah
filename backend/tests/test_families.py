@@ -4,7 +4,8 @@ from shutil import copy
 from dotenv import load_dotenv
 from os import getenv, remove
 
-from src.families import get_count, search_families, add_family, AddFamilyResult, family_properties, open_families_file
+from src.families import get_count, search_families, add_family, family_properties, open_families_file
+from src.results import results
 
 load_dotenv()
 FAMILIES_FILENAME = getenv('FAMILIES_FILENAME')
@@ -97,13 +98,13 @@ class TestSearch(unittest.TestCase):
         
         test_cases = [
             ("None", None, 3),
-            ("Empty String", "", 3),
-            ("Home: One Match", "0", 1),
-            ("Home: Two Matches", "1", 2),
-            ("Mobile: One Match", "6", 1),
+            ("Empty String",        "", 3),
+            ("Home: One Match",     "0", 1),
+            ("Home: Two Matches",   "1", 2),
+            ("Mobile: One Match",   "6", 1),
             ("Mobile: Two Matches", "5", 2),
-            ("Both: Two Matches", "3", 2),
-            ("Not Found", "7", 0)
+            ("Both: Two Matches",   "3", 2),
+            ("Not Found",           "7", 0)
         ]
 
         for title, query, expected_len in test_cases:
@@ -134,12 +135,12 @@ class TestSearch(unittest.TestCase):
         families = [Family({"שם מלא": "פרינץ", "רחוב": "שפרינצק", "מס' בית": "000-1111111"})]
         
         test_cases = [
-            ("Name Without Hyphen", "פר", "name", 1),
-            ("Name With Hyphen", "פ-ר", "name", 0),
+            ("Name Without Hyphen", "פר",   "name", 1),
+            ("Name With Hyphen", "פ-ר",     "name", 0),
             ("Street Without Hyphen", "צק", "street", 1),
-            ("Street With Hyphen", "צ-ק", "street", 0),
-            ("Phone Without Hyphen", "01", "phone", 1),
-            ("Phone With Hyphen", "0-1", "phone", 1),
+            ("Street With Hyphen", "צ-ק",   "street", 0),
+            ("Phone Without Hyphen", "01",  "phone", 1),
+            ("Phone With Hyphen", "0-1",    "phone", 1),
         ]
 
         for title, query, search_by, expected_len in test_cases:
@@ -168,16 +169,16 @@ class TestDataManagement(unittest.TestCase):
         families = [Family({"שם מלא": "שלום פרינץ"})]
 
         test_cases = [
-            ("New Name", {"שם מלא": "נתאי פרינץ"}, AddFamilyResult.FAMILY_ADDED),
-            ("Name Exists", {"שם מלא": "שלום פרינץ"}, AddFamilyResult.FAMILY_EXISTS),
-            ("Name Partially Exists", {"שם מלא": "שלום"}, AddFamilyResult.FAMILY_ADDED),
-            ("Missing Name", {}, AddFamilyResult.MISSING_FULL_NAME),
-            ("Phone Not Digits", {"שם מלא": "א", "מס' בית": "שלוםפרינץ"}, AddFamilyResult.PHONE_NOT_DIGITS),
-            ("Phone Too Short", {"שם מלא": "א", "מס' פלאפון": "05253816"}, AddFamilyResult.PHONE_WRONG_LEN),
-            ("Phone Too Long", {"שם מלא": "א", "מס' בית": "05253816480"}, AddFamilyResult.PHONE_WRONG_LEN),
-            ("Phone OK", {"שם מלא": "א", "מס' פלאפון": "0525381648"}, AddFamilyResult.FAMILY_ADDED),
-            ("Phone With Hyphen", {"שם מלא": "א", "מס' בית": "04-5381648"}, AddFamilyResult.FAMILY_ADDED),
-            ("Phone With Hyphen", {"שם מלא": "א", "מס' פלאפון": "052-5381648"}, AddFamilyResult.FAMILY_ADDED),
+            ("New Name",                {"שם מלא": "נתאי פרינץ"},                      results["FAMILY_ADDED"]),
+            ("Name Exists",             {"שם מלא": "שלום פרינץ"},                      results["FAMILY_EXISTS"]),
+            ("Name Partially Exists",   {"שם מלא": "שלום"},                             results["FAMILY_ADDED"]),
+            ("Missing Name",            {},                                              results["MISSING_FULL_NAME"]),
+            ("Phone Not Digits",        {"שם מלא": "א", "מס' בית": "שלוםפרינץ"},       results["PHONE_NOT_DIGITS"]),
+            ("Phone Too Short",         {"שם מלא": "א", "מס' פלאפון": "05253816"},      results["PHONE_WRONG_LEN"]),
+            ("Phone Too Long",          {"שם מלא": "א", "מס' בית": "05253816480"},      results["PHONE_WRONG_LEN"]),
+            ("Phone OK",                {"שם מלא": "א", "מס' פלאפון": "0525381648"},    results["FAMILY_ADDED"]),
+            ("Phone With Hyphen",       {"שם מלא": "א", "מס' בית": "04-5381648"},       results["FAMILY_ADDED"]),
+            ("Phone With Hyphen",       {"שם מלא": "א", "מס' פלאפון": "052-5381648"},   results["FAMILY_ADDED"]),
         ]
 
         for title, family, expected_result in test_cases:
