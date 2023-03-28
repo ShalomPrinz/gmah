@@ -9,53 +9,43 @@ import { searchFamilies } from "../services";
 const columns = [
   {
     id: 0,
-    label: "שם מלא",
-    path: "fullName",
+    path: "שם מלא",
   },
   {
     id: 1,
-    label: "רחוב",
-    path: "street",
+    path: "רחוב",
   },
   {
     id: 2,
-    label: "בניין",
-    path: "house",
+    path: "בניין",
   },
   {
     id: 3,
-    label: "דירה",
-    path: "apartmentNumber",
+    path: "דירה",
   },
   {
     id: 4,
-    label: "קומה",
-    path: "floor",
+    path: "קומה",
   },
   {
     id: 5,
-    label: "מס' בית",
-    path: "homePhone",
+    path: "מס' בית",
   },
   {
     id: 6,
-    label: "מס' פלאפון",
-    path: "mobilePhone",
+    path: "מס' פלאפון",
   },
   {
     id: 7,
-    label: "נהג במקור",
-    path: "originalDriver",
+    path: "נהג במקור",
   },
   {
     id: 8,
-    label: "ממליץ",
-    path: "referrer",
+    path: "ממליץ",
   },
   {
     id: 9,
-    label: "הערות",
-    path: "notes",
+    path: "הערות",
   },
 ];
 
@@ -123,7 +113,7 @@ function Families() {
         <Table
           columns={columns}
           data={families}
-          dataIdProp="fullName"
+          dataIdProp="שם מלא"
           headerHighlight={getHeaderByButtonValue(searchBy)}
         />
       </Row>

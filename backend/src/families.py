@@ -8,14 +8,14 @@ from src.util import without_hyphen, insert_hyphen
 load_dotenv()
 FAMILIES_FILENAME = getenv('FAMILIES_FILENAME')
 
-def to_excel_row(fullName=None, street=None, house=None,
-    apartmentNumber=None, floor=None, homePhone=None, mobilePhone=None,
-    originalDriver=None, referrer=None, notes=None):
+family_properties = ["שם מלא", "רחוב", "בניין", "דירה", "קומה", "מס' בית",
+    "מס' פלאפון", "נהג במקור", "ממליץ", "הערות"]
+
+def to_excel_row(family):
     '''
     Cast family data to excel row format in the right order
     '''
-    return [fullName, street, house, apartmentNumber, floor,
-        homePhone, mobilePhone, originalDriver, referrer, notes]
+    return [family.get(key, None) for key in family_properties]
 
 def get_count():
     '''
@@ -97,21 +97,21 @@ def format_phone(family, attr_name):
 def add_family(family):
     '''
     Adds the given family to the families file.
-    family should be a dictionary with family properties, fullName property required
+    family should be a dictionary with family properties, "שם מלא" property required
     '''
-    if not "fullName" in family:
+    if not "שם מלא" in family:
         return AddFamilyResult.MISSING_FULL_NAME
 
     families_file = Excel(FAMILIES_FILENAME)
 
     # Don't allow duplicate families name
-    search_result = families_file.search(family["fullName"], 'name')
+    search_result = families_file.search(family["שם מלא"], 'name')
     if len(search_result) > 0:
-        if any(found_family["fullName"] == family["fullName"] for found_family in search_result):
+        if any(found_family["שם מלא"] == family["שם מלא"] for found_family in search_result):
             return AddFamilyResult.FAMILY_EXISTS
     
     # Validate and format phone numbers
-    for phone_type in ["homePhone", "mobilePhone"]:
+    for phone_type in ["מס' בית", "מס' פלאפון"]:
         result = format_phone(family, phone_type)
         if result is None:
             continue
@@ -120,6 +120,6 @@ def add_family(family):
         else:
             family[phone_type] = result
 
-    excel_row = to_excel_row(**family)
+    excel_row = to_excel_row(family)
     families_file.append_row(excel_row)
     return AddFamilyResult.FAMILY_ADDED

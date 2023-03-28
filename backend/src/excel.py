@@ -2,7 +2,6 @@ import openpyxl
 from os import path
 
 from src.search import SearchRequest, search
-from src.util import format_family_header
 
 class Excel:
     def __init__(self, filename):
@@ -32,7 +31,7 @@ class Excel:
         return self.worksheet.max_row
 
     def get_headers(self):
-        return [format_family_header(cell.value) for cell in next(self.worksheet.rows)]
+        return [cell.value for cell in next(self.worksheet.rows)]
     
     def search(self, query, search_by=''):
         request = SearchRequest(

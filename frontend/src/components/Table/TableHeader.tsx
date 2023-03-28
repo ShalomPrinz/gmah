@@ -7,11 +7,11 @@ export interface TableHeaderProps {
 }
 
 const TableHeader = ({ columns, headerHighlight }: TableHeaderProps) => {
-  const headerCallback = ({ label }: TableColumn) => {
+  const headerCallback = ({ path }: TableColumn) => {
     const className = `fs-5 p-3${
-      headerHighlight === label ? " bg-warning" : ""
+      headerHighlight === path ? " bg-warning" : ""
     }`;
-    return <th className={className}>{label}</th>;
+    return <th className={className}>{path}</th>;
   };
 
   return (

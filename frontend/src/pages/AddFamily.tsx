@@ -5,80 +5,62 @@ import { Form } from "../components";
 import { addFamily } from "../services";
 
 // This regex matches 9 or 10 digits number, and allows hyphen after three digits
-const phoneRegExp = /^\d{9,10}$|^\d{3}-\d{6,7}$/;
+const phoneRegExp = /^\d{2,3}-?\d{7}$/;
 
 const schema = object({
-  fullName: string().required("אי אפשר להוסיף משפחה ללא שם"),
-  street: string(),
-  house: string(),
-  apartmentNumber: number().typeError("מספר הדירה צריך להיות מספר"),
-  floor: number().typeError("מספר הקומה צריך להיות מספר"),
-  homePhone: string().matches(
+  "שם מלא": string().required("אי אפשר להוסיף משפחה ללא שם"),
+  רחוב: string(),
+  בניין: string(),
+  דירה: number().typeError("מספר הדירה צריך להיות מספר"),
+  קומה: number().typeError("מספר הקומה צריך להיות מספר"),
+  "מס' בית": string().matches(
     phoneRegExp,
     "נא להכניס מס' טלפון תקין בעל 9 או 10 ספרות"
   ),
-  mobilePhone: string().matches(
+  "מס' פלאפון": string().matches(
     phoneRegExp,
     "נא להכניס מס' טלפון תקין בעל 9 או 10 ספרות"
   ),
-  referrer: string(),
-  notes: string(),
+  ממליץ: string(),
+  הערות: string(),
 });
 
 const textInputs = [
   {
     id: 0,
-    label: "שם מלא",
-    name: "fullName",
-    type: "text",
+    name: "שם מלא",
   },
   {
     id: 1,
-    label: "רחוב",
-    name: "street",
-    type: "text",
+    name: "רחוב",
   },
   {
     id: 2,
-    label: "בניין",
-    name: "house",
-    type: "text",
+    name: "בניין",
   },
   {
     id: 3,
-    label: "דירה",
-    name: "apartmentNumber",
-    type: "text",
+    name: "דירה",
   },
   {
     id: 4,
-    label: "קומה",
-    name: "floor",
-    type: "text",
+    name: "קומה",
   },
   {
     id: 5,
-    label: "מס' בית",
-    name: "homePhone",
-    type: "text",
+    name: "מס' בית",
   },
   {
     id: 6,
-    label: "מס' פלאפון",
-    name: "mobilePhone",
-    type: "text",
+    name: "מס' פלאפון",
   },
   {
     id: 7,
-    label: "ממליץ",
-    name: "referrer",
-    type: "text",
+    name: "ממליץ",
   },
   {
     id: 8,
-    label: "הערות",
-    name: "notes",
-    type: "text",
+    name: "הערות",
   },
 ];
 
@@ -86,7 +68,7 @@ function AddFamily() {
   const handleSubmit = (familyData: any) =>
     addFamily(familyData)
       .then(() => {
-        toast.success(`משפחת ${familyData.fullName} נוספה בהצלחה לגמח:)`);
+        toast.success(`משפחת ${familyData["שם מלא"]} נוספה בהצלחה לגמח:)`);
         return true;
       })
       .catch(() => {

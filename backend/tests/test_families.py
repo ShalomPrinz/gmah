@@ -4,31 +4,27 @@ from shutil import copy
 from dotenv import load_dotenv
 from os import getenv, remove
 
-from src.families import get_count, search_families, add_family, AddFamilyResult
+from src.families import get_count, search_families, add_family, AddFamilyResult, family_properties
 
 load_dotenv()
 FAMILIES_FILENAME = getenv('FAMILIES_FILENAME')
 
+default_family_properties = {
+    "שם מלא": "פלוני פלוני",
+    "רחוב": "שפרינצק",
+    "בניין": 10,
+    "דירה": 2,
+    "קומה": 1,
+    "מס' בית": "012-3456789",
+    "מס' פלאפון": "987-6543210",
+    "נהג במקור": "נחום נחום",
+    "ממליץ": "רווחה",
+    "הערות": "",
+}
+
 class Family:
-    def __init__(self, fullName="פלוני פלוני", street="שפרינצק", house=10,
-        apartmentNumber=2, floor=1, homePhone="012-3456789", mobilePhone="987-6543210",
-        originalDriver="נחום נחום", referrer="רווחה", notes=""):
-
-        self.fullName = fullName
-        self.street = street
-        self.house = house
-        self.apartmentNumber = apartmentNumber
-        self.floor = floor
-        self.homePhone = homePhone
-        self.mobilePhone = mobilePhone
-        self.originalDriver = originalDriver
-        self.referrer = referrer 
-        self.notes = notes
-
-    def to_excel_row(self):
-        return [self.fullName, self.street, self.house, self.apartmentNumber, 
-            self.floor, self.homePhone, self.mobilePhone, 
-            self.originalDriver, self.referrer, self.notes]
+    def __init__(self, family):
+        self.excel_row = [family.get(key, default_family_properties.get(key, None)) for key in family_properties]
 
 def write_families_file(families):
     workbook = openpyxl.load_workbook(FAMILIES_FILENAME)
@@ -36,7 +32,7 @@ def write_families_file(families):
     worksheet.delete_rows(2, worksheet.max_row - 1)
 
     for family in families:
-        worksheet.append(family.to_excel_row())
+        worksheet.append(family.excel_row)
     workbook.save(FAMILIES_FILENAME)
 
 class TestSearch(unittest.TestCase):
@@ -48,7 +44,7 @@ class TestSearch(unittest.TestCase):
         remove('temp.xlsx')
 
     def test_search_by_name(self):
-        families = [Family(fullName="פרינץ"), Family(fullName="כהנא"), Family(fullName="נתאי")]
+        families = [Family({"שם מלא": "פרינץ"}), Family({"שם מלא": "כהנא"}), Family({"שם מלא": "נתאי"})]
         
         test_cases = [
             ("None", None, 3),
@@ -66,9 +62,9 @@ class TestSearch(unittest.TestCase):
                 self.assertEqual(expected_len, len(search_result))
     
     def test_search_by_street(self):
-        families = [Family(fullName="פרינץ", street="הבנים"),
-            Family(fullName="כהנא", street="השופטים"),
-            Family(fullName="נתאי", street="סלינג'ר")]
+        families = [Family({"שם מלא": "פרינץ", "רחוב": "הבנים"}),
+            Family({"שם מלא": "כהנא", "רחוב": "השופטים"}),
+            Family({"שם מלא": "נתאי", "רחוב": "סלינג'ר"})]
         
         test_cases = [
             ("None", None, 3),
@@ -86,9 +82,9 @@ class TestSearch(unittest.TestCase):
                 self.assertEqual(expected_len, len(search_result))
 
     def test_search_by_phone(self):
-        families = [Family(fullName="פרינץ", mobilePhone="333-4444444", homePhone="000-1111111"),
-            Family(fullName="כהנא", mobilePhone="444-5555555", homePhone="111-2222222"),
-            Family(fullName="נתאי", mobilePhone="555-6666666", homePhone="222-3333333")]
+        families = [Family({"שם מלא": "פרינץ", "מס' פלאפון": "333-4444444", "מס' בית": "000-1111111"}),
+            Family({"שם מלא": "כהנא", "מס' פלאפון": "444-5555555", "מס' בית": "111-2222222"}),
+            Family({"שם מלא": "נתאי", "מס' פלאפון": "555-6666666", "מס' בית": "222-3333333"})]
         
         test_cases = [
             ("None", None, 3),
@@ -109,7 +105,7 @@ class TestSearch(unittest.TestCase):
 
     def test_search_no_value_cell(self):
         # Should not return this cell for all queries
-        families = [Family(fullName="פרינץ", street=None)]
+        families = [Family({"שם מלא": "פרינץ", "רחוב": None})]
         
         test_cases = [
             ("None", None, 0),
@@ -124,7 +120,7 @@ class TestSearch(unittest.TestCase):
                 self.assertEqual(expected_len, len(search_result))
 
     def test_search_hyphen(self):
-        families = [Family(fullName="פרינץ", street="שפרינצק", homePhone="000-1111111")]
+        families = [Family({"שם מלא": "פרינץ", "רחוב": "שפרינצק", "מס' בית": "000-1111111"})]
         
         test_cases = [
             ("Name Without Hyphen", "פר", "name", 1),
@@ -151,24 +147,24 @@ class TestDataManagement(unittest.TestCase):
 
     def test_get_families_num(self):
         expected_count = 10
-        families = [Family(f"משפחה מס' {i}") for i in range(expected_count)]
+        families = [Family({"שם מלא": f"משפחה מס' {i}"}) for i in range(expected_count)]
         write_families_file(families)
         self.assertEqual(expected_count, get_count())
 
     def test_add_family(self):
-        families = [Family(fullName="שלום פרינץ")]
+        families = [Family({"שם מלא": "שלום פרינץ"})]
 
         test_cases = [
-            ("New Name", {"fullName": "נתאי פרינץ"}, AddFamilyResult.FAMILY_ADDED),
-            ("Name Exists", {"fullName": "שלום פרינץ"}, AddFamilyResult.FAMILY_EXISTS),
-            ("Name Partially Exists", {"fullName": "שלום"}, AddFamilyResult.FAMILY_ADDED),
+            ("New Name", {"שם מלא": "נתאי פרינץ"}, AddFamilyResult.FAMILY_ADDED),
+            ("Name Exists", {"שם מלא": "שלום פרינץ"}, AddFamilyResult.FAMILY_EXISTS),
+            ("Name Partially Exists", {"שם מלא": "שלום"}, AddFamilyResult.FAMILY_ADDED),
             ("Missing Name", {}, AddFamilyResult.MISSING_FULL_NAME),
-            ("Phone Not Digits", {"fullName": "א", "homePhone": "שלוםפרינץ"}, AddFamilyResult.PHONE_NOT_DIGITS),
-            ("Phone Too Short", {"fullName": "א", "mobilePhone": "05253816"}, AddFamilyResult.PHONE_WRONG_LEN),
-            ("Phone Too Long", {"fullName": "א", "homePhone": "05253816480"}, AddFamilyResult.PHONE_WRONG_LEN),
-            ("Phone OK", {"fullName": "א", "mobilePhone": "0525381648"}, AddFamilyResult.FAMILY_ADDED),
-            ("Phone With Hyphen", {"fullName": "א", "homePhone": "04-5381648"}, AddFamilyResult.FAMILY_ADDED),
-            ("Phone With Hyphen", {"fullName": "א", "mobilePhone": "052-5381648"}, AddFamilyResult.FAMILY_ADDED),
+            ("Phone Not Digits", {"שם מלא": "א", "מס' בית": "שלוםפרינץ"}, AddFamilyResult.PHONE_NOT_DIGITS),
+            ("Phone Too Short", {"שם מלא": "א", "מס' פלאפון": "05253816"}, AddFamilyResult.PHONE_WRONG_LEN),
+            ("Phone Too Long", {"שם מלא": "א", "מס' בית": "05253816480"}, AddFamilyResult.PHONE_WRONG_LEN),
+            ("Phone OK", {"שם מלא": "א", "מס' פלאפון": "0525381648"}, AddFamilyResult.FAMILY_ADDED),
+            ("Phone With Hyphen", {"שם מלא": "א", "מס' בית": "04-5381648"}, AddFamilyResult.FAMILY_ADDED),
+            ("Phone With Hyphen", {"שם מלא": "א", "מס' פלאפון": "052-5381648"}, AddFamilyResult.FAMILY_ADDED),
         ]
 
         for title, family, expected_result in test_cases:
