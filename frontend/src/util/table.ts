@@ -1,5 +1,3 @@
-import { getLines, isString } from "./string";
-
 /**
  * This util module is meant to support convert Microsoft Word table data
  * to js array.
@@ -9,6 +7,14 @@ import { getLines, isString } from "./string";
  *  - Table cells are divided by "\t"
  *  - If cell is empty, its string is nothing (= "")
  */
+
+import { getLines, isString } from "./string";
+
+type ParsedTableRow = {
+  [header: string]: string;
+};
+
+type ParsedTable = ParsedTableRow[];
 
 const MINIMUM_TABLE_LINES = 2; // 1 Header + 1 Content
 const TABLE_HEADERS_NUM = 7; // שם מלא, רחוב, בניין, דירה, קומה,מס' בית, מס' פלאפון
@@ -52,15 +58,15 @@ function validateTableFormat(text: any) {
  * The property key equals to the matching column header,
  * and the value is the data in the cell itself.
  */
-function parseTable(text: string) {
+function parseTable(text: string): ParsedTable {
   const lines = getLines(text);
   const headers = lines[0].split("\t");
 
-  const rows = [];
+  const rows: ParsedTable = [];
   for (let i = 1; i < lines.length; i++) {
     const cells = lines[i].split("\t");
 
-    const row: { [header: string]: string } = {};
+    const row: ParsedTableRow = {};
     headers.forEach((header, index) => (row[header] = cells[index]));
     rows.push(row);
   }
@@ -69,3 +75,4 @@ function parseTable(text: string) {
 }
 
 export { TABLE_FORMAT_VALID, parseTable, validateTableFormat };
+export type { ParsedTable };

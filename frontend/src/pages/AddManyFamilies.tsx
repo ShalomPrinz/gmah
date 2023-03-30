@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import Row from "react-bootstrap/Row";
 import { toast } from "react-toastify";
 
 import {
@@ -7,43 +8,67 @@ import {
   parseTable,
   validateTableFormat,
 } from "../util";
+import type { ParsedTable } from "../util";
 
 function AddManyFamilies() {
-  const [table, setTable] = useState<any[]>([]);
+  const autoFocusRef = useAutoFocus<HTMLDivElement>();
+  const [table, setTable] = useState<ParsedTable>([]);
 
-  const handlePaste = (event: any) => {
-    const parsedTable = parsePastedData(event);
-    if (parsedTable) {
-      setTable(parsedTable);
-    }
+  const setTableData = (data: string) => {
+    const parsed = parsePastedData(data);
+    if (parsed && parsed.length) setTable(parsed);
   };
 
+  const handlePaste = (event: any) =>
+    setTableData(event?.clipboardData?.getData("text/plain"));
+
+  const performPaste = () =>
+    navigator.clipboard.readText().then((text) => setTableData(text));
+
   return (
-    <main
-      className="w-75 my-5 mx-auto p-5 text-center"
-      onPaste={handlePaste}
-      style={{ border: "1px solid black" }}
-    >
-      <h2 className="mb-5">הדבק את טבלת המצטרפים החדשים לגמח</h2>
-      <pre>{JSON.stringify(table)}</pre>
-    </main>
+    <div onPaste={handlePaste} ref={autoFocusRef} tabIndex={-1}>
+      <main className="container my-5 text-center">
+        <Row>
+          <h2>הדבק את טבלת המצטרפים החדשים לגמח</h2>
+          <p>
+            על מנת להדביק את הטבלה, הקש{" "}
+            <span className="fw-bold mx-2 fs-5">Ctrl + V</span> או{" "}
+            <button
+              className="bg-default rounded px-3 py-1 me-2"
+              onClick={performPaste}
+            >
+              לחץ כאן
+            </button>
+          </p>
+          <p>שים לב: אתה צריך להעתיק את כל הטבלה, כולל את שורת הכותרות</p>
+        </Row>
+        <Row>
+          <pre>{JSON.stringify(table)}</pre>
+        </Row>
+      </main>
+    </div>
   );
 }
 
-function parsePastedData(event: any) {
-  const pastedData = event?.clipboardData?.getData("text/plain");
-  if (!pastedData || !isString(pastedData)) {
+function useAutoFocus<T extends HTMLElement>() {
+  const ref = useRef<T>(null);
+  useEffect(() => ref?.current?.focus(), [ref]);
+  return ref;
+}
+
+function parsePastedData(pastedString: string): ParsedTable {
+  if (!pastedString || !isString(pastedString)) {
     toast.error("קרתה תקלה בניסיון לקבל את המידע שהודבק");
-    return null;
+    return [];
   }
 
-  const validationResult = validateTableFormat(pastedData);
+  const validationResult = validateTableFormat(pastedString);
   if (validationResult != TABLE_FORMAT_VALID) {
     toast.error(validationResult);
-    return null;
+    return [];
   }
 
-  return parseTable(pastedData);
+  return parseTable(pastedString);
 }
 
 export default AddManyFamilies;
