@@ -45,4 +45,6 @@
 
 .button-border-focus:disabled {
   box-shadow: none;
+  color: grey;
+  transform: none;
 }

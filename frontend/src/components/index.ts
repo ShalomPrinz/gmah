@@ -4,4 +4,5 @@ import Navbar from "./Navbar/Navbar";
 import RadioMenu from "./RadioMenu";
 import Table from "./Table/Table";
 
+export { InputTable } from "./InputTable";
 export { ConditionalList, Form, Navbar, RadioMenu, Table };

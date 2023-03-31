@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import Row from "react-bootstrap/Row";
 import { toast } from "react-toastify";
+import { array, object, string, number } from "yup";
 
+import { InputTable } from "../components";
 import {
   TABLE_FORMAT_VALID,
   isString,
@@ -9,6 +10,74 @@ import {
   validateTableFormat,
 } from "../util";
 import type { ParsedTable } from "../util";
+
+const familyTableHeaders = [
+  {
+    id: 0,
+    path: "שם מלא",
+  },
+  {
+    id: 1,
+    path: "רחוב",
+  },
+  {
+    id: 2,
+    path: "בניין",
+  },
+  {
+    id: 3,
+    path: "דירה",
+  },
+  {
+    id: 4,
+    path: "קומה",
+  },
+  {
+    id: 5,
+    path: "מס' בית",
+  },
+  {
+    id: 6,
+    path: "מס' פלאפון",
+  },
+  {
+    id: 7,
+    path: "נהג במקור",
+  },
+  {
+    id: 8,
+    path: "ממליץ",
+  },
+  {
+    id: 9,
+    path: "הערות",
+  },
+];
+
+// This regex matches 9 or 10 digits number, and allows hyphen after three digits
+const phoneRegExp = /^\d{2,3}-?\d{7}$/;
+
+const schema = object({
+  families: array().of(
+    object({
+      "שם מלא": string().required("אי אפשר להוסיף משפחה ללא שם"),
+      רחוב: string(),
+      בניין: string(),
+      דירה: number().typeError("מספר הדירה צריך להיות מספר"),
+      קומה: number().typeError("מספר הקומה צריך להיות מספר"),
+      "מס' בית": string().matches(
+        phoneRegExp,
+        "נא להכניס מס' טלפון תקין בעל 9 או 10 ספרות"
+      ),
+      "מס' פלאפון": string().matches(
+        phoneRegExp,
+        "נא להכניס מס' טלפון תקין בעל 9 או 10 ספרות"
+      ),
+      ממליץ: string(),
+      הערות: string(),
+    })
+  ),
+});
 
 function AddManyFamilies() {
   const autoFocusRef = useAutoFocus<HTMLDivElement>();
@@ -25,26 +94,37 @@ function AddManyFamilies() {
   const performPaste = () =>
     navigator.clipboard.readText().then((text) => setTableData(text));
 
+  const handleSubmit = async (families: any) => {
+    console.log("families submitted", families);
+    return new Promise<boolean>((resolve) =>
+      setTimeout(() => resolve(true), 2000)
+    );
+  };
+
   return (
     <div onPaste={handlePaste} ref={autoFocusRef} tabIndex={-1}>
-      <main className="container my-5 text-center">
-        <Row>
-          <h2>הדבק את טבלת המצטרפים החדשים לגמח</h2>
-          <p>
-            על מנת להדביק את הטבלה, הקש{" "}
-            <span className="fw-bold mx-2 fs-5">Ctrl + V</span> או{" "}
-            <button
-              className="bg-default rounded px-3 py-1 me-2"
-              onClick={performPaste}
-            >
-              לחץ כאן
-            </button>
-          </p>
-          <p>שים לב: אתה צריך להעתיק את כל הטבלה, כולל את שורת הכותרות</p>
-        </Row>
-        <Row>
-          <pre>{JSON.stringify(table)}</pre>
-        </Row>
+      <div className="mt-5 text-center">
+        <h2>הדבק את טבלת המצטרפים החדשים לגמח</h2>
+        <p>
+          על מנת להדביק את הטבלה, הקש{" "}
+          <span className="fw-bold mx-2 fs-5">Ctrl + V</span> או{" "}
+          <button
+            className="bg-default rounded px-3 py-1 me-2"
+            onClick={performPaste}
+          >
+            לחץ כאן
+          </button>
+        </p>
+        <p>שים לב: אתה צריך להעתיק את כל הטבלה, כולל את שורת הכותרות</p>
+      </div>
+      <main className="text-center w-100 pe-5">
+        <InputTable
+          columns={familyTableHeaders}
+          data={table}
+          inputsName="families"
+          onSubmit={(families) => handleSubmit(families)}
+          schema={schema}
+        />
       </main>
     </div>
   );
