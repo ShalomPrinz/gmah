@@ -4,50 +4,8 @@ import Col from "react-bootstrap/Col";
 
 import { RadioMenu, Table } from "../components";
 import Search from "../components/Search";
+import { familiesTableHeaders } from "../modules";
 import { searchFamilies } from "../services";
-
-const columns = [
-  {
-    id: 0,
-    path: "שם מלא",
-  },
-  {
-    id: 1,
-    path: "רחוב",
-  },
-  {
-    id: 2,
-    path: "בניין",
-  },
-  {
-    id: 3,
-    path: "דירה",
-  },
-  {
-    id: 4,
-    path: "קומה",
-  },
-  {
-    id: 5,
-    path: "מס' בית",
-  },
-  {
-    id: 6,
-    path: "מס' פלאפון",
-  },
-  {
-    id: 7,
-    path: "נהג במקור",
-  },
-  {
-    id: 8,
-    path: "ממליץ",
-  },
-  {
-    id: 9,
-    path: "הערות",
-  },
-];
 
 const buttons = [
   {
@@ -111,7 +69,7 @@ function Families() {
       </Row>
       <Row>
         <Table
-          columns={columns}
+          columns={familiesTableHeaders}
           data={families}
           dataIdProp="שם מלא"
           headerHighlight={getHeaderByButtonValue(searchBy)}
