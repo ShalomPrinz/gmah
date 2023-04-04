@@ -9,6 +9,7 @@
  */
 
 import { getLines, isString } from "./string";
+import { addFamilyHeaders } from "../modules";
 
 type ParsedTableRow = {
   [header: string]: string;
@@ -16,6 +17,7 @@ type ParsedTableRow = {
 
 type ParsedTable = ParsedTableRow[];
 
+const DEFAULT_CELL_VALUE = "";
 const MINIMUM_TABLE_LINES = 2; // 1 Header + 1 Content
 const TABLE_HEADERS_NUM = 7; // שם מלא, רחוב, בניין, דירה, קומה,מס' בית, מס' פלאפון
 const TABLE_FORMAT_VALID = "validTable";
@@ -52,6 +54,17 @@ function validateTableFormat(text: any) {
 }
 
 /**
+ * Fills the given row object with default value for each cell that
+ * doesn't have a value.
+ */
+function fillRow(row: ParsedTableRow) {
+  addFamilyHeaders.forEach(
+    ({ path }) => (row[path] = row[path] ?? DEFAULT_CELL_VALUE)
+  );
+  return row;
+}
+
+/**
  * Parses the given string to js array with objects.
  * Each object in the array represents a row in the table.
  * Each property of an object represents a cell in the table.
@@ -67,8 +80,10 @@ function parseTable(text: string): ParsedTable {
     const cells = lines[i].split("\t");
 
     const row: ParsedTableRow = {};
-    headers.forEach((header, index) => (row[header] = cells[index]));
-    rows.push(row);
+    headers.forEach(
+      (header, index) => (row[header] = cells[index] ?? DEFAULT_CELL_VALUE)
+    );
+    rows.push(fillRow(row));
   }
 
   return rows;

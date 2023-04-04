@@ -1,14 +1,21 @@
 import { useField } from "formik";
 
 import type { TableColumn } from "./types";
+import IconComponent from "../Icon";
 
 export interface TableBodyProps {
   columns: TableColumn[];
   inputsName: string;
   items: number;
+  removeFunc: (index: number) => void;
 }
 
-const TableBody = ({ columns, inputsName, items }: TableBodyProps) => {
+const TableBody = ({
+  columns,
+  inputsName,
+  items,
+  removeFunc,
+}: TableBodyProps) => {
   const cellCallback = (
     column: TableColumn,
     colIndex: number,
@@ -27,6 +34,16 @@ const TableBody = ({ columns, inputsName, items }: TableBodyProps) => {
       {columns.map((column, colIndex) =>
         cellCallback(column, colIndex, rowIndex)
       )}
+      <td>
+        <button
+          className="me-3 bg-white text-danger rounded fs-5 border border-3 border-danger button-hover"
+          onClick={() => removeFunc(rowIndex)}
+          type="button"
+        >
+          <span className="ps-2">הסר</span>
+          <IconComponent color="red" icon="removeItem" />
+        </button>
+      </td>
     </tr>
   );
 

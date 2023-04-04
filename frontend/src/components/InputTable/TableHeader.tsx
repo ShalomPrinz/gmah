@@ -16,7 +16,8 @@ const TableHeader = ({ columns, display }: TableHeaderProps) => {
       <tr>
         {display && (
           <>
-            <th /> {/* Display row index before row content */}
+            <th />
+            {/* Display row index before row content */}
             <ConditionalList itemCallback={headerCallback} list={columns} />
           </>
         )}

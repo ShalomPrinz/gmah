@@ -11,13 +11,25 @@ import {
 } from "../util";
 import type { ParsedTable } from "../util";
 
+const emptyItem = addFamilyHeaders.reduce(
+  (obj: { [key: string]: string }, header) => {
+    obj[header.path] = "";
+    return obj;
+  },
+  {}
+);
+
 function AddManyFamilies() {
   const autoFocusRef = useAutoFocus<HTMLDivElement>();
+  const [pasteCount, setPasteCount] = useState(0); // Force Form Reinitialize
   const [table, setTable] = useState<ParsedTable>([]);
 
   const setTableData = (data: string) => {
     const parsed = parsePastedData(data);
-    if (parsed && parsed.length) setTable(parsed);
+    if (parsed && parsed.length) {
+      setTable(parsed);
+      setPasteCount((count) => count + 1);
+    }
   };
 
   const handlePaste = (event: any) =>
@@ -52,8 +64,10 @@ function AddManyFamilies() {
       <main className="text-center w-100 pe-5">
         <InputTable
           columns={addFamilyHeaders}
-          data={table}
+          emptyItem={emptyItem}
+          initialData={table}
           inputsName="families"
+          key={pasteCount}
           onSubmit={(families) => handleSubmit(families)}
           schema={familiesArraySchema}
         />

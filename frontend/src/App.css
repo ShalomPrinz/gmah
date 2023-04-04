@@ -48,3 +48,15 @@
   color: grey;
   transform: none;
 }
+
+.button-hover {
+  transition: transform 0.4s;
+}
+
+.button-hover:hover {
+  transform: scale(1.2);
+}
+
+.button-hover:disabled {
+  transform: none;
+}

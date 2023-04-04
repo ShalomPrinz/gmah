@@ -18,7 +18,7 @@ const ConditionalList = ({
     {list.map((item, index) => {
       if (!indexAsKey && !Object.hasOwn(item, keyProp))
         console.error("No unique id found for item", item);
-      return cloneElement(itemCallback(item), { key: item[keyProp] || index });
+      return cloneElement(itemCallback(item), { key: item[keyProp] ?? index });
     })}
   </>
 );

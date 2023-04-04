@@ -1,11 +1,13 @@
 import { FieldArray, Form, Formik } from "formik";
 import type { FormikErrors } from "formik";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 import TableBody from "./TableBody";
 import TableHeader from "./TableHeader";
 
 import type { TableColumn } from "./types";
+import IconComponent from "../Icon";
 
 type TableRow = {
   [key: string]: string;
@@ -13,7 +15,9 @@ type TableRow = {
 
 interface InputTableProps {
   columns: TableColumn[];
-  data: TableRow[];
+  /** Used for adding item to the table */
+  emptyItem: TableRow;
+  initialData: TableRow[];
   inputsName: string;
   onSubmit: (data: TableRow[]) => Promise<boolean>;
   /** Yup Object Schema with one key value pair: { [inputsName]: data } */
@@ -22,19 +26,24 @@ interface InputTableProps {
 
 const InputTable = ({
   columns,
-  data,
+  emptyItem,
+  initialData,
   inputsName,
   onSubmit,
   schema,
 }: InputTableProps) => {
-  const displayTable = data.length > 0;
+  const { itemsCount, addItem, removeItem } = useItemsCount(
+    initialData.length,
+    emptyItem
+  );
+  const displayTable = itemsCount > 0;
 
   const toastUnknownSubmitError = () =>
     toast.error("קרתה תקלה בהוספת המשפחות", { toastId: "addFamiliesError" });
 
   const onSubmitResolved = (isSuccess: boolean) => {
     if (isSuccess) {
-      toast.success(`הוספת בהצלחה ${data.length} משפחות חדשות לגמ"ח`);
+      toast.success(`הוספת בהצלחה ${itemsCount} משפחות חדשות לגמ"ח`);
     } else {
       toastUnknownSubmitError();
     }
@@ -61,7 +70,7 @@ const InputTable = ({
   return (
     <Formik
       enableReinitialize
-      initialValues={{ [inputsName]: data }}
+      initialValues={{ [inputsName]: initialData }}
       validationSchema={schema}
       onSubmit={(values, { setSubmitting }) => {
         setSubmitting(true);
@@ -74,15 +83,26 @@ const InputTable = ({
       {({ isSubmitting, errors }) => (
         <Form onSubmitCapture={() => handleErrorSubmission(errors)}>
           <FieldArray name={inputsName}>
-            {() => (
-              <table className="bg-white">
-                <TableHeader columns={columns} display={displayTable} />
-                <TableBody
-                  columns={columns}
-                  inputsName={inputsName}
-                  items={data.length}
-                />
-              </table>
+            {({ push, remove }) => (
+              <>
+                <table className="bg-white">
+                  <TableHeader columns={columns} display={displayTable} />
+                  <TableBody
+                    columns={columns}
+                    inputsName={inputsName}
+                    items={itemsCount}
+                    removeFunc={(index: number) => removeItem(remove, index)}
+                  />
+                </table>
+                <button
+                  className="fs-3 bg-default rounded p-4 ms-5 mb-5 position-fixed bottom-0 start-0 button-hover"
+                  onClick={() => addItem(push)}
+                  type="button"
+                >
+                  <span className="ps-3">הוסף שורה בטבלה</span>
+                  <IconComponent icon="addFamily" />
+                </button>
+              </>
             )}
           </FieldArray>
           {isSubmitting && (
@@ -107,5 +127,23 @@ const InputTable = ({
     </Formik>
   );
 };
+
+function useItemsCount(initialCount: number, emptyItem: TableRow) {
+  const [itemsCount, setItemsCount] = useState(initialCount);
+
+  useEffect(() => setItemsCount(initialCount), [initialCount]);
+
+  const addItem = (pushFunc: (obj: any) => void) => {
+    pushFunc(emptyItem);
+    setItemsCount((count) => count + 1);
+  };
+
+  const removeItem = (removeFunc: (index: number) => void, index: number) => {
+    removeFunc(index);
+    setItemsCount((count) => count - 1);
+  };
+
+  return { itemsCount, addItem, removeItem };
+}
 
 export default InputTable;

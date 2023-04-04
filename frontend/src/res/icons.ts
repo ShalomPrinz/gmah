@@ -1,9 +1,17 @@
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
-import { faBars, faImage, faTimes } from "@fortawesome/free-solid-svg-icons";
+import {
+  faBars,
+  faCircleMinus,
+  faImage,
+  faTimes,
+  faUserPlus,
+} from "@fortawesome/free-solid-svg-icons";
 
 const icons = {
+  addFamily: faUserPlus,
   navbarClosed: faBars,
   navbarExpanded: faTimes,
+  removeItem: faCircleMinus,
 };
 
 export type Icon = keyof typeof icons;
