@@ -34,3 +34,16 @@ export const familiesTableHeaders = [
   { id: 8, path: "ממליץ" },
   { id: 9, path: "הערות" },
 ];
+
+export const familyProperties = [
+  "שם מלא",
+  "רחוב",
+  "בניין",
+  "דירה",
+  "קומה",
+  "מס' בית",
+  "מס' פלאפון",
+  "נהג במקור",
+  "ממליץ",
+  "הערות",
+];

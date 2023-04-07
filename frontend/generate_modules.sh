@@ -40,6 +40,22 @@ add_families_array "addFamilyHeaders" "path" "${add_family_exclude[*]}"
 # Families Table
 add_families_array "familiesTableHeaders" "path" ""
 
+function write_family_properties {
+    var_name="familyProperties"
+    echo "export const $var_name = " >> $output_file
+
+    var_text="["
+    for idx in ${!family_attributes[@]}; do
+        var_text+='"'${family_attributes[$idx]}'",'
+    done
+    var_text+="]"
+
+    echo -e "$var_text\n" >> $output_file
+    index_exports+="$var_name,"
+}
+
+write_family_properties
+
 # Index File
 # Note: export from main output file must be first export
 file_contents=$(cat $index_file)
