@@ -1,14 +1,11 @@
 import openpyxl
 import unittest
 from shutil import copy
-from dotenv import load_dotenv
-from os import getenv, remove
+from os import remove
 
-from src.families import get_count, search_families, add_family, family_properties, open_families_file
+from src.data import family_properties, families_filename
+from src.families import get_count, search_families, add_family, open_families_file
 from src.results import results
-
-load_dotenv()
-FAMILIES_FILENAME = getenv('FAMILIES_FILENAME')
 
 default_family_properties = {
     "שם מלא": "פלוני פלוני",
@@ -18,6 +15,7 @@ default_family_properties = {
     "קומה": 1,
     "מס' בית": "012-3456789",
     "מס' פלאפון": "987-6543210",
+    "נהג": "שלמה שלומי",
     "נהג במקור": "נחום נחום",
     "ממליץ": "רווחה",
     "הערות": "",
@@ -28,13 +26,13 @@ class Family:
         self.excel_row = [family.get(key, default_family_properties.get(key, None)) for key in family_properties]
 
 def write_families_file(families):
-    workbook = openpyxl.load_workbook(FAMILIES_FILENAME)
+    workbook = openpyxl.load_workbook(families_filename)
     worksheet = workbook[workbook.sheetnames[0]]
     worksheet.delete_rows(2, worksheet.max_row - 1)
 
     for family in families:
         worksheet.append(family.excel_row)
-    workbook.save(FAMILIES_FILENAME)
+    workbook.save(families_filename)
 
 def load_families_file():
     error, families_file = open_families_file()
@@ -45,10 +43,10 @@ def load_families_file():
 
 class TestSearch(unittest.TestCase):
     def setUpClass():
-        copy(FAMILIES_FILENAME, 'temp.xlsx')
+        copy(families_filename, 'temp.xlsx')
     
     def tearDownClass():
-        copy('temp.xlsx', FAMILIES_FILENAME)
+        copy('temp.xlsx', families_filename)
         remove('temp.xlsx')
 
     def test_search_by_name(self):
@@ -114,6 +112,27 @@ class TestSearch(unittest.TestCase):
                 search_result = search_families(families_file, query, 'phone')
                 self.assertEqual(expected_len, len(search_result))
 
+    def test_search_by_driver(self):
+        families = [Family({"שם מלא": "פרינץ", "נהג": "ארז משה"}),
+            Family({"שם מלא": "כהנא", "נהג": "אלי לולו"}),
+            Family({"שם מלא": "נתאי", "נהג": "יוסי זהר"})]
+        
+        test_cases = [
+            ("None", None, 3),
+            ("Empty String", "", 3),
+            ("Two Matches", "א", 2),
+            ("One Match", "מ", 1),
+            ("Not First Letter", "ר", 2),
+            ("Not Found", "חיים", 0)
+        ]
+
+        for title, query, expected_len in test_cases:
+            with self.subTest(title=title):
+                write_families_file(families=families)
+                families_file = load_families_file()
+                search_result = search_families(families_file, query, 'driver')
+                self.assertEqual(expected_len, len(search_result))
+
     def test_search_no_value_cell(self):
         # Should not return this cell for all queries
         families = [Family({"שם מלא": "פרינץ", "רחוב": None})]
@@ -152,10 +171,10 @@ class TestSearch(unittest.TestCase):
 
 class TestDataManagement(unittest.TestCase):
     def setUpClass():
-        copy(FAMILIES_FILENAME, 'temp.xlsx')
+        copy(families_filename, 'temp.xlsx')
     
     def tearDownClass():
-        copy('temp.xlsx', FAMILIES_FILENAME)
+        copy('temp.xlsx', families_filename)
         remove('temp.xlsx')
 
     def test_get_families_num(self):

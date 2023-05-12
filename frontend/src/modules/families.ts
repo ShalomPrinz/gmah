@@ -6,8 +6,7 @@ export const addFamilyInputs = [
   { id: 4, name: "קומה" },
   { id: 5, name: "מס' בית" },
   { id: 6, name: "מס' פלאפון" },
-  { id: 8, name: "ממליץ" },
-  { id: 9, name: "הערות" },
+  { id: 9, name: "ממליץ" },
 ];
 
 export const addFamilyHeaders = [
@@ -18,8 +17,7 @@ export const addFamilyHeaders = [
   { id: 4, path: "קומה" },
   { id: 5, path: "מס' בית" },
   { id: 6, path: "מס' פלאפון" },
-  { id: 8, path: "ממליץ" },
-  { id: 9, path: "הערות" },
+  { id: 9, path: "ממליץ" },
 ];
 
 export const familiesTableHeaders = [
@@ -30,9 +28,10 @@ export const familiesTableHeaders = [
   { id: 4, path: "קומה" },
   { id: 5, path: "מס' בית" },
   { id: 6, path: "מס' פלאפון" },
-  { id: 7, path: "נהג במקור" },
-  { id: 8, path: "ממליץ" },
-  { id: 9, path: "הערות" },
+  { id: 7, path: "נהג" },
+  { id: 8, path: "נהג במקור" },
+  { id: 9, path: "ממליץ" },
+  { id: 10, path: "הערות" },
 ];
 
 export const familyProperties = [
@@ -43,6 +42,7 @@ export const familyProperties = [
   "קומה",
   "מס' בית",
   "מס' פלאפון",
+  "נהג",
   "נהג במקור",
   "ממליץ",
   "הערות",

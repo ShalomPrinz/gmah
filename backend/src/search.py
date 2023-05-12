@@ -16,6 +16,7 @@ class SearchBy(Enum):
     NAME = 'name'
     STREET = 'street'
     PHONE = 'phone'
+    DRIVER = 'driver'
 
     @classmethod
     def get_search_columns(cls, search_by):
@@ -27,6 +28,8 @@ class SearchBy(Enum):
                 return [1]
             case SearchBy.PHONE:
                 return [5, 6]
+            case SearchBy.DRIVER:
+                return [7]
             case _:
                 return [0]
 

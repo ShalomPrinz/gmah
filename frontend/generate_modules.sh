@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Preparation
-family_attributes=([0]="שם מלא" [1]="רחוב" [2]="בניין" [3]="דירה" [4]="קומה" [5]="מס' בית" [6]="מס' פלאפון" [7]="נהג במקור" [8]="ממליץ" [9]="הערות")
-add_family_exclude=(7)
+family_attributes=([0]="שם מלא" [1]="רחוב" [2]="בניין" [3]="דירה" [4]="קומה" [5]="מס' בית" [6]="מס' פלאפון" [7]="נהג" [8]="נהג במקור" [9]="ממליץ" [10]="הערות")
+add_family_exclude="7 8 10"
 
 dir_path="src/modules/"
 
@@ -32,10 +32,10 @@ function add_families_array {
 }
 
 # Add Family
-add_families_array "addFamilyInputs" "name" "${add_family_exclude[*]}"
+add_families_array "addFamilyInputs" "name" "$add_family_exclude"
 
 # Add Families
-add_families_array "addFamilyHeaders" "path" "${add_family_exclude[*]}"
+add_families_array "addFamilyHeaders" "path" "$add_family_exclude"
 
 # Families Table
 add_families_array "familiesTableHeaders" "path" ""

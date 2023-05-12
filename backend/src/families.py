@@ -1,12 +1,7 @@
-from dotenv import load_dotenv
-from os import getenv
-
+from src.data import key_prop, family_properties, families_filename
 from src.excel import Excel
 from src.util import without_hyphen, insert_hyphen
 from src.results import Result, results
-
-load_dotenv()
-FAMILIES_FILENAME = getenv('FAMILIES_FILENAME')
 
 def open_families_file():
     '''
@@ -17,19 +12,16 @@ def open_families_file():
         - If connection has succeed, error will be None
     '''
     try:
-        families_file = Excel(FAMILIES_FILENAME)
+        families_file = Excel(families_filename)
         return (None, families_file)
     except Exception as e:
         return (e, None)
-
-family_properties = ["שם מלא", "רחוב", "בניין", "דירה", "קומה", "מס' בית",
-    "מס' פלאפון", "נהג במקור", "ממליץ", "הערות"]
 
 def to_excel_row(family):
     '''
     Cast family data to excel row format in the right order
     '''
-    return [family.get(key, None) for key in family_properties]
+    return [family.get(attr, None) for attr in family_properties]
 
 def get_count(families_file: Excel):
     '''
@@ -78,9 +70,13 @@ def format_phone(family, attr_name):
     return phone
 
 def is_family_exists(families_file: Excel, family_name):
+    '''
+    Returns whether a family exists in the excel, by searching for
+    a match of family name, assuming a family name property is unique.
+    '''
     search_result = families_file.search(family_name, 'name')
     if len(search_result) > 0 and \
-        any(found_family["שם מלא"] == family_name for found_family in search_result):
+        any(found_family[key_prop] == family_name for found_family in search_result):
             return True
     return False
 
@@ -103,13 +99,13 @@ def validate_phones(family):
 
 def add_family(families_file: Excel, family):
     '''
-    Adds the given family to the families file.
-    family should be a dictionary with family properties, "שם מלא" property required
+    Adds the given family to the families file. family should be a dictionary
+    with custom family properties, key_prop property required
     '''
-    if not "שם מלא" in family:
+    if not key_prop in family:
         return results["MISSING_FULL_NAME"]
 
-    if is_family_exists(families_file, family["שם מלא"]):
+    if is_family_exists(families_file, family[key_prop]):
         return results["FAMILY_EXISTS"]
 
     if validation_error := validate_phones(family):

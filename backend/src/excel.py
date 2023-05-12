@@ -1,8 +1,12 @@
 import openpyxl
 from os import path
 
+from src.data import family_properties
 from src.search import SearchRequest, search
 from src.errors import FileResourcesMissingError
+from src.util import letter_by_index
+
+last_excel_column = letter_by_index(len(family_properties))
 
 class Excel:
     def __init__(self, filename):
@@ -15,7 +19,7 @@ class Excel:
 
         self.table_name = 'נתמכים'
         self.cell_style = 'שורת נתמך'
-        self.last_column = 'J' # = 10 Columns
+        self.last_column = last_excel_column
 
         if len(self.workbook.named_styles) < 2 or \
             self.cell_style not in self.workbook.named_styles:

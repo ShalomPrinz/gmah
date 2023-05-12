@@ -23,6 +23,11 @@ const buttons = [
     text: "מספר פלאפון",
     value: "phone",
   },
+  {
+    id: "search-by-driver",
+    text: "נהג",
+    value: "driver",
+  },
 ];
 
 const getButtonTextByValue = (value: string) =>
@@ -33,6 +38,7 @@ const getHeaderByButtonValue = (value: string) =>
     name: "שם מלא",
     street: "רחוב",
     phone: "מס' פלאפון",
+    driver: "נהג",
   }[value] || "NoSuchSearchOption");
 
 function Families() {
