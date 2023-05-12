@@ -7,7 +7,7 @@ function App() {
   return (
     <>
       <Router />
-      <ToastContainer />
+      <ToastContainer rtl />
     </>
   );
 }

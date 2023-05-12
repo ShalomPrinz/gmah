@@ -210,7 +210,7 @@ class TestDataManagement(unittest.TestCase):
     def test_add_many_families(self):
         family = {"שם מלא": "שלום פרינץ"}
         exist_families = [Family(family)]
-        exists_error = add_many_error(add_results["FAMILY_EXISTS"], family)
+        exists_error = add_many_error(add_results["FAMILY_EXISTS"], family["שם מלא"])
 
         test_cases = [
             ("No Families",             [],                                               add_many_results["FAMILIES_ADDED"]),
@@ -235,7 +235,7 @@ class TestDataManagement(unittest.TestCase):
         families = [{"שם מלא": "דוד חיים"}, {"שם מלא": "משפוחה"}, {"שם מלא": "שלום פרינץ"}]
         result = add_families(families_file, families)
         
-        exists_error = add_many_error(add_results["FAMILY_EXISTS"], family)
+        exists_error = add_many_error(add_results["FAMILY_EXISTS"], family["שם מלא"])
         self.assertEqual(exists_error, result)
 
         first_search = search_families(families_file, "דוד חיים", 'name')

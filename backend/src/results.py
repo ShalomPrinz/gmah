@@ -25,11 +25,11 @@ add_results = {
 
 @dataclass
 class AddManyResult(Result):
-    error_family: any
+    family_key: any
 
 add_many_results = {
     "FAMILIES_ADDED":   AddManyResult(200, "Families Added", "המשפחות נוספו בהצלחה", None),
 }
 
-def add_many_error(result: Result, error_family):
-    return AddManyResult(result.status, result.title, result.description, error_family)
+def add_many_error(result: Result, family_key):
+    return AddManyResult(result.status, result.title, result.description, family_key)

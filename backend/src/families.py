@@ -125,5 +125,5 @@ def add_families(families_file: Excel, families):
     for family in families:
         result = add_family(families_file, family)
         if result.status != 200:
-            return add_many_error(result, family)
+            return add_many_error(result, family[key_prop])
     return add_many_results["FAMILIES_ADDED"]

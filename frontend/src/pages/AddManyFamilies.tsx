@@ -23,15 +23,20 @@ function AddManyFamilies() {
   } = useTableParser(toast.error);
 
   const handleSubmit = (families: any[]) =>
-    addFamilies(families)
-      .then(() => {
-        toast.success(`${families.length} משפחות נוספו בהצלחה לגמח:)`);
-      })
-      .catch(() => {
-        toast.error(
-          "קרתה תקלה ולא הצלחנו להוסיף את המשפחות לגמח. אם הבעיה ממשיכה אנא פנה לשלום"
+    addFamilies(families).then((response) => {
+      if (response === "Unexpected") return;
+      if (typeof response !== "string") {
+        toast.success(`${families.length} משפחות נוספו בהצלחה לגמח`);
+        return;
+      }
+
+      const index = families.findIndex((f) => f["שם מלא"] === response);
+      if (index > 0) {
+        toast.info(
+          `למרות שהייתה תקלה, כל המשפחות שמופיעות לפני משפחת ${response} בטבלה נוספו לגמ"ח בהצלחה`
         );
-      });
+      }
+    });
 
   return (
     <>

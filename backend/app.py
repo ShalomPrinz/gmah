@@ -36,4 +36,4 @@ def query_family():
 @app.route('/families', methods=["POST"])
 def add_families():
     result = families.add_families(g.families_file, request.json)
-    return jsonify(title=result.title, description=result.description, error_family=result.error_family), result.status
+    return jsonify(title=result.title, description=result.description, family_name=result.family_key), result.status

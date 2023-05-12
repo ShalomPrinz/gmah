@@ -6,17 +6,12 @@ import { addFamilies } from "../services";
 
 function AddFamily() {
   const handleSubmit = (familyData: any) =>
-    addFamilies([familyData])
-      .then(() => {
+    addFamilies([familyData]).then((response) => {
+      if (typeof response !== "string") {
         toast.success(`משפחת ${familyData["שם מלא"]} נוספה בהצלחה לגמח:)`);
         return true;
-      })
-      .catch(() => {
-        toast.error(
-          "קרתה תקלה ולא הצלחנו להוסיף את המשפחה לגמח. אם הבעיה ממשיכה אנא פנה לשלום"
-        );
-        return false;
-      });
+      }
+    });
 
   return (
     <main className="container my-4 text-center">
