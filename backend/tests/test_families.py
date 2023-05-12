@@ -4,8 +4,8 @@ from shutil import copy
 from os import remove
 
 from src.data import family_properties, families_filename
-from src.families import get_count, search_families, add_family, open_families_file
-from src.results import results
+from src.families import get_count, search_families, add_family, add_families, open_families_file
+from src.results import add_results, add_many_results, add_many_error
 
 default_family_properties = {
     "שם מלא": "פלוני פלוני",
@@ -185,24 +185,60 @@ class TestDataManagement(unittest.TestCase):
         self.assertEqual(expected_count, get_count(families_file))
 
     def test_add_family(self):
-        families = [Family({"שם מלא": "שלום פרינץ"})]
+        exist_families = [Family({"שם מלא": "שלום פרינץ"})]
 
         test_cases = [
-            ("New Name",                {"שם מלא": "נתאי פרינץ"},                      results["FAMILY_ADDED"]),
-            ("Name Exists",             {"שם מלא": "שלום פרינץ"},                      results["FAMILY_EXISTS"]),
-            ("Name Partially Exists",   {"שם מלא": "שלום"},                             results["FAMILY_ADDED"]),
-            ("Missing Name",            {},                                              results["MISSING_FULL_NAME"]),
-            ("Phone Not Digits",        {"שם מלא": "א", "מס' בית": "שלוםפרינץ"},       results["PHONE_NOT_DIGITS"]),
-            ("Phone Too Short",         {"שם מלא": "א", "מס' פלאפון": "05253816"},      results["PHONE_WRONG_LEN"]),
-            ("Phone Too Long",          {"שם מלא": "א", "מס' בית": "05253816480"},      results["PHONE_WRONG_LEN"]),
-            ("Phone OK",                {"שם מלא": "א", "מס' פלאפון": "0525381648"},    results["FAMILY_ADDED"]),
-            ("Phone With Hyphen",       {"שם מלא": "א", "מס' בית": "04-5381648"},       results["FAMILY_ADDED"]),
-            ("Phone With Hyphen",       {"שם מלא": "א", "מס' פלאפון": "052-5381648"},   results["FAMILY_ADDED"]),
+            ("New Name",                {"שם מלא": "נתאי פרינץ"},                      add_results["FAMILY_ADDED"]),
+            ("Name Exists",             {"שם מלא": "שלום פרינץ"},                      add_results["FAMILY_EXISTS"]),
+            ("Name Partially Exists",   {"שם מלא": "שלום"},                             add_results["FAMILY_ADDED"]),
+            ("Missing Name",            {},                                              add_results["MISSING_FULL_NAME"]),
+            ("Phone Not Digits",        {"שם מלא": "א", "מס' בית": "שלוםפרינץ"},       add_results["PHONE_NOT_DIGITS"]),
+            ("Phone Too Short",         {"שם מלא": "א", "מס' פלאפון": "05253816"},      add_results["PHONE_WRONG_LEN"]),
+            ("Phone Too Long",          {"שם מלא": "א", "מס' בית": "05253816480"},      add_results["PHONE_WRONG_LEN"]),
+            ("Phone OK",                {"שם מלא": "א", "מס' פלאפון": "0525381648"},    add_results["FAMILY_ADDED"]),
+            ("Phone With Hyphen",       {"שם מלא": "א", "מס' בית": "04-5381648"},       add_results["FAMILY_ADDED"]),
+            ("Phone With Hyphen",       {"שם מלא": "א", "מס' פלאפון": "052-5381648"},   add_results["FAMILY_ADDED"]),
         ]
 
         for title, family, expected_result in test_cases:
             with self.subTest(title=title):
-                write_families_file(families=families)
+                write_families_file(families=exist_families)
                 families_file = load_families_file()
                 result = add_family(families_file, family)
                 self.assertEqual(expected_result, result)
+
+    def test_add_many_families(self):
+        family = {"שם מלא": "שלום פרינץ"}
+        exist_families = [Family(family)]
+        exists_error = add_many_error(add_results["FAMILY_EXISTS"], family)
+
+        test_cases = [
+            ("No Families",             [],                                               add_many_results["FAMILIES_ADDED"]),
+            ("New Name",                [{"שם מלא": "נתאי פרינץ"}],                      add_many_results["FAMILIES_ADDED"]),
+            ("Name Exists",             [{"שם מלא": "שלום פרינץ"}],                      exists_error),
+            ("Second Family Exists",    [{"שם מלא": "שלום"}, {"שם מלא": "שלום פרינץ"}], exists_error),
+        ]
+
+        for title, families, expected_result in test_cases:
+            with self.subTest(title=title):
+                write_families_file(families=exist_families)
+                families_file = load_families_file()
+                result = add_families(families_file, families)
+                self.assertEqual(expected_result, result)
+
+    def test_add_families_before_error(self):
+        family = {"שם מלא": "שלום פרינץ"}
+        exist_families = [Family(family)]
+        write_families_file(families=exist_families)
+        
+        families_file = load_families_file()
+        families = [{"שם מלא": "דוד חיים"}, {"שם מלא": "משפוחה"}, {"שם מלא": "שלום פרינץ"}]
+        result = add_families(families_file, families)
+        
+        exists_error = add_many_error(add_results["FAMILY_EXISTS"], family)
+        self.assertEqual(exists_error, result)
+
+        first_search = search_families(families_file, "דוד חיים", 'name')
+        self.assertEqual(1, len(first_search))
+        second = search_families(families_file, "משפוחה", 'name')
+        self.assertEqual(1, len(second))

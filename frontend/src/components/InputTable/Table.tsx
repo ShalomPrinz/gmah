@@ -19,7 +19,7 @@ interface InputTableProps {
   emptyItem: TableRow;
   initialData: TableRow[];
   inputsName: string;
-  onSubmit: (data: TableRow[]) => Promise<boolean>;
+  onSubmit: (data: TableRow[]) => Promise<void>;
   /** Yup Object Schema with one key value pair: { [inputsName]: data } */
   schema: any;
 }
@@ -37,17 +37,6 @@ const InputTable = ({
     emptyItem
   );
   const displayTable = itemsCount > 0;
-
-  const toastUnknownSubmitError = () =>
-    toast.error("קרתה תקלה בהוספת המשפחות", { toastId: "addFamiliesError" });
-
-  const onSubmitResolved = (isSuccess: boolean) => {
-    if (isSuccess) {
-      toast.success(`הוספת בהצלחה ${itemsCount} משפחות חדשות לגמ"ח`);
-    } else {
-      toastUnknownSubmitError();
-    }
-  };
 
   function handleErrorSubmission(
     errors: FormikErrors<{ [x: string]: TableRow[] }>
@@ -74,10 +63,7 @@ const InputTable = ({
       validationSchema={schema}
       onSubmit={(values, { setSubmitting }) => {
         setSubmitting(true);
-        onSubmit(values[inputsName])
-          .then((isSuccess) => onSubmitResolved(isSuccess))
-          .catch(() => toastUnknownSubmitError())
-          .finally(() => setSubmitting(false));
+        onSubmit(values[inputsName]).finally(() => setSubmitting(false));
       }}
     >
       {({ isSubmitting, errors }) => (
@@ -85,7 +71,7 @@ const InputTable = ({
           <FieldArray name={inputsName}>
             {({ push, remove }) => (
               <>
-                <table className="bg-white">
+                <table className="bg-white mx-auto">
                   <TableHeader columns={columns} display={displayTable} />
                   <TableBody
                     columns={columns}

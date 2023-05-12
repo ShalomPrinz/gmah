@@ -2,11 +2,11 @@ import { toast } from "react-toastify";
 
 import { Form } from "../components";
 import { addFamilyInputs, familiesObjectSchema } from "../modules";
-import { addFamily } from "../services";
+import { addFamilies } from "../services";
 
 function AddFamily() {
   const handleSubmit = (familyData: any) =>
-    addFamily(familyData)
+    addFamilies([familyData])
       .then(() => {
         toast.success(`משפחת ${familyData["שם מלא"]} נוספה בהצלחה לגמח:)`);
         return true;

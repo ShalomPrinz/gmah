@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 
 import { InputTable } from "../components";
 import { addFamilyHeaders, familiesArraySchema } from "../modules";
+import { addFamilies } from "../services";
 import { useTableParser } from "../util";
 
 const emptyItem = addFamilyHeaders.reduce(
@@ -21,12 +22,16 @@ function AddManyFamilies() {
     parseFromClipboard,
   } = useTableParser(toast.error);
 
-  const handleSubmit = async (families: any) => {
-    console.log("families submitted", families);
-    return new Promise<boolean>((resolve) =>
-      setTimeout(() => resolve(true), 2000)
-    );
-  };
+  const handleSubmit = (families: any[]) =>
+    addFamilies(families)
+      .then(() => {
+        toast.success(`${families.length} משפחות נוספו בהצלחה לגמח:)`);
+      })
+      .catch(() => {
+        toast.error(
+          "קרתה תקלה ולא הצלחנו להוסיף את המשפחות לגמח. אם הבעיה ממשיכה אנא פנה לשלום"
+        );
+      });
 
   return (
     <>
@@ -65,7 +70,7 @@ function AddManyFamilies() {
           </Col>
         </Row>
       </div>
-      <main className="text-center w-100 pe-5">
+      <main className="text-center w-100">
         <InputTable
           columns={addFamilyHeaders}
           emptyItem={emptyItem}

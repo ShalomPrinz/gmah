@@ -1,7 +1,7 @@
 from src.data import key_prop, family_properties, families_filename
 from src.excel import Excel
 from src.util import without_hyphen, insert_hyphen
-from src.results import Result, results
+from src.results import Result, add_results, add_many_error, add_many_results
 
 def open_families_file():
     '''
@@ -58,14 +58,14 @@ def format_phone(family, attr_name):
         
     phone = without_hyphen(str(phone))
     if not phone.replace('0', '').isdigit():
-        return results["PHONE_NOT_DIGITS"]
+        return add_results["PHONE_NOT_DIGITS"]
     
     if len(phone) == 9:
         phone = insert_hyphen(phone, 2)
     elif len(phone) == 10:
         phone = insert_hyphen(phone, 3)
     else:
-        return results["PHONE_WRONG_LEN"]
+        return add_results["PHONE_WRONG_LEN"]
     
     return phone
 
@@ -103,14 +103,27 @@ def add_family(families_file: Excel, family):
     with custom family properties, key_prop property required
     '''
     if not key_prop in family:
-        return results["MISSING_FULL_NAME"]
+        return add_results["MISSING_FULL_NAME"]
 
     if is_family_exists(families_file, family[key_prop]):
-        return results["FAMILY_EXISTS"]
+        return add_results["FAMILY_EXISTS"]
 
     if validation_error := validate_phones(family):
         return validation_error
 
     excel_row = to_excel_row(family)
     families_file.append_row(excel_row)
-    return results["FAMILY_ADDED"]
+    return add_results["FAMILY_ADDED"]
+
+def add_families(families_file: Excel, families):
+    '''
+    Adds a list of families to the families file.
+
+    If error occurres in adding a family, the function will 
+    stop the addition of families and return error information.
+    '''
+    for family in families:
+        result = add_family(families_file, family)
+        if result.status != 200:
+            return add_many_error(result, family)
+    return add_many_results["FAMILIES_ADDED"]

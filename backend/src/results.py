@@ -15,10 +15,21 @@ def get_result(exception):
     else:
         return Result(500, "Internal Server Error", "קרתה שגיאה לא צפויה")
 
-results = {
+add_results = {
     "FAMILY_ADDED":         Result(200, "Family Added", "המשפחה נוספה בהצלחה"),
     "MISSING_FULL_NAME":    Result(400, "Missing Full Name", "לא ניתן להכניס משפחה ללא שם לרשימת הנתמכים"),
     "FAMILY_EXISTS":        Result(409, "Family Exists", "כבר קיימת משפחה עם השם הזה"),
     "PHONE_NOT_DIGITS":     Result(400, "Phone is Not Digits", "מספר הטלפון של המשפחה יכול להכיל ספרות בלבד"),
     "PHONE_WRONG_LEN":      Result(400, "Phone has Wrong Length", "מספר הטלפון של המשפחה צריך להיות באורך של 9 או 10 ספרות"),
 }
+
+@dataclass
+class AddManyResult(Result):
+    error_family: any
+
+add_many_results = {
+    "FAMILIES_ADDED":   AddManyResult(200, "Families Added", "המשפחות נוספו בהצלחה", None),
+}
+
+def add_many_error(result: Result, error_family):
+    return AddManyResult(result.status, result.title, result.description, error_family)
