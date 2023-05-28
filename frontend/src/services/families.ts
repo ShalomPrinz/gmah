@@ -1,6 +1,6 @@
 import { toast } from "react-toastify";
 
-import { get, post } from "./http";
+import { get, post, put } from "./http";
 
 async function getFamiliesCount() {
   return get("familiesCount");
@@ -37,4 +37,11 @@ async function addFamilies(families: any) {
   });
 }
 
-export { addFamilies, getFamiliesCount, searchFamilies };
+async function updateFamily(originalName: string, familyData: any) {
+  return put("family", {
+    original_name: originalName,
+    family_data: familyData,
+  });
+}
+
+export { addFamilies, getFamiliesCount, searchFamilies, updateFamily };

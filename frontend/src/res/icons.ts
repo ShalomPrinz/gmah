@@ -4,11 +4,13 @@ import {
   faCircleMinus,
   faImage,
   faTimes,
+  faUserPen,
   faUserPlus,
 } from "@fortawesome/free-solid-svg-icons";
 
 const icons = {
   addFamily: faUserPlus,
+  editFamily: faUserPen,
   navbarClosed: faBars,
   navbarExpanded: faTimes,
   removeItem: faCircleMinus,

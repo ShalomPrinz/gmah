@@ -2,8 +2,8 @@ import openpyxl
 from os import path
 
 from src.data import family_properties
-from src.search import SearchRequest, search
-from src.errors import FileResourcesMissingError
+from src.search import SearchRequest, search, FindRequest, find
+from src.errors import FileResourcesMissingError, FamilyNotFoundError
 from src.util import letter_by_index
 
 last_excel_column = letter_by_index(len(family_properties))
@@ -37,6 +37,19 @@ class Excel:
 
     def get_headers(self):
         return [cell.value for cell in next(self.worksheet.rows)]
+
+    def get_row_index(self, row_key):
+        min_row = 2
+        request = FindRequest(
+            rows_iter=self.worksheet.iter_rows(min_row),
+            query=row_key
+        )
+
+        result = find(request)
+        if result != -1:
+            return result + min_row
+        else:
+            raise FamilyNotFoundError(f"המשפחה {row_key} לא נמצאת")
     
     def search(self, query, search_by=''):
         request = SearchRequest(
@@ -58,4 +71,15 @@ class Excel:
             cell.style = self.cell_style
 
         self.worksheet.tables[self.table_name].ref = f'A1:{self.last_column}{new_row}'
+        self.save()
+
+    def replace_row(self, row_index, row_data):
+        for key, value in row_data.items():
+            if key not in family_properties:
+                continue
+
+            col_index = family_properties.index(key) + 1
+            cell = self.worksheet.cell(row=row_index, column=col_index)
+            cell.value = value
+
         self.save()

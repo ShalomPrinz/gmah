@@ -12,12 +12,15 @@ FRONTEND_DOMAIN = getenv('FRONTEND_DOMAIN')
 app = Flask(__name__)
 cors = CORS(app, resources={r"/*": {"origins": FRONTEND_DOMAIN}})
 
+def error_response(error: Exception):
+    result = get_result(error)
+    return jsonify(error=result.title, description=result.description), result.status
+
 @app.before_request
 def load_families_file():
     error, families_file = families.open_families_file()
     if error is not None:
-        result = get_result(error)
-        return jsonify(error=result.title, description=result.description), result.status
+        return error_response(error)
     else:
         g.families_file = families_file
 
@@ -37,3 +40,12 @@ def query_family():
 def add_families():
     result = families.add_families(g.families_file, request.json)
     return jsonify(title=result.title, description=result.description, family_name=result.family_key), result.status
+
+@app.route('/family', methods=["PUT"])
+def update_family():
+    original_name = request.json['original_name']
+    family_data = request.json['family_data']
+    error = families.update_family(g.families_file, original_name, family_data)
+    if error is not None:
+        return error_response(error)
+    return jsonify(), 200

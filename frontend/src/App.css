@@ -60,3 +60,14 @@
 .button-hover:disabled {
   transform: none;
 }
+
+.link-decoration {
+  background-color: var(--default-bg-color);
+  color: var(--default-color);
+  text-decoration: none;
+}
+
+.link-decoration:hover {
+  background-color: var(--default-bg-color);
+  color: var(--default-color);
+}

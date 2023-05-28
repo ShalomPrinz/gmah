@@ -8,6 +8,7 @@ import {
 
 import { Navbar } from "../components";
 import Home from "./Home";
+import EditFamily from "./EditFamily";
 import Families from "./Families";
 import FamilyManager from "./FamilyManager";
 import AddFamily from "./AddFamily";
@@ -24,7 +25,12 @@ const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<Header />}>
       <Route index element={<Home />} />
-      <Route path="families" element={<Families />} />
+      <Route path="families">
+        <Route index element={<Families />} />
+        <Route path="edit">
+          <Route path=":name" element={<EditFamily />} />
+        </Route>
+      </Route>
       <Route path="manage">
         <Route index element={<FamilyManager />} />
         <Route path="add" element={<AddFamily />} />

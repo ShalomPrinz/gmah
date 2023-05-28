@@ -18,6 +18,8 @@ const TableHeader = ({ columns, headerHighlight }: TableHeaderProps) => {
     <thead>
       <tr>
         <ConditionalList itemCallback={headerCallback} list={columns} />
+        {/* Continues headers row to allow custom button in last table row */}
+        <th />
       </tr>
     </thead>
   );

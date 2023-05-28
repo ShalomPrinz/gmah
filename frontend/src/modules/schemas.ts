@@ -4,7 +4,7 @@ import { array, object, string, number } from "yup";
 const phoneRegExp = /^\d{2,3}-?\d{7}$/;
 
 const familiesObjectSchema = object({
-  "שם מלא": string().required("אי אפשר להוסיף משפחה ללא שם"),
+  "שם מלא": string().required("המשפחה חייבת להכיל שם"),
   רחוב: string(),
   בניין: string(),
   דירה: number().typeError("מספר הדירה צריך להיות מספר"),

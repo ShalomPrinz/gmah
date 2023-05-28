@@ -12,6 +12,11 @@ class SearchRequest:
     query: str
     search_by: str
 
+@dataclass
+class FindRequest:
+    rows_iter: Generator[Worksheet, None, None]
+    query: str
+
 class SearchBy(Enum):
     NAME = 'name'
     STREET = 'street'
@@ -53,3 +58,18 @@ def search(request: SearchRequest):
                 matching_rows.append(matching_row)
                 break # Row added to matching_rows, skip to next row
     return matching_rows
+
+def find(request: FindRequest):
+    '''
+    Returns the index of query in rows_iter, first item match will return 1.
+
+    If query is not found in rows_iter, returns -1.
+    '''
+    search_columns = SearchBy.get_search_columns('name')
+
+    for index, row in enumerate(request.rows_iter):
+        for column in search_columns:
+            if row[column].value == request.query:
+                return index
+
+    return -1

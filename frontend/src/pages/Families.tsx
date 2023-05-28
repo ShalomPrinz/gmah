@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import { Link } from "react-router-dom";
 
 import { RadioMenu, Table } from "../components";
+import IconComponent from "../components/Icon";
 import Search from "../components/Search";
 import { familiesTableHeaders } from "../modules";
 import { searchFamilies } from "../services";
+
+const familyIdProp = "שם מלא";
 
 const buttons = [
   {
@@ -46,6 +50,17 @@ function Families() {
   const [searchBy, setSearchBy] = useState("name");
   const families = useFamiliesSearch(query, searchBy);
 
+  const LastTableColumn = ({ item }: { item: any }) => (
+    <Link
+      className="link-decoration rounded fs-5 p-2"
+      to={`edit/${item[familyIdProp]}`}
+      state={{ item }}
+    >
+      <span className="ps-2">עריכה</span>
+      <IconComponent icon="editFamily" />
+    </Link>
+  );
+
   return (
     <main className="container text-center mx-auto">
       <Row>
@@ -77,8 +92,9 @@ function Families() {
         <Table
           columns={familiesTableHeaders}
           data={families}
-          dataIdProp="שם מלא"
+          dataIdProp={familyIdProp}
           headerHighlight={getHeaderByButtonValue(searchBy)}
+          LastColumn={LastTableColumn}
         />
       </Row>
     </main>

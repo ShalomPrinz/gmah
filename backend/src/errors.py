@@ -15,3 +15,11 @@ class FileNotFoundError(Exception):
     def __init__(self, description):
         super().__init__()
         self.result = Result(404, "File Not Found", description)
+
+class FamilyNotFoundError(Exception):
+    '''
+    Family not found.
+    '''
+    def __init__(self, description):
+        super().__init__()
+        self.result = Result(404, "Family Not Found", description)

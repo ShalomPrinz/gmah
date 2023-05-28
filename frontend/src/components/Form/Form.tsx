@@ -8,9 +8,11 @@ import { FormTextInput } from "./FormTextInput";
 import "./Form.css";
 
 interface FormProps {
+  initialData?: {};
   onSubmit: (values: {}) => Promise<any>;
   /** Yup Object Schema */
   schema: any;
+  submitText?: string;
   textInputs: Array<TextInput>;
   title: string;
 }
@@ -21,11 +23,17 @@ const inputCallback = (item: TextInput) => (
   </Col>
 );
 
-const AppForm = ({ onSubmit, schema, textInputs, title }: FormProps) => {
-  const initialValues = textInputs.reduce(
-    (o, key) => ({ ...o, [key.name]: "" }),
-    {}
-  );
+const AppForm = ({
+  initialData,
+  onSubmit,
+  schema,
+  submitText,
+  textInputs,
+  title,
+}: FormProps) => {
+  const initialValues =
+    initialData ||
+    textInputs.reduce((o, key) => ({ ...o, [key.name]: "" }), {});
 
   // @ts-ignore This function parameters types is determined by Formik
   const handleSubmit = (values, { resetForm, setSubmitting }) =>
@@ -53,7 +61,7 @@ const AppForm = ({ onSubmit, schema, textInputs, title }: FormProps) => {
             className="fs-1 bg-default w-50 mx-auto p-3 m-4 rounded button-border-focus"
             type="submit"
           >
-            {title}
+            {submitText || title}
           </button>
         </Row>
       </Form>

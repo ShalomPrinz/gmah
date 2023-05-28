@@ -127,3 +127,13 @@ def add_families(families_file: Excel, families):
         if result.status != 200:
             return add_many_error(result, family[key_prop])
     return add_many_results["FAMILIES_ADDED"]
+
+def update_family(families_file: Excel, original_name, family):
+    '''
+    Changes the data of originalName family to the new family data.
+    '''
+    try:
+        index = families_file.get_row_index(original_name)
+    except Exception as e:
+        return e
+    families_file.replace_row(index, family)

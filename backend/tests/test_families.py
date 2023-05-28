@@ -4,8 +4,9 @@ from shutil import copy
 from os import remove
 
 from src.data import family_properties, families_filename
-from src.families import get_count, search_families, add_family, add_families, open_families_file
+from src.families import get_count, search_families, add_family, add_families, open_families_file, update_family
 from src.results import add_results, add_many_results, add_many_error
+from src.errors import FamilyNotFoundError
 
 default_family_properties = {
     "שם מלא": "פלוני פלוני",
@@ -242,3 +243,24 @@ class TestDataManagement(unittest.TestCase):
         self.assertEqual(1, len(first_search))
         second = search_families(families_file, "משפוחה", 'name')
         self.assertEqual(1, len(second))
+
+    def test_update_family(self):
+        updated_family = {"שם מלא": "שם חדש"}
+        families = [{"שם מלא": ""}, {"שם מלא": None}, {"שם מלא": "שלום פרינץ"}, {"שם מלא": "נתאי"}, {"שם מלא": "חיים"}]
+        exist_families = [Family(f) for f in families]
+
+        test_cases = [
+            ("No Such Name", "גרון", updated_family, FamilyNotFoundError),
+            ("Partial Name Match", "שלום", updated_family, FamilyNotFoundError),
+            ("Exact Match", "נתאי", updated_family, None)
+        ]
+
+        for title, original_name, family_data, expected_result in test_cases:
+            with self.subTest(title=title):
+                write_families_file(families=exist_families)
+                families_file = load_families_file()
+                result = update_family(families_file, original_name, family_data)
+                if expected_result is None:
+                    self.assertIs(result, None, "Should return None if successful")
+                else:
+                    self.assertIsInstance(result, expected_result, "Should raise FamilyNotFound Exception")
