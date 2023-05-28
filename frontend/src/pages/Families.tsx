@@ -6,10 +6,8 @@ import { Link } from "react-router-dom";
 import { RadioMenu, Table } from "../components";
 import IconComponent from "../components/Icon";
 import Search from "../components/Search";
-import { familiesTableHeaders } from "../modules";
+import { familiesTableHeaders, familyIdProp } from "../modules";
 import { searchFamilies } from "../services";
-
-const familyIdProp = "שם מלא";
 
 const buttons = [
   {

@@ -3,7 +3,11 @@ import Row from "react-bootstrap/Row";
 import { toast } from "react-toastify";
 
 import { InputTable } from "../components";
-import { addFamilyHeaders, familiesArraySchema } from "../modules";
+import {
+  addFamilyHeaders,
+  familiesArraySchema,
+  familyIdProp,
+} from "../modules";
 import { addFamilies } from "../services";
 import { useTableParser } from "../util";
 
@@ -30,7 +34,7 @@ function AddManyFamilies() {
         return;
       }
 
-      const index = families.findIndex((f) => f["שם מלא"] === response);
+      const index = families.findIndex((f) => f[familyIdProp] === response);
       if (index > 0) {
         toast.info(
           `למרות שהייתה תקלה, כל המשפחות שמופיעות לפני משפחת ${response} בטבלה נוספו לגמ"ח בהצלחה`

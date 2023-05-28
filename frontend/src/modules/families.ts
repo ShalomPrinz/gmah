@@ -47,3 +47,5 @@ export const familyProperties = [
   "ממליץ",
   "הערות",
 ];
+
+export const familyIdProp = "שם מלא";

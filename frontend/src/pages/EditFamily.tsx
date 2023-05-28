@@ -2,14 +2,18 @@ import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import { Form } from "../components";
-import { addFamilyInputs, familiesObjectSchema } from "../modules";
+import {
+  addFamilyInputs,
+  familiesObjectSchema,
+  familyIdProp,
+} from "../modules";
 import { updateFamily } from "../services";
 
 function EditFamily() {
   const originalData = useLocationState();
   if (originalData === undefined) return <>Error</>;
 
-  const originalName = originalData["שם מלא"];
+  const originalName = originalData[familyIdProp];
   console.log("original name", originalName);
 
   const handleSubmit = (familyData: any) =>

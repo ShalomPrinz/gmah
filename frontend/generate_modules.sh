@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # Preparation
-family_attributes=([0]="שם מלא" [1]="רחוב" [2]="בניין" [3]="דירה" [4]="קומה" [5]="מס' בית" [6]="מס' פלאפון" [7]="נהג" [8]="נהג במקור" [9]="ממליץ" [10]="הערות")
+family_id_prop="שם מלא"
+family_attributes=([0]=$family_id_prop [1]="רחוב" [2]="בניין" [3]="דירה" [4]="קומה" [5]="מס' בית" [6]="מס' פלאפון" [7]="נהג" [8]="נהג במקור" [9]="ממליץ" [10]="הערות")
 add_family_exclude="7 8 10"
 
 dir_path="src/modules/"
@@ -55,6 +56,11 @@ function write_family_properties {
 }
 
 write_family_properties
+
+# Family ID Prop
+fip_name="familyIdProp"
+echo "export const $fip_name = \"$family_id_prop\"" >> $output_file
+index_exports+="$fip_name"
 
 # Index File
 # Note: export from main output file must be first export

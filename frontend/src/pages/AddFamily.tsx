@@ -1,14 +1,14 @@
 import { toast } from "react-toastify";
 
 import { Form } from "../components";
-import { addFamilyInputs, familiesObjectSchema } from "../modules";
+import { addFamilyInputs, familiesObjectSchema, familyIdProp } from "../modules";
 import { addFamilies } from "../services";
 
 function AddFamily() {
   const handleSubmit = (familyData: any) =>
     addFamilies([familyData]).then((response) => {
       if (typeof response !== "string") {
-        toast.success(`משפחת ${familyData["שם מלא"]} נוספה בהצלחה לגמח:)`);
+        toast.success(`משפחת ${familyData[familyIdProp]} נוספה בהצלחה לגמח:)`);
         return true;
       }
     });
