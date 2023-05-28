@@ -250,9 +250,9 @@ class TestDataManagement(unittest.TestCase):
         exist_families = [Family(f) for f in families]
 
         test_cases = [
-            ("No Such Name", "גרון", updated_family, FamilyNotFoundError),
-            ("Partial Name Match", "שלום", updated_family, FamilyNotFoundError),
-            ("Exact Match", "נתאי", updated_family, None)
+            ("No Such Name",        "גרון", updated_family, FamilyNotFoundError),
+            ("Partial Name Match",  "שלום", updated_family, FamilyNotFoundError),
+            ("Exact Match",         "נתאי", updated_family, None)
         ]
 
         for title, original_name, family_data, expected_result in test_cases:

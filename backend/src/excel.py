@@ -20,6 +20,7 @@ class Excel:
         self.table_name = 'נתמכים'
         self.cell_style = 'שורת נתמך'
         self.last_column = last_excel_column
+        self.first_content_row = 2
 
         if len(self.workbook.named_styles) < 2 or \
             self.cell_style not in self.workbook.named_styles:
@@ -38,22 +39,24 @@ class Excel:
     def get_headers(self):
         return [cell.value for cell in next(self.worksheet.rows)]
 
+    def get_rows_iter(self):
+        return self.worksheet.iter_rows(min_row=self.first_content_row)
+
     def get_row_index(self, row_key):
-        min_row = 2
         request = FindRequest(
-            rows_iter=self.worksheet.iter_rows(min_row),
+            rows_iter=self.get_rows_iter(),
             query=row_key
         )
 
         result = find(request)
         if result != -1:
-            return result + min_row
+            return result + self.first_content_row
         else:
             raise FamilyNotFoundError(f"המשפחה {row_key} לא נמצאת")
     
     def search(self, query, search_by=''):
         request = SearchRequest(
-            rows_iter=self.worksheet.iter_rows(min_row=2),
+            rows_iter=self.get_rows_iter(),
             headers=self.get_headers(),
             query=query,
             search_by=search_by
