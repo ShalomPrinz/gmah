@@ -3,6 +3,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from os import getenv
 
+import src.month as month
 import src.families as families
 from src.results import get_result
 
@@ -49,3 +50,10 @@ def update_family():
     if error is not None:
         return error_response(error)
     return jsonify(), 200
+
+@app.route('/drivers')
+def get_drivers():
+    error, drivers = month.load_drivers()
+    if error is not None:
+        return error_response(error)
+    return jsonify(drivers=drivers), 200

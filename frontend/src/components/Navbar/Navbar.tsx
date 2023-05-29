@@ -73,6 +73,11 @@ function NavbarWrapper() {
       name: "ניהול",
       url: "/manage",
     },
+    {
+      id: 2,
+      name: "חודשי",
+      url: "/month",
+    },
   ];
 
   return <AppNavbar pages={pages} />;

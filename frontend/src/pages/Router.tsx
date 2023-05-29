@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 
 import { Navbar } from "../components";
+import Drivers from "./Drivers";
 import Home from "./Home";
 import EditFamily from "./EditFamily";
 import Families from "./Families";
@@ -35,6 +36,9 @@ const router = createBrowserRouter(
         <Route index element={<FamilyManager />} />
         <Route path="add" element={<AddFamily />} />
         <Route path="add-many" element={<AddManyFamilies />} />
+      </Route>
+      <Route path="month">
+        <Route index element={<Drivers />} />
       </Route>
     </Route>
   )
