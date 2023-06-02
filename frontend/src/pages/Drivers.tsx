@@ -1,17 +1,23 @@
 import { useEffect, useState } from "react";
 
-import { ConditionalList, Table } from "../components";
+import { ConditionalList, MultiInputTable } from "../components";
 import { getDrivers } from "../services";
 
 type Driver = {
-  id: string;
   name: string;
   phone: string;
 };
 
-interface Managers {
-  [name: string]: Driver[];
+interface Manager {
+  id: string;
+  name: string;
+  drivers: Driver[];
 }
+
+const defaultDriver: Driver = {
+  name: "",
+  phone: "",
+};
 
 const driversColumns = [
   { id: 0, label: "שם הנהג", path: "name" },
@@ -21,14 +27,15 @@ const driversColumns = [
 function Drivers() {
   const managers = useManagers();
 
-  const managerCallback = (managerName: string) => {
+  const managerCallback = ({ name, drivers }: Manager) => {
     return (
-      <div className="my-4" style={{ width: "35%" }}>
-        <h2>{managerName}</h2>
-        <Table
+      <div className="my-3" style={{ width: "40%" }}>
+        <h2>{name}</h2>
+        <MultiInputTable
           columns={driversColumns}
-          data={managers[managerName]}
-          dataIdProp="id"
+          defaultItem={defaultDriver}
+          initialValues={drivers}
+          name={`managers:${name}`}
         />
       </div>
     );
@@ -36,19 +43,16 @@ function Drivers() {
 
   return (
     <>
-      <h1 className="my-5 text-center">אחראי נהגים</h1>
+      <h1 className="mt-5 text-center">אחראי נהגים</h1>
       <main className="container text-center d-flex flex-wrap justify-content-evenly">
-        <ConditionalList
-          list={Object.keys(managers)}
-          itemCallback={managerCallback}
-        />
+        <ConditionalList list={managers} itemCallback={managerCallback} />
       </main>
     </>
   );
 }
 
 function useManagers() {
-  const [drivers, setDrivers] = useState<Managers>({});
+  const [drivers, setDrivers] = useState<Manager[]>([]);
 
   useEffect(() => {
     getDrivers()
