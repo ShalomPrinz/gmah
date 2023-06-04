@@ -14,7 +14,6 @@ function EditFamily() {
   if (originalData === undefined) return <>Error</>;
 
   const originalName = originalData[familyIdProp];
-  console.log("original name", originalName);
 
   const handleSubmit = (familyData: any) =>
     updateFamily(originalName, familyData)

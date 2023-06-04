@@ -1,4 +1,5 @@
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 import TableBody from "./TableBody";
 import TableHeader from "./TableHeader";
@@ -15,6 +16,7 @@ interface InputTableProps {
   defaultItem: Item;
   initialValues: Item[];
   name: string;
+  schema: any;
 }
 
 function InputTable({
@@ -22,11 +24,14 @@ function InputTable({
   defaultItem,
   initialValues,
   name,
+  schema,
 }: InputTableProps) {
   const formMethods = useForm<FormValues>({
     defaultValues: {
       [name]: initialValues,
     },
+    mode: "onBlur",
+    resolver: yupResolver(schema),
   });
 
   // All form methods are required for Form Context Provider

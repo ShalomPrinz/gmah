@@ -67,7 +67,7 @@ index_exports+="$fip_name"
 file_contents=$(cat $index_file)
 other_exports="${file_contents#*;}"
 first_export='export { '$index_exports' } from "./'$output_filename'"'
-echo $first_export > $index_file
+echo -e "$first_export\n" > $index_file
 echo $other_exports >> $index_file
 
 # Lint

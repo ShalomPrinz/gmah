@@ -15,18 +15,36 @@ const TableBody = ({
   formName,
 }: TableBodyProps) => {
   const { fields, remove } = fieldArrayMethods;
+  const {
+    formState: { errors, dirtyFields },
+  } = useFormContext();
 
   const cellCallback = (
     column: TableColumn,
     colIndex: number,
     rowIndex: number
-  ) => (
-    <TableTextInput
-      fieldName={`${formName}.${rowIndex}.${column.path}`}
-      key={colIndex}
-      title={column.label}
-    />
-  );
+  ) => {
+    function getErrorMessage() {
+      const dirtyCells = dirtyFields[formName]?.[rowIndex] || {};
+      if (Object.keys(dirtyCells).includes(column.path)) {
+        // @ts-ignore errors object at runtime is of different type
+        const errorCells = errors[formName]?.[rowIndex] || {};
+        if (Object.hasOwn(errorCells, column.path)) {
+          return errorCells[column.path].message || "שגיאה לא צפויה";
+        }
+      }
+      return undefined;
+    }
+
+    return (
+      <TableTextInput
+        fieldName={`${formName}.${rowIndex}.${column.path}`}
+        getErrorMessage={getErrorMessage}
+        key={colIndex}
+        title={column.label}
+      />
+    );
+  };
 
   const rowCallback = (rowId: string, rowIndex: number) => (
     <tr key={rowId}>
@@ -52,18 +70,27 @@ const TableBody = ({
 
 interface TableTextInputProps {
   fieldName: string;
+  getErrorMessage: () => any;
   title: string;
 }
 
-function TableTextInput({ fieldName, title }: TableTextInputProps) {
+function TableTextInput({
+  fieldName,
+  getErrorMessage,
+  title,
+}: TableTextInputProps) {
   const { register } = useFormContext();
+  const errorMessage = getErrorMessage();
+  const hasError = typeof errorMessage !== "undefined";
 
   return (
     <td className="align-middle">
       <input
-        className={`form-text-input p-1 m-1 text-center`}
+        className={`form-text-input p-1 m-1 text-center${
+          hasError ? " form-input-invalid" : ""
+        }`}
         style={{ maxWidth: "150px" }}
-        title={title}
+        title={hasError ? errorMessage : title}
         type="text"
         {...register(fieldName)}
       />

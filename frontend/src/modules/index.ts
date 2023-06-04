@@ -5,4 +5,9 @@ export {
   familyProperties,
   familyIdProp,
 } from "./families";
-export { familiesArraySchema, familiesObjectSchema } from "./schemas";
+
+export {
+  driversArraySchema,
+  familiesArraySchema,
+  familiesObjectSchema,
+} from "./schemas";

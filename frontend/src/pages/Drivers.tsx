@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { ConditionalList, MultiInputTable } from "../components";
+import { driversArraySchema } from "../modules";
 import { getDrivers } from "../services";
 
 type Driver = {
@@ -28,6 +29,7 @@ function Drivers() {
   const managers = useManagers();
 
   const managerCallback = ({ name, drivers }: Manager) => {
+    const tableName = `managers:${name}`;
     return (
       <div className="my-3" style={{ width: "40%" }}>
         <h2>{name}</h2>
@@ -35,7 +37,8 @@ function Drivers() {
           columns={driversColumns}
           defaultItem={defaultDriver}
           initialValues={drivers}
-          name={`managers:${name}`}
+          name={tableName}
+          schema={driversArraySchema(tableName)}
         />
       </div>
     );
