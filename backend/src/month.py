@@ -18,3 +18,10 @@ def load_drivers():
         return (None, drivers.load_json())
     except Exception as e:
         return (e, None)
+
+def update_drivers(drivers_json):
+    try:
+        with open(filename, 'w', encoding='utf-8') as f:
+            json.dump(drivers_json, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        return e

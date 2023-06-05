@@ -57,3 +57,11 @@ def get_drivers():
     if error is not None:
         return error_response(error)
     return jsonify(drivers=drivers), 200
+
+@app.route('/drivers', methods=["POST"])
+def update_drivers():
+    drivers = request.json['drivers']
+    error = month.update_drivers(drivers)
+    if error is not None:
+        return error_response(error)
+    return jsonify(), 200

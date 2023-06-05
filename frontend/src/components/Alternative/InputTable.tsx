@@ -1,21 +1,18 @@
+import { useEffect } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 import TableBody from "./TableBody";
 import TableHeader from "./TableHeader";
-import type { TableColumn } from "./types";
-
-type Item = { [key: string]: string };
-
-type FormValues = {
-  [key: string]: Item[];
-};
+import type { FormItem, FormSubmitFn, FormValues, TableColumn } from "./types";
 
 interface InputTableProps {
   columns: TableColumn[];
-  defaultItem: Item;
-  initialValues: Item[];
+  defaultItem: FormItem;
+  initialValues: FormItem[];
   name: string;
+  /** Parent should implement submit functionality */
+  registerSubmit: (formkey: string, submitFn: FormSubmitFn) => void;
   schema: any;
 }
 
@@ -24,6 +21,7 @@ function InputTable({
   defaultItem,
   initialValues,
   name,
+  registerSubmit,
   schema,
 }: InputTableProps) {
   const formMethods = useForm<FormValues>({
@@ -38,11 +36,11 @@ function InputTable({
   const { control, handleSubmit } = formMethods;
   const fieldArrayMethods = useFieldArray({ name, control });
 
-  const onSubmit = (data: FormValues) => console.log(data);
+  useEffect(() => registerSubmit(name, handleSubmit), []);
 
   return (
     <FormProvider {...formMethods}>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={(e) => e.preventDefault()}>
         <table className="bg-white mx-auto">
           <TableHeader columns={columns} />
           <TableBody

@@ -2,6 +2,7 @@ import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import {
   faBars,
   faCircleMinus,
+  faFilePen,
   faImage,
   faTimes,
   faUserPen,
@@ -14,6 +15,7 @@ const icons = {
   navbarClosed: faBars,
   navbarExpanded: faTimes,
   removeItem: faCircleMinus,
+  updateDrivers: faFilePen,
 };
 
 export type Icon = keyof typeof icons;
