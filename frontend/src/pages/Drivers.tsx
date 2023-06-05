@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-import { ConditionalList, MultiInputTable } from "../components";
-import { FormSubmitFn } from "../components/Alternative/types";
+import { ConditionalList, MultiInputTable, Table } from "../components";
+import { FormResetFn, FormSubmitFn } from "../components/Alternative/types";
 import IconComponent from "../components/Icon";
 import { driversArraySchema } from "../modules";
 import { getDrivers, updateDrivers } from "../services";
@@ -32,16 +32,20 @@ type SubmitFunctions = {
   [formKey: string]: FormSubmitFn;
 };
 
+type PageMode = "View" | "Update";
+
 const toFormName = (managerName: string) => `manager:${managerName}`;
 const toManagerName = (formName: string) => formName.split(":")[1];
 const toHebrew = (driverProperty: string) =>
   driverProperty === "name" ? "שם הנהג" : "מס' פלאפון";
 
 function Drivers() {
-  const managers = useManagers();
+  const { changePageMode, isViewMode } = usePageMode();
+  const managers = useManagers(isViewMode);
   const { registerSubmitFunction, submitAll } = useFormsSubmission();
+  const { registerResetFunction, resetAll } = useFormsReset();
 
-  const handleClick = async () => {
+  const handleUpdateDrivers = async () => {
     const submitResult = await submitAll();
     if (!submitResult) return;
 
@@ -51,29 +55,45 @@ function Drivers() {
         return { ...m, drivers: submitResult[formName] };
       } else return m;
     });
-    updateDrivers(updated);
+
+    updateDrivers(updated).then(() => changePageMode());
   };
 
   const managerCallback = ({ name, drivers }: Manager) => {
     const tableName = toFormName(name);
     return (
-      <div className="my-3" style={{ width: "40%" }}>
+      <div className="my-3" style={{ width: isViewMode ? "35%" : "40%" }}>
         <h2>{name}</h2>
-        <MultiInputTable
-          columns={driversColumns}
-          defaultItem={defaultDriver}
-          initialValues={drivers}
-          name={tableName}
-          registerSubmit={registerSubmitFunction}
-          schema={driversArraySchema(tableName)}
-        />
+        {isViewMode ? (
+          <Table columns={driversColumns} data={drivers} dataIdProp="name" />
+        ) : (
+          <MultiInputTable
+            columns={driversColumns}
+            defaultItem={defaultDriver}
+            initialValues={drivers}
+            name={tableName}
+            registerReset={registerResetFunction}
+            registerSubmit={registerSubmitFunction}
+            schema={driversArraySchema(tableName)}
+          />
+        )}
       </div>
     );
   };
 
   return (
     <>
-      <h1 className="mt-5 text-center">אחראי נהגים</h1>
+      <h1 className="mt-5 text-center">
+        אחראי נהגים
+        {!isViewMode && (
+          <button
+            className="me-5 p-3 fs-3 bg-warning border border-dark border-4 rounded"
+            onClick={resetAll}
+          >
+            נקה שינויים
+          </button>
+        )}
+      </h1>
       <main
         className="container text-center d-flex flex-wrap justify-content-evenly"
         style={{ marginBottom: "100px" }}
@@ -82,14 +102,23 @@ function Drivers() {
       </main>
       <button
         className="fs-3 bg-default rounded p-4 mt-5 ms-5 mb-5 position-fixed bottom-0 start-0 button-hover"
-        onClick={handleClick}
+        onClick={isViewMode ? changePageMode : handleUpdateDrivers}
         type="button"
       >
-        <span className="ps-3">סיום העדכון</span>
+        <span className="ps-3">{isViewMode ? "עריכה" : "סיום העדכון"}</span>
         <IconComponent icon="updateDrivers" />
       </button>
     </>
   );
+}
+
+function usePageMode() {
+  const [pageMode, setPageMode] = useState<PageMode>("View");
+  const isViewMode = pageMode === "View";
+  const changePageMode = () =>
+    setPageMode((prev) => (prev === "View" ? "Update" : "View"));
+
+  return { changePageMode, isViewMode };
 }
 
 function useFormsSubmission() {
@@ -139,7 +168,19 @@ function useFormsSubmission() {
   return { registerSubmitFunction, submitAll };
 }
 
-function useManagers() {
+function useFormsReset() {
+  const [resetFunctions, setResetFunctions] = useState<FormResetFn[]>([]);
+  useEffect(() => () => setResetFunctions([]), []);
+  const registerResetFunction = (resetFn: FormResetFn) => {
+    setResetFunctions((prev) => [...prev, resetFn]);
+  };
+
+  const resetAll = () => resetFunctions.forEach((resetFn) => resetFn());
+
+  return { registerResetFunction, resetAll };
+}
+
+function useManagers(dependency: boolean) {
   const [drivers, setDrivers] = useState<Manager[]>([]);
 
   useEffect(() => {
@@ -148,7 +189,7 @@ function useManagers() {
       .catch((error) =>
         console.error("Error occurred while trying to load drivers", error)
       );
-  }, []);
+  }, [dependency]);
 
   return drivers;
 }

@@ -1,4 +1,4 @@
-import { UseFormHandleSubmit } from "react-hook-form";
+import { UseFormHandleSubmit, UseFormReset } from "react-hook-form";
 
 interface TableColumn {
   id: number;
@@ -12,6 +12,8 @@ type FormValues = {
   [key: string]: FormItem[];
 };
 
+type FormResetFn = UseFormReset<FormValues>;
+
 type FormSubmitFn = UseFormHandleSubmit<FormValues, undefined>;
 
-export type { FormItem, FormSubmitFn, FormValues, TableColumn };
+export type { FormItem, FormResetFn, FormSubmitFn, FormValues, TableColumn };

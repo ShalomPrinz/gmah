@@ -4,14 +4,21 @@ import { yupResolver } from "@hookform/resolvers/yup";
 
 import TableBody from "./TableBody";
 import TableHeader from "./TableHeader";
-import type { FormItem, FormSubmitFn, FormValues, TableColumn } from "./types";
+import type {
+  FormItem,
+  FormResetFn,
+  FormSubmitFn,
+  FormValues,
+  TableColumn,
+} from "./types";
 
 interface InputTableProps {
   columns: TableColumn[];
   defaultItem: FormItem;
   initialValues: FormItem[];
   name: string;
-  /** Parent should implement submit functionality */
+  /** Parent should implement submit and reset functionality */
+  registerReset: (resetFn: FormResetFn) => void;
   registerSubmit: (formkey: string, submitFn: FormSubmitFn) => void;
   schema: any;
 }
@@ -21,6 +28,7 @@ function InputTable({
   defaultItem,
   initialValues,
   name,
+  registerReset,
   registerSubmit,
   schema,
 }: InputTableProps) {
@@ -33,10 +41,11 @@ function InputTable({
   });
 
   // All form methods are required for Form Context Provider
-  const { control, handleSubmit } = formMethods;
+  const { control, handleSubmit, reset } = formMethods;
   const fieldArrayMethods = useFieldArray({ name, control });
 
   useEffect(() => registerSubmit(name, handleSubmit), []);
+  useEffect(() => registerReset(reset), []);
 
   return (
     <FormProvider {...formMethods}>
