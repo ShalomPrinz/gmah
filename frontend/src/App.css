@@ -2,6 +2,11 @@
   --default-bg-color: hsl(228, 73%, 21%);
   --default-color: white;
   --default-shadow: rgb(97, 219, 233);
+  --disabled-bg-color: hsl(195, 4%, 44%);
+}
+
+button:disabled {
+  background-color: var(--disabled-bg-color);
 }
 
 .bg-default {

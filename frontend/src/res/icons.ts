@@ -4,6 +4,7 @@ import {
   faCircleMinus,
   faFilePen,
   faImage,
+  faShare,
   faTimes,
   faUserPen,
   faUserPlus,
@@ -12,6 +13,7 @@ import {
 const icons = {
   addFamily: faUserPlus,
   editFamily: faUserPen,
+  forwardItem: faShare,
   navbarClosed: faBars,
   navbarExpanded: faTimes,
   removeItem: faCircleMinus,

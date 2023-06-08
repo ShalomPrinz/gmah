@@ -1,7 +1,10 @@
 import { UseFieldArrayReturn, useFormContext } from "react-hook-form";
 
-import type { TableColumn } from "./types";
+import { useFormForwardContext } from "./FormForwardContext";
 import IconComponent from "../Icon";
+
+import type { Icon } from "../../res/icons";
+import type { TableColumn } from "./types";
 
 export interface TableBodyProps {
   columns: TableColumn[];
@@ -17,7 +20,9 @@ const TableBody = ({
   const { fields, remove } = fieldArrayMethods;
   const {
     formState: { errors, dirtyFields },
+    getValues,
   } = useFormContext();
+  const { endForward, isThisForwarding, setForward } = useFormForwardContext();
 
   const cellCallback = (
     column: TableColumn,
@@ -46,24 +51,46 @@ const TableBody = ({
     );
   };
 
-  const rowCallback = (rowId: string, rowIndex: number) => (
-    <tr key={rowId}>
-      <td className="fs-4 fw-bold ps-3">{rowIndex + 1}</td>
-      {columns.map((column, colIndex) =>
-        cellCallback(column, colIndex, rowIndex)
-      )}
-      <td>
-        <button
-          className="me-3 bg-white text-danger rounded fs-5 border border-3 border-danger button-hover"
-          onClick={() => remove(rowIndex)}
-          type="button"
-        >
-          <span className="ps-2">הסר</span>
-          <IconComponent color="red" icon="removeItem" />
-        </button>
-      </td>
-    </tr>
-  );
+  const rowCallback = (rowId: string, rowIndex: number) => {
+    const removeFunc = () => {
+      remove(rowIndex);
+      endForward();
+    };
+    const rowValue = getValues()?.[formName]?.[rowIndex];
+    const origin = { formName, rowIndex };
+    const forward = () =>
+      setForward({ origin, item: rowValue, removeFromOrigin: removeFunc });
+
+    return (
+      <tr key={rowId}>
+        <td className="fs-4 fw-bold ps-3">{rowIndex + 1}</td>
+        {columns.map((column, colIndex) =>
+          cellCallback(column, colIndex, rowIndex)
+        )}
+        <RowButton
+          icon="removeItem"
+          onClick={removeFunc}
+          style="red"
+          text="הסר"
+        />
+        {isThisForwarding(origin) ? (
+          <RowButton
+            icon="forwardItem"
+            onClick={endForward}
+            style="red"
+            text="בטל"
+          />
+        ) : (
+          <RowButton
+            icon="forwardItem"
+            onClick={forward}
+            style="blue"
+            text="העבר"
+          />
+        )}
+      </tr>
+    );
+  };
 
   return <tbody>{fields.map(({ id }, index) => rowCallback(id, index))}</tbody>;
 };
@@ -94,6 +121,36 @@ function TableTextInput({
         type="text"
         {...register(fieldName)}
       />
+    </td>
+  );
+}
+
+interface RowButtonProps {
+  icon: Icon;
+  onClick: () => void;
+  style: "red" | "blue";
+  text: string;
+}
+
+function RowButton({ icon, onClick, style, text }: RowButtonProps) {
+  const isStyleRed = style === "red";
+
+  const iconColor = isStyleRed ? "red" : "blue";
+  const iconFlip = !isStyleRed;
+
+  const buttonStyle = isStyleRed ? "danger" : "primary";
+  const className = `me-2 bg-white text-${buttonStyle} rounded fs-5 border border-3 border-${buttonStyle} button-hover`;
+
+  return (
+    <td>
+      <button className={className} onClick={onClick} type="button">
+        <span className="ps-2">{text}</span>
+        <IconComponent
+          color={iconColor}
+          flipHorizontal={iconFlip}
+          icon={icon}
+        />
+      </button>
     </td>
   );
 }

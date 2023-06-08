@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 import { ConditionalList, MultiInputTable, Table } from "../components";
+import { FormForwardProvider } from "../components/Alternative/FormForwardContext";
 import { FormResetFn, FormSubmitFn } from "../components/Alternative/types";
 import IconComponent from "../components/Icon";
 import { driversArraySchema } from "../modules";
@@ -34,8 +35,6 @@ type SubmitFunctions = {
 
 type PageMode = "View" | "Update";
 
-const toFormName = (managerName: string) => `manager:${managerName}`;
-const toManagerName = (formName: string) => formName.split(":")[1];
 const toHebrew = (driverProperty: string) =>
   driverProperty === "name" ? "שם הנהג" : "מס' פלאפון";
 
@@ -50,9 +49,8 @@ function Drivers() {
     if (!submitResult) return;
 
     const updated = managers.map((m) => {
-      const formName = toFormName(m.name);
-      if (Object.hasOwn(submitResult, formName)) {
-        return { ...m, drivers: submitResult[formName] };
+      if (Object.hasOwn(submitResult, m.name)) {
+        return { ...m, drivers: submitResult[m.name] };
       } else return m;
     });
 
@@ -60,9 +58,9 @@ function Drivers() {
   };
 
   const managerCallback = ({ name, drivers }: Manager) => {
-    const tableName = toFormName(name);
+    const width = isViewMode ? "35%" : "45%";
     return (
-      <div className="my-3" style={{ width: isViewMode ? "35%" : "40%" }}>
+      <div className="my-3" style={{ width }}>
         <h2>{name}</h2>
         {isViewMode ? (
           <Table columns={driversColumns} data={drivers} dataIdProp="name" />
@@ -71,10 +69,10 @@ function Drivers() {
             columns={driversColumns}
             defaultItem={defaultDriver}
             initialValues={drivers}
-            name={tableName}
+            formName={name}
             registerReset={registerResetFunction}
             registerSubmit={registerSubmitFunction}
-            schema={driversArraySchema(tableName)}
+            schema={driversArraySchema(name)}
           />
         )}
       </div>
@@ -98,7 +96,9 @@ function Drivers() {
         className="container text-center d-flex flex-wrap justify-content-evenly"
         style={{ marginBottom: "100px" }}
       >
-        <ConditionalList list={managers} itemCallback={managerCallback} />
+        <FormForwardProvider>
+          <ConditionalList list={managers} itemCallback={managerCallback} />
+        </FormForwardProvider>
       </main>
       <button
         className="fs-3 bg-default rounded p-4 mt-5 ms-5 mb-5 position-fixed bottom-0 start-0 button-hover"
@@ -143,14 +143,13 @@ function useFormsSubmission() {
               // @ts-ignore typescript doesn't allow forEach here
               errorObject?.forEach((error, index) => {
                 Object.entries(error).forEach(([errorKey, errorValue]) => {
-                  const managerName = toManagerName(formKey);
                   const hebrewKey = toHebrew(errorKey);
                   const driverNumber = index + 1;
                   // @ts-ignore typescript doesn't allow unknown type
                   const message = errorValue?.message || "שגיאה בלתי צפויה";
                   toast.warn(
-                    `יש בעיה אצל ${managerName}, ב${hebrewKey} של נהג ${driverNumber}: ${message}`,
-                    { toastId: `${managerName}:${driverNumber}:${hebrewKey}` }
+                    `יש בעיה אצל ${formKey}, ב${hebrewKey} של נהג ${driverNumber}: ${message}`,
+                    { toastId: `${formKey}:${driverNumber}:${hebrewKey}` }
                   );
                 });
               });
