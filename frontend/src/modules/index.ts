@@ -1,5 +1,6 @@
 export {
   addFamilyInputs,
+  editFamilyInputs,
   addFamilyHeaders,
   familiesTableHeaders,
   familyProperties,

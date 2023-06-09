@@ -19,14 +19,14 @@ const TableBody = ({
     formState: { errors, dirtyFields },
   } = useFormContext();
 
-  function cellCallback(column: TableColumn, rowIndex: number) {
+  function cellCallback({ id, label, path }: TableColumn, rowIndex: number) {
     function getErrorMessage() {
       const dirtyCells = dirtyFields[formName]?.[rowIndex] || {};
-      if (Object.keys(dirtyCells).includes(column.path)) {
+      if (Object.keys(dirtyCells).includes(path)) {
         // @ts-ignore errors object at runtime is of different type
         const errorCells = errors[formName]?.[rowIndex] || {};
-        if (Object.hasOwn(errorCells, column.path)) {
-          return errorCells[column.path].message || "שגיאה לא צפויה";
+        if (Object.hasOwn(errorCells, path)) {
+          return errorCells[path].message || "שגיאה לא צפויה";
         }
       }
       return undefined;
@@ -34,10 +34,10 @@ const TableBody = ({
 
     return (
       <TableTextInput
-        fieldName={`${formName}.${rowIndex}.${column.path}`}
+        fieldName={`${formName}.${rowIndex}.${path}`}
         getErrorMessage={getErrorMessage}
-        key={column.id}
-        title={column.path}
+        key={id}
+        title={label || path}
       />
     );
   }

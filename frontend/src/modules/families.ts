@@ -9,6 +9,20 @@ export const addFamilyInputs = [
   { id: 9, name: "ממליץ" },
 ];
 
+export const editFamilyInputs = [
+  { id: 0, name: "שם מלא" },
+  { id: 1, name: "רחוב" },
+  { id: 2, name: "בניין" },
+  { id: 3, name: "דירה" },
+  { id: 4, name: "קומה" },
+  { id: 5, name: "מס' בית" },
+  { id: 6, name: "מס' פלאפון" },
+  { id: 7, name: "נהג" },
+  { id: 8, name: "נהג במקור" },
+  { id: 9, name: "ממליץ" },
+  { id: 10, name: "הערות" },
+];
+
 export const addFamilyHeaders = [
   { id: 0, path: "שם מלא" },
   { id: 1, path: "רחוב" },

@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 
 import { Form } from "../components";
 import {
-  addFamilyInputs,
+  editFamilyInputs,
   familiesObjectSchema,
   familyIdProp,
 } from "../modules";
@@ -26,7 +26,7 @@ function EditFamily() {
         return false;
       });
 
-  const initialData = addFamilyInputs.reduce(
+  const initialData = editFamilyInputs.reduce(
     (o, key) => ({ ...o, [key.name]: originalData[key.name] || "" }),
     {}
   );
@@ -38,7 +38,7 @@ function EditFamily() {
         onSubmit={handleSubmit}
         schema={familiesObjectSchema}
         submitText="לחץ כאן לאישור"
-        textInputs={addFamilyInputs}
+        textInputs={editFamilyInputs}
         title={`שינוי פרטים: ${originalName}`}
       />
     </main>

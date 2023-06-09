@@ -4,15 +4,23 @@ import { array, object, string, number } from "yup";
 const phoneRegExp = /^\d{2,3}-?\d{7}$/;
 
 function emptyStringToNull(value: any, originalValue: any) {
-  return typeof originalValue === 'string' && originalValue === '' ? null : value;
+  return typeof originalValue === "string" && originalValue === ""
+    ? null
+    : value;
 }
 
 const familiesObjectSchema = object({
   "שם מלא": string().required("המשפחה חייבת להכיל שם"),
   רחוב: string(),
   בניין: string(),
-  דירה: number().typeError("מספר הדירה צריך להיות מספר").transform(emptyStringToNull).nullable(),
-  קומה: number().typeError("מספר הקומה צריך להיות מספר").transform(emptyStringToNull).nullable(),
+  דירה: number()
+    .typeError("מספר הדירה צריך להיות מספר")
+    .transform(emptyStringToNull)
+    .nullable(),
+  קומה: number()
+    .typeError("מספר הקומה צריך להיות מספר")
+    .transform(emptyStringToNull)
+    .nullable(),
   "מס' בית": string().matches(
     phoneRegExp,
     "נא להכניס מס' טלפון תקין בעל 9 או 10 ספרות"
@@ -21,6 +29,7 @@ const familiesObjectSchema = object({
     phoneRegExp,
     "נא להכניס מס' טלפון תקין בעל 9 או 10 ספרות"
   ),
+  נהג: string(),
   ממליץ: string(),
   הערות: string(),
 });

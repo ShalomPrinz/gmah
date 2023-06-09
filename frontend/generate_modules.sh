@@ -35,6 +35,9 @@ function add_families_array {
 # Add Family
 add_families_array "addFamilyInputs" "name" "$add_family_exclude"
 
+# Edit Family
+add_families_array "editFamilyInputs" "name" ""
+
 # Add Families
 add_families_array "addFamilyHeaders" "path" "$add_family_exclude"
 
