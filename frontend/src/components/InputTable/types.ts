@@ -1,6 +1,13 @@
 interface TableColumn {
   id: number;
+  label?: string;
   path: string;
 }
 
-export type { TableColumn };
+type FormItem = { [key: string]: string };
+
+type FormValues = {
+  [key: string]: FormItem[];
+};
+
+export type { FormItem, FormValues, TableColumn };

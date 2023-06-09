@@ -38,7 +38,7 @@ interface FormForwardProviderProps {
   children: ReactNode;
 }
 
-function FormForwardProvider({ children }: FormForwardProviderProps) {
+function FormGroupForwardProvider({ children }: FormForwardProviderProps) {
   const [forwardValue, setForwardValue] = useState<ForwardValue | undefined>(
     undefined
   );
@@ -83,4 +83,4 @@ function FormForwardProvider({ children }: FormForwardProviderProps) {
   );
 }
 
-export { FormForwardProvider, useFormForwardContext };
+export { FormGroupForwardProvider, useFormForwardContext };

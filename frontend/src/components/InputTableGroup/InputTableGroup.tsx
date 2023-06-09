@@ -13,7 +13,7 @@ import type {
   TableColumn,
 } from "./types";
 
-interface InputTableProps {
+interface InputTableGroupProps {
   columns: TableColumn[];
   defaultItem: FormItem;
   initialValues: FormItem[];
@@ -24,7 +24,7 @@ interface InputTableProps {
   schema: any;
 }
 
-function InputTable({
+function InputTableGroup({
   columns,
   defaultItem,
   initialValues,
@@ -32,7 +32,7 @@ function InputTable({
   registerReset,
   registerSubmit,
   schema,
-}: InputTableProps) {
+}: InputTableGroupProps) {
   const formMethods = useForm<FormValues>({
     defaultValues: {
       [formName]: initialValues,
@@ -45,8 +45,10 @@ function InputTable({
   const { control, handleSubmit, reset } = formMethods;
   const fieldArrayMethods = useFieldArray({ name: formName, control });
 
-  useEffect(() => registerSubmit(formName, handleSubmit), []);
-  useEffect(() => registerReset(reset), []);
+  useEffect(() => {
+    registerSubmit(formName, handleSubmit);
+    registerReset(reset);
+  }, []);
 
   const { appendButtonDisabled, appendButtonText, handleAppendItem } =
     useAppendButton({
@@ -115,4 +117,4 @@ function useAppendButton({
   };
 }
 
-export default InputTable;
+export default InputTableGroup;

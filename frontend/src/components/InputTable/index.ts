@@ -1,3 +1,3 @@
-import InputTable from "./Table";
+import InputTable from "./InputTable";
 
 export { InputTable };

@@ -1,4 +1,4 @@
-import { ConditionalList } from "../";
+import { ConditionalList } from "..";
 import type { TableColumn } from "./types";
 
 export interface TableHeaderProps {
@@ -7,8 +7,8 @@ export interface TableHeaderProps {
 }
 
 const TableHeader = ({ columns, display }: TableHeaderProps) => {
-  const headerCallback = ({ path }: TableColumn) => {
-    return <th className="fs-5 p-3">{path}</th>;
+  const headerCallback = ({ label, path }: TableColumn) => {
+    return <th className="fs-5 p-3">{label || path}</th>;
   };
 
   return (

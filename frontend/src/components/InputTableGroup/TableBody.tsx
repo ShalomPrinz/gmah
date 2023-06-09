@@ -1,9 +1,8 @@
 import { UseFieldArrayReturn, useFormContext } from "react-hook-form";
 
 import { useFormForwardContext } from "./FormForwardContext";
-import IconComponent from "../Icon";
 
-import type { Icon } from "../../res/icons";
+import RowButton from "../RowButton";
 import type { TableColumn } from "./types";
 
 export interface TableBodyProps {
@@ -24,11 +23,7 @@ const TableBody = ({
   } = useFormContext();
   const { endForward, isThisForwarding, setForward } = useFormForwardContext();
 
-  const cellCallback = (
-    column: TableColumn,
-    colIndex: number,
-    rowIndex: number
-  ) => {
+  function cellCallback(column: TableColumn, rowIndex: number) {
     function getErrorMessage() {
       const dirtyCells = dirtyFields[formName]?.[rowIndex] || {};
       if (Object.keys(dirtyCells).includes(column.path)) {
@@ -45,13 +40,13 @@ const TableBody = ({
       <TableTextInput
         fieldName={`${formName}.${rowIndex}.${column.path}`}
         getErrorMessage={getErrorMessage}
-        key={colIndex}
+        key={column.id}
         title={column.label}
       />
     );
-  };
+  }
 
-  const rowCallback = (rowId: string, rowIndex: number) => {
+  function rowCallback(rowId: string, rowIndex: number) {
     const removeFunc = () => {
       remove(rowIndex);
       endForward();
@@ -64,9 +59,7 @@ const TableBody = ({
     return (
       <tr key={rowId}>
         <td className="fs-4 fw-bold ps-3">{rowIndex + 1}</td>
-        {columns.map((column, colIndex) =>
-          cellCallback(column, colIndex, rowIndex)
-        )}
+        {columns.map((column) => cellCallback(column, rowIndex))}
         <RowButton
           icon="removeItem"
           onClick={removeFunc}
@@ -90,7 +83,7 @@ const TableBody = ({
         )}
       </tr>
     );
-  };
+  }
 
   return <tbody>{fields.map(({ id }, index) => rowCallback(id, index))}</tbody>;
 };
@@ -121,36 +114,6 @@ function TableTextInput({
         type="text"
         {...register(fieldName)}
       />
-    </td>
-  );
-}
-
-interface RowButtonProps {
-  icon: Icon;
-  onClick: () => void;
-  style: "red" | "blue";
-  text: string;
-}
-
-function RowButton({ icon, onClick, style, text }: RowButtonProps) {
-  const isStyleRed = style === "red";
-
-  const iconColor = isStyleRed ? "red" : "blue";
-  const iconFlip = !isStyleRed;
-
-  const buttonStyle = isStyleRed ? "danger" : "primary";
-  const className = `me-2 bg-white text-${buttonStyle} rounded fs-5 border border-3 border-${buttonStyle} button-hover`;
-
-  return (
-    <td>
-      <button className={className} onClick={onClick} type="button">
-        <span className="ps-2">{text}</span>
-        <IconComponent
-          color={iconColor}
-          flipHorizontal={iconFlip}
-          icon={icon}
-        />
-      </button>
     </td>
   );
 }

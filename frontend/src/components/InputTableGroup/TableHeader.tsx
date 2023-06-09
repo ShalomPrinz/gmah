@@ -1,4 +1,4 @@
-import { ConditionalList } from "../";
+import { ConditionalList } from "..";
 import type { TableColumn } from "./types";
 
 export interface TableHeaderProps {
