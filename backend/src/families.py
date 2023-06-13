@@ -3,9 +3,9 @@ from src.excel import Excel
 from src.util import without_hyphen, insert_hyphen
 from src.results import Result, add_results, add_many_error, add_many_results
 
-def open_families_file():
+def load_families_file():
     '''
-    Tries to connect to the application source file.
+    Connects to the families source file.
 
     Returns a tuple: (error, file)
         - If connection has failed, file will be None

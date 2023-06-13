@@ -3,7 +3,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from os import getenv
 
-import src.month as month
+import src.managers as managers
 import src.families as families
 from src.results import get_result
 
@@ -18,12 +18,16 @@ def error_response(error: Exception):
     return jsonify(error=result.title, description=result.description), result.status
 
 @app.before_request
-def load_families_file():
-    error, families_file = families.open_families_file()
+def load_files():
+    error, families_file = families.load_families_file()
     if error is not None:
         return error_response(error)
-    else:
-        g.families_file = families_file
+    g.families_file = families_file
+    
+    error, managers_file = managers.load_managers_file()
+    if error is not None:
+        return error_response(error)
+    g.managers_file = managers_file
 
 @app.route('/familiesCount')
 def families_count():
@@ -51,17 +55,15 @@ def update_family():
         return error_response(error)
     return jsonify(), 200
 
-@app.route('/drivers')
-def get_drivers():
-    error, drivers = month.load_drivers()
-    if error is not None:
-        return error_response(error)
-    return jsonify(drivers=drivers), 200
+@app.route('/managers')
+def get_managers():
+    app_managers = managers.get_managers(g.managers_file)
+    return jsonify(managers=app_managers), 200
 
-@app.route('/drivers', methods=["POST"])
-def update_drivers():
-    drivers = request.json['drivers']
-    error = month.update_drivers(drivers)
+@app.route('/managers', methods=["POST"])
+def update_managers():
+    app_managers = request.json['managers']
+    error = managers.update_managers(g.managers_file, app_managers)
     if error is not None:
         return error_response(error)
     return jsonify(), 200

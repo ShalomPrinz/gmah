@@ -17,7 +17,7 @@ const icons = {
   navbarClosed: faBars,
   navbarExpanded: faTimes,
   removeItem: faCircleMinus,
-  updateDrivers: faFilePen,
+  updateManagers: faFilePen,
 };
 
 export type Icon = keyof typeof icons;

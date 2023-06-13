@@ -10,7 +10,7 @@ import {
 import type { FormResetFn, FormSubmitFn } from "../components/InputTableGroup";
 import IconComponent from "../components/Icon";
 import { driversArraySchema } from "../modules";
-import { getDrivers, updateDrivers } from "../services";
+import { getManagers, updateManagers } from "../services";
 
 type Driver = {
   name: string;
@@ -42,23 +42,23 @@ type PageMode = "View" | "Update";
 const toHebrew = (driverProperty: string) =>
   driverProperty === "name" ? "שם הנהג" : "מס' פלאפון";
 
-function Drivers() {
+function Managers() {
   const { changePageMode, isViewMode } = usePageMode();
   const managers = useManagers(isViewMode);
   const { registerSubmitFunction, submitAll } = useFormsSubmission();
   const { registerResetFunction, resetAll } = useFormsReset();
 
-  const handleUpdateDrivers = async () => {
+  const handleUpdateManagers = async () => {
     const submitResult = await submitAll();
     if (!submitResult) return;
 
     const updated = managers.map((m) => {
       if (Object.hasOwn(submitResult, m.name)) {
-        return { ...m, drivers: submitResult[m.name] };
+        return { ...m, managers: submitResult[m.name] };
       } else return m;
     });
 
-    updateDrivers(updated).then(() => changePageMode());
+    updateManagers(updated).then(() => changePageMode());
   };
 
   const managerCallback = ({ name, drivers }: Manager) => {
@@ -106,11 +106,11 @@ function Drivers() {
       </main>
       <button
         className="fs-3 bg-default rounded p-4 mt-5 ms-5 mb-5 position-fixed bottom-0 start-0 button-hover"
-        onClick={isViewMode ? changePageMode : handleUpdateDrivers}
+        onClick={isViewMode ? changePageMode : handleUpdateManagers}
         type="button"
       >
         <span className="ps-3">{isViewMode ? "עריכה" : "סיום העדכון"}</span>
-        <IconComponent icon="updateDrivers" />
+        <IconComponent icon="updateManagers" />
       </button>
     </>
   );
@@ -184,17 +184,17 @@ function useFormsReset() {
 }
 
 function useManagers(dependency: boolean) {
-  const [drivers, setDrivers] = useState<Manager[]>([]);
+  const [managers, setManagers] = useState<Manager[]>([]);
 
   useEffect(() => {
-    getDrivers()
-      .then((res) => setDrivers(res.data.drivers))
+    getManagers()
+      .then((res) => setManagers(res.data.managers))
       .catch((error) =>
-        console.error("Error occurred while trying to load drivers", error)
+        console.error("Error occurred while trying to load managers", error)
       );
   }, [dependency]);
 
-  return drivers;
+  return managers;
 }
 
-export default Drivers;
+export default Managers;

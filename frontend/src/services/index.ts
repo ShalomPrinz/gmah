@@ -1,2 +1,2 @@
 export * from "./families";
-export * from "./month";
+export * from "./managers";

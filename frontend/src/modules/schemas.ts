@@ -38,7 +38,7 @@ const familiesArraySchema = object({
   families: array().of(familiesObjectSchema),
 });
 
-const driversObjectSchema = object({
+const driverObjectSchema = object({
   name: string().required("לנהג חייב להיות שם"),
   phone: string()
     .matches(phoneRegExp, "נא להכניס מס' טלפון תקין בעל 9 או 10 ספרות")
@@ -47,7 +47,7 @@ const driversObjectSchema = object({
 
 const driversArraySchema = (name: string) =>
   object({
-    [name]: array().of(driversObjectSchema).required(),
-  }).required();
+    [name]: array().of(driverObjectSchema),
+  });
 
 export { driversArraySchema, familiesArraySchema, familiesObjectSchema };

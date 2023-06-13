@@ -75,8 +75,8 @@ function NavbarWrapper() {
     },
     {
       id: 2,
-      name: "חודשי",
-      url: "/month",
+      name: "אחראי נהגים",
+      url: "/managers",
     },
   ];
 
