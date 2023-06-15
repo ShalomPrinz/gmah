@@ -15,11 +15,13 @@ import FamilyManager from "./FamilyManager";
 import AddFamily from "./AddFamily";
 import AddManyFamilies from "./AddManyFamilies";
 
+import { HistoryProvider } from "../contexts";
+
 const Header = () => (
-  <>
+  <HistoryProvider>
     <Navbar />
     <Outlet />
-  </>
+  </HistoryProvider>
 );
 
 const router = createBrowserRouter(

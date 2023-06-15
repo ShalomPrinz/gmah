@@ -51,7 +51,8 @@
   color: var(--navbar-hover-color);
 }
 
-@media screen and (max-width: 960px) {
+/* CSS variables are disallowed in media queries declaration */
+@media screen and (max-width: 992px) {
   .nav-item .active {
     border: none;
     color: var(--navbar-hover-color);

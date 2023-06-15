@@ -2,7 +2,11 @@ import { useState } from "react";
 
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
+import { useMediaQuery } from "react-responsive";
 import { NavLink } from "react-router-dom";
+import { toast } from "react-toastify";
+
+import { useHistoryContext } from "../../contexts";
 import ConditionalList from "../ConditionalList";
 import IconComponent from "../Icon";
 
@@ -20,20 +24,32 @@ const pageCallback = ({ name, url }: Page) => (
   </NavLink>
 );
 
+// Note: When changing those, also change in css file
+/** Navbar expand size in bootstrap breakpoints */
+const expandSizeBs = "lg";
+/** Navbar expand size in pixels */
+const expandSizePx = "992px";
+
 interface NavbarProps {
   pages: Page[];
 }
 
 function AppNavbar({ pages }: NavbarProps) {
   const [expanded, setExpanded] = useState(false);
+  const hasCollapseOption = useMediaQuery({ maxWidth: expandSizePx });
+  const { goBack } = useHistoryContext();
+  const goBackFailureCallback = () =>
+    toast.error("הגעת לדף הבית", { toastId: "endOfHistory" });
 
-  const icon = expanded ? "navbarExpanded" : "navbarClosed";
-  const setNotExpanded = () => expanded && setExpanded(!expanded);
+  const displayGoBack = !hasCollapseOption;
+  const toggleNavbarIcon = expanded ? "navbarExpanded" : "navbarClosed";
+  const switchExpanded = () => setExpanded(!expanded);
+  const setNotExpanded = () => expanded && switchExpanded();
 
   return (
     <Navbar
       className="navbar bg-default"
-      expand="lg"
+      expand={expandSizeBs}
       expanded={expanded}
       style={{ direction: "rtl" }}
     >
@@ -46,18 +62,45 @@ function AppNavbar({ pages }: NavbarProps) {
         />
         {'גמ"ח אבישי'}
       </NavLink>
-      <Navbar.Toggle
-        aria-controls="responsive-navbar-nav"
-        onClick={() => setExpanded(!expanded)}
-      >
-        <IconComponent icon={icon} />
-      </Navbar.Toggle>
-      <Navbar.Collapse id="responsive-navbar-nav">
+      {hasCollapseOption && (
+        <NavbarButton
+          Icon={<IconComponent icon={toggleNavbarIcon} />}
+          onClick={switchExpanded}
+          title="הראה תפריט"
+        />
+      )}
+      <Navbar.Collapse>
         <Nav onClick={setNotExpanded}>
           <ConditionalList itemCallback={pageCallback} list={pages} />
         </Nav>
       </Navbar.Collapse>
+      {displayGoBack && (
+        <NavbarButton
+          Icon={<IconComponent flipHorizontal icon="forwardItem" />}
+          onClick={() => goBack(goBackFailureCallback)}
+          title="חזור אחורה"
+        />
+      )}
     </Navbar>
+  );
+}
+
+interface NavbarButtonProps {
+  Icon: JSX.Element;
+  onClick: () => void;
+  title: string;
+}
+
+function NavbarButton({ Icon, onClick, title }: NavbarButtonProps) {
+  return (
+    <button
+      className="fs-1 mx-5 btn btn-transparent"
+      title={title}
+      type="button"
+      onClick={onClick}
+    >
+      {Icon}
+    </button>
   );
 }
 
