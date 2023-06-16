@@ -10,6 +10,7 @@ import { Navbar } from "../components";
 import Managers from "./Managers";
 import Home from "./Home";
 import EditFamily from "./EditFamily";
+import EditManagers from "./EditManagers";
 import Families from "./Families";
 import FamilyManager from "./FamilyManager";
 import AddFamily from "./AddFamily";
@@ -41,6 +42,7 @@ const router = createBrowserRouter(
       </Route>
       <Route path="managers">
         <Route index element={<Managers />} />
+        <Route path="edit" element={<EditManagers />} />
       </Route>
     </Route>
   )
