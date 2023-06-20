@@ -11,6 +11,7 @@ import IconComponent from "../Icon";
 import TableBody from "./TableBody";
 import TableHeader from "./TableHeader";
 import type { FormItem, FormValues, TableColumn } from "./types";
+import { formatFamilyKey } from "../../util";
 
 interface InputTableProps {
   columns: TableColumn[];
@@ -65,9 +66,10 @@ function InputTable({
     errors[formName]?.forEach((familyErrors, index) => {
       familyErrors &&
         Object.entries(familyErrors).forEach(([field, error]) => {
+          const key = formatFamilyKey(field);
           const message = error?.message || "שגיאה לא צפויה";
           toast.warning(
-            `יש שגיאה ב${field} של משפחה מספר ${index + 1}: ${message}`,
+            `יש שגיאה ב${key} של משפחה מספר ${index + 1}: ${message}`,
             { toastId: `${index}:${field}` }
           );
         });

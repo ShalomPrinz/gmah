@@ -24,14 +24,14 @@ export const editFamilyInputs = [
 ];
 
 export const addFamilyHeaders = [
-  { id: 0, path: "שם מלא" },
-  { id: 1, path: "רחוב" },
-  { id: 2, path: "בניין" },
-  { id: 3, path: "דירה" },
-  { id: 4, path: "קומה" },
-  { id: 5, path: "מס' בית" },
-  { id: 6, path: "מס' פלאפון" },
-  { id: 9, path: "ממליץ" },
+  { id: 0, label: "שם מלא", path: "שם מלא" },
+  { id: 1, label: "רחוב", path: "רחוב" },
+  { id: 2, label: "בניין", path: "בניין" },
+  { id: 3, label: "דירה", path: "דירה" },
+  { id: 4, label: "קומה", path: "קומה" },
+  { id: 5, label: "מס' בית", path: "מס$ בית" },
+  { id: 6, label: "מס' פלאפון", path: "מס$ פלאפון" },
+  { id: 9, label: "ממליץ", path: "ממליץ" },
 ];
 
 export const familiesTableHeaders = [
@@ -61,5 +61,19 @@ export const familyProperties = [
   "ממליץ",
   "הערות",
 ];
+
+export const defaultFamily = {
+  "שם מלא": "",
+  רחוב: "",
+  בניין: "",
+  דירה: "",
+  קומה: "",
+  "מס$ בית": "",
+  "מס$ פלאפון": "",
+  נהג: "",
+  "נהג במקור": "",
+  ממליץ: "",
+  הערות: "",
+};
 
 export const familyIdProp = "שם מלא";

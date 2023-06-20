@@ -14,16 +14,42 @@ echo "" > $output_file
 index_file="${dir_path}index.ts"
 index_exports=""
 
+# Replaces ' with $, to prevent react-hook-form key error
+function prepare_path {
+    local value=$1
+    local path=$(echo "$value" | tr "'" "$")
+    echo "$path"
+}
+
 function add_families_array {
-    var_name=$1
-    obj_attr=$2
-    excludes=$3
+    local var_name=$1
+    local obj_attr=$2
+    local excludes=$3
     echo "export const $var_name = " >> $output_file
 
-    var_text="["
+    local var_text="["
     for idx in ${!family_attributes[@]}; do
         if [[ ! " $excludes " =~ " $idx " ]]; then
             var_text+='{id: '$idx', '$obj_attr': "'${family_attributes[$idx]}'"},'
+        fi
+    done
+    var_text+="]"
+
+    echo -e "$var_text\n" >> $output_file
+    index_exports+="$var_name,"
+}
+
+function add_labeled_families_array {
+    local var_name=$1
+    local excludes=$2
+    echo "export const $var_name = " >> $output_file
+
+    local var_text="["
+    for idx in ${!family_attributes[@]}; do
+        if [[ ! " $excludes " =~ " $idx " ]]; then
+            value="${family_attributes[$idx]}"
+            path=$(prepare_path "$value")
+            var_text+='{id: '$idx', label: "'$value'", path: "'$path'"},'
         fi
     done
     var_text+="]"
@@ -39,16 +65,16 @@ add_families_array "addFamilyInputs" "name" "$add_family_exclude"
 add_families_array "editFamilyInputs" "name" ""
 
 # Add Families
-add_families_array "addFamilyHeaders" "path" "$add_family_exclude"
+add_labeled_families_array "addFamilyHeaders" "$add_family_exclude"
 
 # Families Table
 add_families_array "familiesTableHeaders" "path" ""
 
 function write_family_properties {
-    var_name="familyProperties"
+    local var_name="familyProperties"
     echo "export const $var_name = " >> $output_file
 
-    var_text="["
+    local var_text="["
     for idx in ${!family_attributes[@]}; do
         var_text+='"'${family_attributes[$idx]}'",'
     done
@@ -59,6 +85,23 @@ function write_family_properties {
 }
 
 write_family_properties
+
+function write_default_family {
+    local var_name="defaultFamily"
+    echo "export const $var_name = " >> $output_file
+
+    local var_text="{"
+    for idx in ${!family_attributes[@]}; do
+        path=$(prepare_path "${family_attributes[$idx]}")
+        var_text+='"'$path'": "",'
+    done
+    var_text+="}"
+
+    echo -e "$var_text\n" >> $output_file
+    index_exports+="$var_name,"
+}
+
+write_default_family
 
 # Family ID Prop
 fip_name="familyIdProp"

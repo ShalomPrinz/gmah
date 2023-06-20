@@ -4,6 +4,7 @@ export {
   addFamilyHeaders,
   familiesTableHeaders,
   familyProperties,
+  defaultFamily,
   familyIdProp,
 } from "./families";
 

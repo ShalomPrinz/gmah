@@ -5,44 +5,22 @@ import { toast } from "react-toastify";
 import { InputTable } from "../components";
 import {
   addFamilyHeaders,
+  defaultFamily,
   familiesArraySchema,
   familyIdProp,
 } from "../modules";
 import { addFamilies } from "../services";
-import { useTableParser } from "../util";
-
-const original = "'";
-const valid = "$";
-
-const prepareKey = (key: string) => key.replace(original, valid);
-const reverseKeyPreparation = (key: string) => key.replace(valid, original);
-
-const transform = (family: any, func: (key: string) => string) =>
-  Object.entries(family).reduce(
-    (acc, [key, value]) => ({ ...acc, [func(key)]: value }),
-    {}
-  );
-
-const prepareFamilyKeys = (family: any) => transform(family, prepareKey);
-const reverseFamilyPreparation = (family: any) =>
-  transform(family, reverseKeyPreparation);
-
-const columns = addFamilyHeaders.map(({ id, path }) => ({
-  id,
-  label: path,
-  path: prepareKey(path),
-}));
-
-const defaultItem = columns.reduce((obj: { [key: string]: string }, header) => {
-  obj[header.path] = "";
-  return obj;
-}, {});
+import {
+  prepareFamily,
+  reverseFamilyPreparation,
+  useTableParser,
+} from "../util";
 
 function AddManyFamilies() {
   const { parsed, parseCount, parseFromClipboard } = useTableParser(
     toast.error
   );
-  const initialTable = parsed.map(prepareFamilyKeys);
+  const initialTable = parsed.map(prepareFamily);
 
   const handleSubmit = (families: any[]) => {
     const reversedKeysFamilies = families.map(reverseFamilyPreparation);
@@ -101,8 +79,8 @@ function AddManyFamilies() {
       </div>
       <main className="text-center w-100">
         <InputTable
-          columns={columns}
-          defaultItem={defaultItem}
+          columns={addFamilyHeaders}
+          defaultItem={defaultFamily}
           initialValues={initialTable}
           formName="families"
           key={parseCount}

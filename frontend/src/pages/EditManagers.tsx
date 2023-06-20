@@ -44,7 +44,7 @@ function EditManagers() {
 
     const updated = managers.map((m) => {
       if (Object.hasOwn(submitResult, m.name)) {
-        return { ...m, managers: submitResult[m.name] };
+        return { ...m, drivers: submitResult[m.name] };
       } else return m;
     });
 

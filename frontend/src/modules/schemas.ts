@@ -1,7 +1,9 @@
 import { array, object, string, number } from "yup";
 
-/** This regex matches 9 or 10 digits number, and allows hyphen after 2 or 3 digits */
-const phoneRegExp = /^\d{2,3}-?\d{7}$/;
+/** This regex matches 9 or 10 digits number, and allows hyphen after 2 or 3 digits.
+ * It also allows empty string.
+ */
+const phoneRegExp = /^(?:\d{2,3}-?\d{7}|)$/;
 
 function emptyStringToNull(value: any, originalValue: any) {
   return typeof originalValue === "string" && originalValue === ""
@@ -21,11 +23,11 @@ const familiesObjectSchema = object({
     .typeError("מספר הקומה צריך להיות מספר")
     .transform(emptyStringToNull)
     .nullable(),
-  "מס' בית": string().matches(
+  "מס$ בית": string().matches(
     phoneRegExp,
     "נא להכניס מס' טלפון תקין בעל 9 או 10 ספרות"
   ),
-  "מס' פלאפון": string().matches(
+  "מס$ פלאפון": string().matches(
     phoneRegExp,
     "נא להכניס מס' טלפון תקין בעל 9 או 10 ספרות"
   ),
