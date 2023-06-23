@@ -76,4 +76,32 @@ export const defaultFamily = {
   הערות: "",
 };
 
+export type Family = {
+  "שם מלא": string;
+  רחוב: string;
+  בניין: string;
+  דירה: string;
+  קומה: string;
+  "מס' בית": string;
+  "מס' פלאפון": string;
+  נהג: string;
+  "נהג במקור": string;
+  ממליץ: string;
+  הערות: string;
+};
+
+export type FormFamily = {
+  "שם מלא": string;
+  רחוב: string;
+  בניין: string;
+  דירה: string;
+  קומה: string;
+  "מס$ בית": string;
+  "מס$ פלאפון": string;
+  נהג: string;
+  "נהג במקור": string;
+  ממליץ: string;
+  הערות: string;
+};
+
 export const familyIdProp = "שם מלא";

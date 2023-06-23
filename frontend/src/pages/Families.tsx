@@ -7,6 +7,7 @@ import { RadioMenu, Table } from "../components";
 import IconComponent from "../components/Icon";
 import Search from "../components/Search";
 import { familiesTableHeaders, familyIdProp } from "../modules";
+import type { Family } from "../modules";
 import { searchFamilies } from "../services";
 
 const buttons = [
@@ -52,7 +53,7 @@ function Families() {
     <Link
       className="link-decoration rounded fs-5 p-2"
       to={`edit/${item[familyIdProp]}`}
-      state={{ item }}
+      state={{ family: item }}
     >
       <span className="ps-2">עריכה</span>
       <IconComponent icon="editFamily" />
@@ -100,7 +101,7 @@ function Families() {
 }
 
 function useFamiliesSearch(query: string, searchBy: string) {
-  const [families, setFamilies] = useState([]);
+  const [families, setFamilies] = useState<Family[]>([]);
 
   useEffect(() => {
     searchFamilies(query, searchBy)

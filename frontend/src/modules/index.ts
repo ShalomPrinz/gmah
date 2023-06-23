@@ -8,6 +8,8 @@ export {
   familyIdProp,
 } from "./families";
 
+export type { Family, FormFamily } from "./families";
+
 export {
   driversArraySchema,
   familiesArraySchema,

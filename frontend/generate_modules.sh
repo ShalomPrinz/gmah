@@ -13,6 +13,7 @@ echo "" > $output_file
 
 index_file="${dir_path}index.ts"
 index_exports=""
+index_type_exports=""
 
 # Replaces ' with $, to prevent react-hook-form key error
 function prepare_path {
@@ -103,18 +104,49 @@ function write_default_family {
 
 write_default_family
 
+function write_family_type {
+    local var_name=$1
+    local regular=$2
+    echo "export type $var_name = " >> $output_file
+
+    local var_text="{"
+    for idx in ${!family_attributes[@]}; do
+        value="${family_attributes[$idx]}"
+        if [ "$regular" = true ]; then
+            var_text+='"'$value'": string;'
+        else
+            var_text+='"'$(prepare_path "$value")'": string;'
+        fi
+    done
+    var_text+="}"
+
+    echo -e "$var_text\n" >> $output_file
+    index_type_exports+="$var_name,"
+}
+
+write_family_type "Family" true
+write_family_type "FormFamily" false
+
 # Family ID Prop
 fip_name="familyIdProp"
 echo "export const $fip_name = \"$family_id_prop\"" >> $output_file
 index_exports+="$fip_name"
 
 # Index File
-# Note: export from main output file must be first export
-file_contents=$(cat $index_file)
-other_exports="${file_contents#*;}"
+
+# Save schemas exports, which are external to this script
+schemas_exports=$(awk '/export/{rec=""; f=1} f{rec = rec $0 RS} END{printf "%s", rec}' "$index_file")
+
+# Write regular exports to index
 first_export='export { '$index_exports' } from "./'$output_filename'"'
 echo -e "$first_export\n" > $index_file
-echo $other_exports >> $index_file
+
+# Write type exports to index
+type_export='export type { '$index_type_exports' } from "./'$output_filename'"'
+echo -e "$type_export\n" >> $index_file
+
+# Write schemas exports to index
+echo $schemas_exports >> $index_file
 
 # Lint
 npx eslint --ext ts src/modules --fix

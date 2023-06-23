@@ -9,6 +9,7 @@ import {
   familiesArraySchema,
   familyIdProp,
 } from "../modules";
+import type { Family, FormFamily } from "../modules";
 import { addFamilies } from "../services";
 import {
   prepareFamily,
@@ -20,11 +21,11 @@ function AddManyFamilies() {
   const { parsed, parseCount, parseFromClipboard } = useTableParser(
     toast.error
   );
-  const initialTable = parsed.map(prepareFamily);
+  const initialTable = (parsed as Family[]).map(prepareFamily);
 
-  const handleSubmit = (families: any[]) => {
-    const reversedKeysFamilies = families.map(reverseFamilyPreparation);
-    addFamilies(reversedKeysFamilies).then((response) => {
+  const handleSubmit = (formFamilies: FormFamily[]) => {
+    const families = formFamilies.map(reverseFamilyPreparation);
+    addFamilies(families).then((response) => {
       if (response === "Unexpected") return;
       if (typeof response !== "string") {
         toast.success(`${families.length} משפחות נוספו בהצלחה לגמח`);
@@ -84,7 +85,7 @@ function AddManyFamilies() {
           initialValues={initialTable}
           formName="families"
           key={parseCount}
-          onSubmit={handleSubmit}
+          onSubmit={(values) => handleSubmit(values as FormFamily[])}
           schema={familiesArraySchema}
         />
       </main>

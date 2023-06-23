@@ -2,6 +2,8 @@ import { toast } from "react-toastify";
 
 import { get, post, put } from "./http";
 
+import type { Family } from "../modules";
+
 async function getFamiliesCount() {
   return get("familiesCount");
 }
@@ -18,7 +20,7 @@ async function searchFamilies(query: string, by: string) {
  * will be this family's name. If there was an unexpected error, the string will
  * simply be "Unexpected".
  */
-async function addFamilies(families: any) {
+async function addFamilies(families: Family[]) {
   return post("families", families).catch((error) => {
     let familyName = "Unexpected";
 
@@ -37,7 +39,7 @@ async function addFamilies(families: any) {
   });
 }
 
-async function updateFamily(originalName: string, familyData: any) {
+async function updateFamily(originalName: string, familyData: Family) {
   return put("family", {
     original_name: originalName,
     family_data: familyData,
