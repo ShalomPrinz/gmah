@@ -2,6 +2,7 @@ from src.data import key_prop, family_properties, families_filename
 from src.excel import Excel
 from src.util import without_hyphen, insert_hyphen
 from src.results import Result, add_results, add_many_error, add_many_results
+from src.styles import families_cell_style
 
 def load_families_file():
     '''
@@ -12,7 +13,10 @@ def load_families_file():
         - If connection has succeed, error will be None
     '''
     try:
-        families_file = Excel(families_filename)
+        families_file = Excel(
+            filename=families_filename,
+            required_style=families_cell_style,
+            table_name='נתמכים')
         return (None, families_file)
     except Exception as e:
         return (e, None)

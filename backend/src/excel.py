@@ -1,30 +1,30 @@
-import openpyxl
+from openpyxl import load_workbook
 from os import path
 
 from src.data import family_properties
 from src.search import SearchRequest, search, FindRequest, find
 from src.errors import FileResourcesMissingError, FamilyNotFoundError
 from src.util import letter_by_index
+from src.styles import RequiredStyle
 
 last_excel_column = letter_by_index(len(family_properties))
 
 class Excel:
-    def __init__(self, filename):
+    def __init__(self, filename: str, required_style: RequiredStyle, table_name: str):
         if not path.exists(filename):
             raise FileNotFoundError(f'הקובץ {filename} לא נמצא')
 
         self.filename = filename
-        self.workbook = openpyxl.load_workbook(filename)
+        self.workbook = load_workbook(filename)
         self.worksheet = self.workbook[self.workbook.sheetnames[0]]
 
-        self.table_name = 'נתמכים'
-        self.cell_style = 'שורת נתמך'
+        self.table_name = table_name
+        self.cell_style = required_style.name
         self.last_column = last_excel_column
-        self.first_content_row = 2
+        self.first_content_row = 2 # First row is 1, and contains titles
 
-        if len(self.workbook.named_styles) < 2 or \
-            self.cell_style not in self.workbook.named_styles:
-            raise FileResourcesMissingError(f"חסר עיצוב תא בשם '{self.cell_style}' בקובץ {filename}")
+        if self.cell_style not in self.workbook.named_styles:
+            self.add_named_style(required_style.style)
 
         if len(self.worksheet.tables) < 1 or \
             self.table_name not in self.worksheet.tables:
@@ -85,4 +85,8 @@ class Excel:
             cell = self.worksheet.cell(row=row_index, column=col_index)
             cell.value = value
 
+        self.save()
+
+    def add_named_style(self, named_style):
+        self.workbook.add_named_style(named_style)
         self.save()
