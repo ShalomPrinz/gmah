@@ -1,5 +1,6 @@
-import { createContext, ReactNode, useContext } from "react";
+import { createContext, ReactNode, useContext, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const routerLocationInitialKey = "default";
 
@@ -27,6 +28,9 @@ interface HistoryProviderProps {
 function HistoryProvider({ children }: HistoryProviderProps) {
   const navigate = useNavigate();
   const { key } = useLocation();
+
+  // Dismiss all toasts on a route change
+  useEffect(() => toast.dismiss(), [key]);
 
   function goBack(failureCallback: FailureCallback) {
     if (key === routerLocationInitialKey) {
