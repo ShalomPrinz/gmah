@@ -1,26 +1,15 @@
-export const addFamilyInputs = [
-  { id: 0, name: "שם מלא" },
-  { id: 1, name: "רחוב" },
-  { id: 2, name: "בניין" },
-  { id: 3, name: "דירה" },
-  { id: 4, name: "קומה" },
-  { id: 5, name: "מס' בית" },
-  { id: 6, name: "מס' פלאפון" },
-  { id: 9, name: "ממליץ" },
-];
-
 export const editFamilyInputs = [
-  { id: 0, name: "שם מלא" },
-  { id: 1, name: "רחוב" },
-  { id: 2, name: "בניין" },
-  { id: 3, name: "דירה" },
-  { id: 4, name: "קומה" },
-  { id: 5, name: "מס' בית" },
-  { id: 6, name: "מס' פלאפון" },
-  { id: 7, name: "נהג" },
-  { id: 8, name: "נהג במקור" },
-  { id: 9, name: "ממליץ" },
-  { id: 10, name: "הערות" },
+  { id: 0, label: "שם מלא", path: "שם מלא" },
+  { id: 1, label: "רחוב", path: "רחוב" },
+  { id: 2, label: "בניין", path: "בניין" },
+  { id: 3, label: "דירה", path: "דירה" },
+  { id: 4, label: "קומה", path: "קומה" },
+  { id: 5, label: "מס' בית", path: "מס$ בית" },
+  { id: 6, label: "מס' פלאפון", path: "מס$ פלאפון" },
+  { id: 7, label: "נהג", path: "נהג" },
+  { id: 8, label: "נהג במקור", path: "נהג במקור" },
+  { id: 9, label: "ממליץ", path: "ממליץ" },
+  { id: 10, label: "הערות", path: "הערות", doubleSize: true },
 ];
 
 export const addFamilyHeaders = [

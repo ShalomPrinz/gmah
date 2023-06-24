@@ -7,17 +7,29 @@ import {
   familiesObjectSchema,
   familyIdProp,
 } from "../modules";
-import type { Family } from "../modules";
+import type { Family, FormFamily } from "../modules";
 import { updateFamily } from "../services";
+import { reverseFamilyPreparation } from "../util";
+
+function getInitialFamily(family: Family) {
+  return editFamilyInputs.reduce(
+    (obj, { label, path }) => ({
+      ...obj,
+      [path]: family[label as keyof Family] || "",
+    }),
+    {} as FormFamily
+  );
+}
 
 function EditFamily() {
-  const originalData = useLocationState();
-  if (originalData === undefined) return <>Error</>;
+  const originalFamily = useLocationState();
+  if (originalFamily === undefined) return <>Error</>;
 
-  const originalName = originalData[familyIdProp];
+  const originalName = originalFamily[familyIdProp];
 
-  const handleSubmit = (family: Family) =>
-    updateFamily(originalName, family)
+  const handleSubmit = async (formFamily: FormFamily) => {
+    const family = reverseFamilyPreparation(formFamily);
+    return updateFamily(originalName, family)
       .then(() => {
         toast.success(`שינית את פרטי משפחת ${originalName} בהצלחה`);
         return false;
@@ -26,20 +38,16 @@ function EditFamily() {
         toast.error("קרתה תקלה לא צפויה");
         return false;
       });
+  };
 
-  const initialData = editFamilyInputs.reduce((o, key) => {
-    const familyKey = key.name as keyof Family;
-    return {
-      ...o,
-      [familyKey]: originalData[familyKey] || "",
-    };
-  }, {} as Family);
+  const initialFamily = getInitialFamily(originalFamily);
 
   return (
     <main className="container my-4 text-center">
       <Form
-        initialData={initialData}
-        onSubmit={(values) => handleSubmit(values as Family)}
+        initialData={initialFamily}
+        inputsInRow="6"
+        onSubmit={(values) => handleSubmit(values as FormFamily)}
         schema={familiesObjectSchema}
         submitText="לחץ כאן לאישור"
         textInputs={editFamilyInputs}
@@ -56,7 +64,7 @@ function useLocationState() {
   }
 
   toast.error("יש בעיה בדרך בה הגעת לעמוד הזה. אם הבעיה חוזרת פנה לשלום", {
-    toastId: 1,
+    toastId: "EditFamily:wrongLocationState",
   });
   return undefined;
 }

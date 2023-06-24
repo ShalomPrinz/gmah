@@ -104,7 +104,7 @@ function useLocationState() {
   }
 
   toast.error("יש בעיה בדרך בה הגעת לעמוד הזה. אם הבעיה חוזרת פנה לשלום", {
-    toastId: "EditManagersLocationStateHook",
+    toastId: "EditManagers:wrongLocationState",
   });
   return undefined;
 }

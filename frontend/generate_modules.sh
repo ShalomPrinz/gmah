@@ -50,7 +50,11 @@ function add_labeled_families_array {
         if [[ ! " $excludes " =~ " $idx " ]]; then
             value="${family_attributes[$idx]}"
             path=$(prepare_path "$value")
-            var_text+='{id: '$idx', label: "'$value'", path: "'$path'"},'
+            var_text+='{id: '$idx', label: "'$value'", path: "'$path'"'
+            if [[ "$var_name" == "editFamilyInputs" && "$value" == "הערות" ]]; then
+                var_text+=', doubleSize: true'
+            fi
+            var_text+='},'
         fi
     done
     var_text+="]"
@@ -59,11 +63,8 @@ function add_labeled_families_array {
     index_exports+="$var_name,"
 }
 
-# Add Family
-add_families_array "addFamilyInputs" "name" "$add_family_exclude"
-
 # Edit Family
-add_families_array "editFamilyInputs" "name" ""
+add_labeled_families_array "editFamilyInputs" ""
 
 # Add Families
 add_labeled_families_array "addFamilyHeaders" "$add_family_exclude"

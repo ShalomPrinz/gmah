@@ -1,28 +1,37 @@
-import { useField } from "formik";
+import { useFormContext } from "react-hook-form";
 
-export type TextInput = {
-  name: string;
-};
-
-interface FormTextInputProps {
-  name: string;
+export interface TextInput {
+  doubleSize?: boolean;
+  label: string;
+  path: string;
 }
 
-export const FormTextInput = ({ name }: FormTextInputProps) => {
-  const [field, meta] = useField(name);
+interface FormTextInputProps extends TextInput {
+  getErrorMessage: () => any;
+}
+
+export const FormTextInput = ({
+  getErrorMessage,
+  label,
+  path,
+}: FormTextInputProps) => {
+  const { register } = useFormContext();
+  const errorMessage = getErrorMessage();
+  const hasError = typeof errorMessage !== "undefined";
+
   return (
-    <div className="d-flex flex-column">
-      <label className="fs-5" htmlFor={name}>
-        {name}
+    <div className="d-flex flex-column my-3">
+      <label className="fs-4 my-2" htmlFor={path}>
+        {label}
       </label>
       <input
-        className="form-text-input p-2 m-3 mb-2"
+        className={`fs-5 form-text-input p-1 m-1 text-center${
+          hasError ? " form-input-invalid" : ""
+        }`}
+        title={hasError ? errorMessage : label}
         type="text"
-        {...field}
+        {...register(path)}
       />
-      {meta.touched && meta.error ? (
-        <div className="text-danger">{meta.error}</div>
-      ) : null}
     </div>
   );
 };
