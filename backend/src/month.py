@@ -1,0 +1,93 @@
+from openpyxl import load_workbook
+
+from src.data import key_prop
+from src.excel import Excel
+from src.families import load_families_file, search_families
+from src.managers import find_manager, load_managers_file
+from src.styles import report_cell_style
+
+month_reports_folder = "דוחות קבלה"
+month_reports_path = f"{month_reports_folder}/"
+month_reports_template = f"{month_reports_path}template.xlsx"
+
+month_report_prefix = "דוח קבלה "
+month_report_suffix = ".xlsx"
+
+default_manager = ""
+
+def load_report_file(path):
+    '''
+    Connects to the new report file.
+
+    Returns a tuple: (error, file)
+        - If connection has failed, file will be None
+        - If connection has succeed, error will be None
+    '''
+    try:
+        report = Excel(
+            filename=path,
+            required_style=report_cell_style
+        )
+        return (None, report)
+    except Exception as e:
+        return (e, None)
+
+def load_template(template_path, sheet_title):
+    '''
+    Loads a template, modifies its sheet title and returns the workbook.
+    '''
+    workbook = load_workbook(template_path)
+    sheet = workbook[workbook.sheetnames[0]]
+    sheet.title = sheet_title
+    return workbook
+
+def create_from_template(name):
+    '''
+    Creates blank month report and returns its filepath.
+    '''
+    sheet_title = f'{month_report_prefix}{name}'
+    workbook = load_template(month_reports_template, sheet_title)
+    filepath = f'{month_reports_path}{month_report_prefix}{name}{month_report_suffix}'
+    workbook.save(filepath)
+    return filepath
+
+def to_excel_row(family, managers_file):
+    '''
+    Cast family data to report excel row format in the right order.
+    If family is missing key_prop or driver, detailed exception is raised.
+    '''
+    family_key = family.get(key_prop, None)
+    if family_key is None:
+        raise Exception(f"שגיאה ביצירת דוח קבלה חודשי: למשפחה {family} אין שם")
+    
+    driver = family.get("נהג", None)
+    if driver is None:
+        raise Exception(f"שגיאה ביצירת דוח קבלה חודשי: למשפחה {family} אין נהג")
+    
+    manager = find_manager(managers_file, driver) or default_manager
+
+    return [family_key, manager, driver, None, None]
+
+def generate_month_report(name):
+    '''
+    Generates new month report with the given name, based on current families and managers files.
+    '''
+    filepath = create_from_template(name)
+
+    error, families_file = load_families_file()
+    if error is not None:
+        return error
+    
+    error, managers_file = load_managers_file()
+    if error is not None:
+        return error
+    
+    error, report_file = load_report_file(filepath)
+    if error is not None:
+        return error
+
+    for family in search_families(families_file):
+        report_row = to_excel_row(family, managers_file)
+        report_file.append_row(report_row, save=False)
+    
+    report_file.save()

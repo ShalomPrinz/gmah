@@ -8,12 +8,21 @@ class RequiredStyle:
 
 style_name = 'שורת נתמך'
 
-border_style = Side(style="medium", color="000000")
-style = NamedStyle(
+def get_cell_style(border_size):
+    border_style = Side(style=border_size, color="000000")
+    return NamedStyle(
+        name=style_name,
+        font=Font(name="Calibri", size=11),
+        border=Border(top=border_style, bottom=border_style, left=border_style, right=border_style),
+        alignment=Alignment(horizontal="center", vertical="center")
+    )
+
+families_cell_style = RequiredStyle(
     name=style_name,
-    font=Font(name="Calibri", size=11),
-    border=Border(top=border_style, bottom=border_style, left=border_style, right=border_style),
-    alignment=Alignment(horizontal="center", vertical="center")
+    style=get_cell_style("medium")
 )
 
-families_cell_style = RequiredStyle(name=style_name, style=style)
+report_cell_style = RequiredStyle(
+    name=style_name,
+    style=get_cell_style("thin")
+)

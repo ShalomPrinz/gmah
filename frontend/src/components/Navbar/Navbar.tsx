@@ -121,6 +121,11 @@ function NavbarWrapper() {
       name: "אחראי נהגים",
       url: "/managers",
     },
+    {
+      id: 3,
+      name: "דוחות קבלה",
+      url: "/reports",
+    },
   ];
 
   return <AppNavbar pages={pages} />;

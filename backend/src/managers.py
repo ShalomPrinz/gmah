@@ -26,3 +26,13 @@ def update_managers(managers_file: Json, managers):
     Updates managers to match the given managers json.
     '''
     return managers_file.update_json(managers)
+
+def find_manager(managers_file: Json, driver_name):
+    '''
+    Returns the corresponding manager to the given driver, or None if not found.
+    '''
+    for manager in managers_file.load_json():
+        if any(driver_name == driver['name'] for driver in manager['drivers']):
+            return manager['name']
+    
+    return None

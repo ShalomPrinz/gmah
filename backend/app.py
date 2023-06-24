@@ -6,6 +6,7 @@ from os import getenv
 import src.managers as managers
 import src.families as families
 from src.results import get_result
+from src.month import generate_month_report
 
 load_dotenv()
 FRONTEND_DOMAIN = getenv('FRONTEND_DOMAIN')
@@ -64,6 +65,14 @@ def get_managers():
 def update_managers():
     app_managers = request.json['managers']
     error = managers.update_managers(g.managers_file, app_managers)
+    if error is not None:
+        return error_response(error)
+    return jsonify(), 200
+
+@app.route('/generate/month', methods=["POST"])
+def generate_month():
+    name = request.json['name']
+    error = generate_month_report(name)
     if error is not None:
         return error_response(error)
     return jsonify(), 200

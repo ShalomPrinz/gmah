@@ -10,7 +10,7 @@ from src.styles import RequiredStyle
 last_excel_column = letter_by_index(len(family_properties))
 
 class Excel:
-    def __init__(self, filename: str, required_style: RequiredStyle, table_name: str):
+    def __init__(self, filename: str, required_style: RequiredStyle, table_name: str = ""):
         if not path.exists(filename):
             raise FileNotFoundError(f'הקובץ {filename} לא נמצא')
 
@@ -25,9 +25,8 @@ class Excel:
 
         if self.cell_style not in self.workbook.named_styles:
             self.add_named_style(required_style.style)
-
-        if len(self.worksheet.tables) < 1 or \
-            self.table_name not in self.worksheet.tables:
+        
+        if self.table_name and self.table_name not in self.worksheet.tables:
             raise FileResourcesMissingError(f"על הקובץ {filename} להכיל טבלה בשם '{self.table_name}'")
     
     def save(self):
@@ -64,7 +63,7 @@ class Excel:
 
         return search(request)
 
-    def append_row(self, row_data):
+    def append_row(self, row_data, save=True):
         new_row = self.get_rows_num() + 1
         self.worksheet.insert_rows(idx=new_row, amount=1)
 
@@ -73,8 +72,11 @@ class Excel:
             cell.value = value
             cell.style = self.cell_style
 
-        self.worksheet.tables[self.table_name].ref = f'A1:{self.last_column}{new_row}'
-        self.save()
+        if self.table_name:
+            self.worksheet.tables[self.table_name].ref = f'A1:{self.last_column}{new_row}'
+        
+        if save:
+            self.save()
 
     def replace_row(self, row_index, row_data):
         for key, value in row_data.items():
