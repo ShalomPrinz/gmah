@@ -5,8 +5,9 @@ from os import getenv
 
 import src.managers as managers
 import src.families as families
+import src.month as month
+
 from src.results import get_result
-from src.month import generate_month_report
 
 load_dotenv()
 FRONTEND_DOMAIN = getenv('FRONTEND_DOMAIN')
@@ -69,10 +70,22 @@ def update_managers():
         return error_response(error)
     return jsonify(), 200
 
+@app.route('/validate/drivers')
+def validate_drivers():
+    error, no_manager_drivers = month.get_no_manager_drivers()
+    if error is not None:
+        return error_response(error)
+
+    error, no_driver_families = month.get_no_driver_families()
+    if error is not None:
+        return error_response(error)
+
+    return jsonify(no_manager_drivers=no_manager_drivers, no_driver_families=no_driver_families), 200
+
 @app.route('/generate/month', methods=["POST"])
 def generate_month():
     name = request.json['name']
-    error = generate_month_report(name)
+    error = month.generate_month_report(name)
     if error is not None:
         return error_response(error)
     return jsonify(), 200

@@ -91,3 +91,55 @@ def generate_month_report(name):
         report_file.append_row(report_row, save=False)
     
     report_file.save()
+
+def get_no_manager_drivers():
+    '''
+    Returns all the drivers from families file that have no corresponding manager in managers file.
+    '''
+    error, families_file = load_families_file()
+    if error is not None:
+        return error, None
+    
+    error, managers_file = load_managers_file()
+    if error is not None:
+        return error, None
+    
+    no_manager_drivers = []
+
+    for family in search_families(families_file):
+        family_key = family.get(key_prop, None)
+        driver = family.get("נהג", None)
+        if family_key is None or driver is None:
+            continue
+
+        manager = find_manager(managers_file, driver)
+        if manager is None:
+            for d in no_manager_drivers:
+                if d["name"] == driver:
+                    d["count"] += 1
+                    break
+            else:
+                no_manager_drivers.append({ "name": driver, "count": 1 })
+
+    return None, no_manager_drivers
+
+def get_no_driver_families():
+    '''
+    Returns all the families from families file that doesn't have a driver.
+    '''
+    error, families_file = load_families_file()
+    if error is not None:
+        return error, None
+    
+    no_driver_families = 0
+
+    for family in search_families(families_file):
+        family_key = family.get(key_prop, None)
+        if family_key is None:
+            continue
+        
+        driver = family.get("נהג", None)
+        if driver is None:
+            no_driver_families += 1
+
+    return None, no_driver_families

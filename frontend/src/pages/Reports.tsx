@@ -1,16 +1,169 @@
-import { generateMonthReport } from "../services";
+import { useEffect, useRef, useState } from "react";
+import Col from "react-bootstrap/Col";
+import Row from "react-bootstrap/Row";
+import { toast } from "react-toastify";
+
+import { ConditionalList } from "../components";
+import { generateMonthReport, getNoManagerDrivers } from "../services";
+import type { NoManagerDriver } from "../types";
+import IconComponent from "../components/Icon";
+
+const defaultReportName = "חדש";
+
+enum ValidationStatus {
+  SUCCESS,
+  WARNING,
+  FAILURE,
+}
+
+function getStatusNoDriverFamilies(count: number) {
+  if (count === 0) return ValidationStatus.SUCCESS;
+  if (count < 6) return ValidationStatus.WARNING;
+  return ValidationStatus.FAILURE;
+}
+
+function getStatusNoManagerDrivers(count: number) {
+  if (count === 0) return ValidationStatus.SUCCESS;
+  if (count < 2) return ValidationStatus.WARNING;
+  return ValidationStatus.FAILURE;
+}
+
+function getStatusNoManagerFamilies(count: number) {
+  if (count === 0) return ValidationStatus.SUCCESS;
+  if (count < 10) return ValidationStatus.WARNING;
+  return ValidationStatus.FAILURE;
+}
+
+function getStatusIcon(status: ValidationStatus) {
+  switch (status) {
+    case ValidationStatus.WARNING:
+      return () => <IconComponent icon="validateWarning" color="orange" />;
+    case ValidationStatus.FAILURE:
+      return () => <IconComponent icon="validateFailure" color="red" />;
+    default:
+      return () => <IconComponent icon="validateSuccess" color="green" />;
+  }
+}
+
+interface ValidationRow {
+  getStatus: () => ValidationStatus;
+  id: number;
+  title: string;
+  value: JSX.Element;
+}
 
 function Reports() {
-  return (
-    <h1 className="text-center m-5">
-      <button
-        className="bg-default rounded p-3"
-        onClick={() => generateMonthReport("יולי")}
-      >
-        צור דוח קבלה חדש
-      </button>
-    </h1>
+  const inputRef = useRef<HTMLInputElement>(null);
+  const { noManagerFamilies, noDriverFamilies, noManagerDrivers } =
+    useDriversValidation();
+
+  const noManagerDriverCallback = (driver: NoManagerDriver) => (
+    <h5>
+      {driver.name}: {driver.count} משפחות
+    </h5>
   );
+
+  const rows: ValidationRow[] = [
+    {
+      getStatus: () => getStatusNoDriverFamilies(noDriverFamilies),
+      id: 0,
+      title: "משפחות ללא נהג",
+      value: <h5>{noDriverFamilies}</h5>,
+    },
+    {
+      getStatus: () => getStatusNoManagerDrivers(noManagerDrivers.length),
+      id: 1,
+      title: "נהגים ללא אחראי",
+      value: (
+        <ConditionalList
+          itemCallback={noManagerDriverCallback}
+          keyProp="name"
+          list={noManagerDrivers}
+        />
+      ),
+    },
+    {
+      getStatus: () => getStatusNoManagerFamilies(noManagerFamilies),
+      id: 2,
+      title: "משפחות עם נהג ללא אחראי",
+      value: <h5>{noManagerFamilies}</h5>,
+    },
+  ];
+
+  const rowCallback = ({ getStatus, title, value }: ValidationRow) => {
+    const StatusIcon = getStatusIcon(getStatus());
+
+    return (
+      <Row className="my-4 text-center">
+        <Col md="5">
+          <h2>{title}</h2>
+        </Col>
+        <Col md="4" className="my-auto">
+          {value}
+        </Col>
+        <Col md="2" className="fs-1">
+          <StatusIcon />
+        </Col>
+      </Row>
+    );
+  };
+
+  return (
+    <>
+      <h1 className="text-center m-5">דוחות קבלה</h1>
+      <main className="container">
+        <Row>
+          <Col md="8">
+            <ConditionalList itemCallback={rowCallback} list={rows} />
+          </Col>
+          <Col md="4" className="text-center">
+            <h4>הכנס כותרת לדוח קבלה</h4>
+            <input
+              className="w-75 fs-3 p-3 mt-3 mb-4 mx-auto rounded form-control"
+              placeholder="לדוגמא: ינואר"
+              ref={inputRef}
+              style={{ border: "3px solid #a4d2f5" }}
+              type="text"
+            />
+            <button
+              className="fs-1 p-4 bg-default rounded"
+              onClick={() =>
+                generateMonthReport(
+                  inputRef?.current?.value || defaultReportName
+                )
+              }
+            >
+              צור דוח קבלה חדש
+            </button>
+          </Col>
+        </Row>
+      </main>
+    </>
+  );
+}
+
+function useDriversValidation() {
+  const [noManagerDrivers, setNoManagerDrivers] = useState<NoManagerDriver[]>(
+    []
+  );
+  const noManagerFamilies = noManagerDrivers.reduce((total, { count }) => {
+    return total + count;
+  }, 0);
+
+  const [noDriverFamilies, setNoDriverFamilies] = useState(0);
+
+  useEffect(() => {
+    getNoManagerDrivers()
+      .then((res) => {
+        setNoManagerDrivers(res.data.no_manager_drivers);
+        setNoDriverFamilies(res.data.no_driver_families);
+      })
+      .catch(() =>
+        toast.error("קרתה שגיאה לא צפויה בניסיון לבדוק את הפרטים לדוח קבלה")
+      );
+  }, []);
+
+  return { noManagerFamilies, noDriverFamilies, noManagerDrivers };
 }
 
 export default Reports;

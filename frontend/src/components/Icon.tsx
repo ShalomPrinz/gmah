@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { getIcon, Icon } from "../res/icons";
 
 interface IconProps {
-  color?: "blue" | "red" | "white";
+  color?: "blue" | "red" | "white" | "green" | "orange";
   flipHorizontal?: boolean;
   icon: Icon;
 }
