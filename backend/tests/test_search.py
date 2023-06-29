@@ -5,7 +5,7 @@ from os import remove
 from src.data import families_filename
 from src.search import find, FindRequest
 
-from tests.test_families import Family, load_families_file, write_families_file
+from tests.test_families import Family, load_families, write_families
 
 class TestFind(unittest.TestCase):
     def setUpClass():
@@ -28,8 +28,8 @@ class TestFind(unittest.TestCase):
 
         for title, query, expected_index in test_cases:
             with self.subTest(title=title):
-                write_families_file(families=families)
-                families_file = load_families_file()
+                write_families(families=families)
+                families_file = load_families()
 
                 request = FindRequest(
                     rows_iter=families_file.get_rows_iter(),

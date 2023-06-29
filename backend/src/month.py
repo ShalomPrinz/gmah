@@ -85,12 +85,9 @@ def generate_month_report(name):
     error, report_file = load_report_file(filepath)
     if error is not None:
         return error
-
-    for family in search_families(families_file):
-        report_row = to_excel_row(family, managers_file)
-        report_file.append_row(report_row, save=False)
     
-    report_file.save()
+    family_to_excel_row = lambda family: to_excel_row(family, managers_file)
+    report_file.append_rows(search_families(families_file), family_to_excel_row)
 
 def get_no_manager_drivers():
     '''

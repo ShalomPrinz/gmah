@@ -63,20 +63,21 @@ class Excel:
 
         return search(request)
 
-    def append_row(self, row_data, save=True):
-        new_row = self.get_rows_num() + 1
-        self.worksheet.insert_rows(idx=new_row, amount=1)
+    def append_rows(self, families, to_excel_row):
+        for family in families:    
+            new_row = self.get_rows_num() + 1
+            self.worksheet.insert_rows(idx=new_row, amount=1)
 
-        for column, value in enumerate(row_data, 1):
-            cell = self.worksheet.cell(row=new_row, column=column)
-            cell.value = value
-            cell.style = self.cell_style
+            row_data = to_excel_row(family)
+            for column, value in enumerate(row_data, 1):
+                cell = self.worksheet.cell(row=new_row, column=column)
+                cell.value = value
+                cell.style = self.cell_style
 
-        if self.table_name:
-            self.worksheet.tables[self.table_name].ref = f'A1:{self.last_column}{new_row}'
-        
-        if save:
-            self.save()
+            if self.table_name:
+                self.worksheet.tables[self.table_name].ref = f'A1:{self.last_column}{new_row}'
+            
+        self.save()
 
     def replace_row(self, row_index, row_data):
         for key, value in row_data.items():
