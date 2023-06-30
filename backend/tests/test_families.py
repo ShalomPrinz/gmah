@@ -1,54 +1,17 @@
-import openpyxl
 import unittest
-from shutil import copy
-from os import remove
 
-from src.data import family_properties, families_filename
-from src.families import get_count, search_families, add_family, add_families, load_families_file, update_family
+from src.families import get_count, search_families, add_family, add_families, update_family
 from src.results import add_results, add_many_results, add_many_error
 from src.errors import FamilyNotFoundError
 
-default_family_properties = {
-    "שם מלא": "פלוני פלוני",
-    "רחוב": "שפרינצק",
-    "בניין": 10,
-    "דירה": 2,
-    "קומה": 1,
-    "מס' בית": "012-3456789",
-    "מס' פלאפון": "987-6543210",
-    "נהג": "שלמה שלומי",
-    "נהג במקור": "נחום נחום",
-    "ממליץ": "רווחה",
-    "הערות": "",
-}
-
-class Family:
-    def __init__(self, family):
-        self.excel_row = [family.get(key, default_family_properties.get(key, None)) for key in family_properties]
-
-def write_families(families):
-    workbook = openpyxl.load_workbook(families_filename)
-    worksheet = workbook[workbook.sheetnames[0]]
-    worksheet.delete_rows(2, worksheet.max_row - 1)
-
-    for family in families:
-        worksheet.append(family.excel_row)
-    workbook.save(families_filename)
-
-def load_families():
-    error, families_file = load_families_file()
-    if error is not None:
-        raise Exception("Couldn't load families file", error)
-    else:
-        return families_file
+from tests.families_util import Family, load_families, write_families, setUpFamilies, tearDownFamilies
 
 class TestSearch(unittest.TestCase):
     def setUpClass():
-        copy(families_filename, 'temp.xlsx')
+        setUpFamilies()
     
     def tearDownClass():
-        copy('temp.xlsx', families_filename)
-        remove('temp.xlsx')
+        tearDownFamilies()
 
     def test_search_by_name(self):
         families = [Family({"שם מלא": "פרינץ"}), Family({"שם מלא": "כהנא"}), Family({"שם מלא": "נתאי"})]
@@ -172,11 +135,10 @@ class TestSearch(unittest.TestCase):
 
 class TestDataManagement(unittest.TestCase):
     def setUpClass():
-        copy(families_filename, 'temp.xlsx')
+        setUpFamilies()
     
     def tearDownClass():
-        copy('temp.xlsx', families_filename)
-        remove('temp.xlsx')
+        tearDownFamilies()
 
     def test_get_families_num(self):
         expected_count = 10

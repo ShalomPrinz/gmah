@@ -1,19 +1,15 @@
 import unittest
-from shutil import copy
-from os import remove
 
-from src.data import families_filename
 from src.search import find, FindRequest
 
-from tests.test_families import Family, load_families, write_families
+from tests.families_util import Family, load_families, write_families, setUpFamilies, tearDownFamilies
 
 class TestFind(unittest.TestCase):
     def setUpClass():
-        copy(families_filename, 'temp.xlsx')
+        setUpFamilies()
     
     def tearDownClass():
-        copy('temp.xlsx', families_filename)
-        remove('temp.xlsx')
+        tearDownFamilies()
 
     def test_find(self):
         families = [Family({"שם מלא": "פרינץ"}), Family({"שם מלא": "כהנא"}), Family({"שם מלא": "נתאי"})]
