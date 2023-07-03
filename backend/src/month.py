@@ -15,6 +15,12 @@ month_report_suffix = ".xlsx"
 
 default_manager = ""
 
+def get_report_path(report_name):
+    '''
+    Returns report path from project parent directory.
+    '''
+    return f'{month_reports_path}{month_report_prefix}{report_name}{month_report_suffix}'
+
 def load_report_file(path):
     '''
     Connects to the new report file.
@@ -47,7 +53,7 @@ def create_from_template(name):
     '''
     sheet_title = f'{month_report_prefix}{name}'
     workbook = load_template(month_reports_template, sheet_title)
-    filepath = f'{month_reports_path}{month_report_prefix}{name}{month_report_suffix}'
+    filepath = get_report_path(name)
     workbook.save(filepath)
     return filepath
 
