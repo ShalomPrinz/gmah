@@ -13,6 +13,7 @@ month_reports_template = f"{month_reports_path}template.xlsx"
 month_report_prefix = "דוח קבלה "
 month_report_suffix = ".xlsx"
 
+default_driver = ""
 default_manager = ""
 
 def get_report_path(report_name):
@@ -60,16 +61,14 @@ def create_from_template(name):
 def to_excel_row(family, managers_file):
     '''
     Cast family data to report excel row format in the right order.
-    If family is missing key_prop or driver, detailed exception is raised.
+    If family is missing key_prop, detailed exception is raised.
+    If family is missing driver, default_driver will be their driver.
     '''
     family_key = family.get(key_prop, None)
     if family_key is None:
         raise Exception(f"שגיאה ביצירת דוח קבלה חודשי: למשפחה {family} אין שם")
     
-    driver = family.get("נהג", None)
-    if driver is None:
-        raise Exception(f"שגיאה ביצירת דוח קבלה חודשי: למשפחה {family} אין נהג")
-    
+    driver = family.get("נהג", default_driver)
     manager = find_manager(managers_file, driver) or default_manager
 
     return [family_key, manager, driver, None, None]

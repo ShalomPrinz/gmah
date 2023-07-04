@@ -4,6 +4,7 @@
 family_id_prop="שם מלא"
 family_attributes=([0]=$family_id_prop [1]="רחוב" [2]="בניין" [3]="דירה" [4]="קומה" [5]="מס' בית" [6]="מס' פלאפון" [7]="נהג" [8]="נהג במקור" [9]="ממליץ" [10]="הערות")
 add_family_exclude="7 8 10"
+table_headers_exclude="8"
 
 dir_path="src/modules/"
 
@@ -70,7 +71,7 @@ add_labeled_families_array "editFamilyInputs" ""
 add_labeled_families_array "addFamilyHeaders" "$add_family_exclude"
 
 # Families Table
-add_families_array "familiesTableHeaders" "path" ""
+add_families_array "familiesTableHeaders" "path" "$table_headers_exclude"
 
 function write_family_properties {
     local var_name="familyProperties"

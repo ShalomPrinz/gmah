@@ -32,7 +32,6 @@ export const familiesTableHeaders = [
   { id: 5, path: "מס' בית" },
   { id: 6, path: "מס' פלאפון" },
   { id: 7, path: "נהג" },
-  { id: 8, path: "נהג במקור" },
   { id: 9, path: "ממליץ" },
   { id: 10, path: "הערות" },
 ];

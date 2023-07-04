@@ -92,42 +92,60 @@ class TestReportGeneration(unittest.TestCase):
         tearDownManagers()
         tearDownMonth()
 
+    def generate_report(self, families):
+        '''
+        Generates monthly report out of given families.
+        Returns report path.
+        '''
+        write_families(families)
+
+        name = "שם דוח"
+        error = generate_month_report(name)
+        self.assertTrue(error is None, "Failed generating month report")
+
+        path = get_report_path(name)
+        return load_report(path)
+        
     def test_report_generated_in_folder(self):
         name = 'שם כלשהו'
         error = generate_month_report(name)
         self.assertTrue(error is None, "Failed generating month report")
-
+        
         filepath = get_report_path(name)
         file_exists = path.isfile(filepath)
-        self.assertTrue(file_exists, "Report file not found")
+        self.assertTrue(file_exists,
+                        "Should validate report file exists in the right path")
 
     def test_report_lines_number(self):
         names = ["שלום", "פרינץ", "נתאי", "אביגל", "אפרת"]
         families = [Family({"שם מלא": family_name, "נהג": "נהגוס"}) for family_name in names]
-        write_families(families)
 
-        name = "שם דוח"
-        error = generate_month_report(name)
-        self.assertTrue(error is None, "Failed generating month report")
+        report = self.generate_report(families)
 
-        path = get_report_path(name)
-        report = load_report(path)
         families_on_report = report.get_rows_num() - 1 # Headline
         expected_families_count = len(names)
-        self.assertEqual(families_on_report, expected_families_count)
+        self.assertEqual(families_on_report, expected_families_count,
+                        "Should generate families count of report lines")
 
     def test_report_family_without_name(self):
         names = ["שלום", None]
         families = [Family({"שם מלא": family_name, "נהג": "נהגוס"}) for family_name in names]
-        write_families(families)
 
-        name = "שם דוח"
-        error = generate_month_report(name)
-        self.assertTrue(error is None, "Failed generating month report")
+        report = self.generate_report(families)
 
-        path = get_report_path(name)
-        report = load_report(path)
         families_on_report = report.get_rows_num() - 1 # Headline
         expected_families_count = len(names) - 1 # "None" doesn't count as a family
-        self.assertEqual(families_on_report, expected_families_count)
+        self.assertEqual(families_on_report, expected_families_count,
+                        "Should not generate line in report for family without name")
+    
+    def test_report_family_without_driver(self):
+        names = ["פלוני", None, ""]
+        families = [Family({"שם מלא": "שלום", "נהג": driver_name}) for driver_name in names]
+
+        report = self.generate_report(families)
+
+        families_on_report = report.get_rows_num() - 1 # Headline
+        expected_families_count = len(names) # None and "" are valid as driver names
+        self.assertEqual(families_on_report, expected_families_count,
+                         "Should generate line in report even for families without driver")
 
