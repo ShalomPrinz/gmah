@@ -15,15 +15,15 @@ class TestFind(unittest.TestCase):
         families = [Family({"שם מלא": "פרינץ"}), Family({"שם מלא": "כהנא"}), Family({"שם מלא": "נתאי"})]
         
         test_cases = [
-            ("None", None, -1),
-            ("Partial Match", "פ", -1),
-            ("Exact Match", "פרינץ", 0),
-            ("Exact Match", "כהנא", 1),
-            ("Exact Match", "נתאי", 2)
+            (None,      -1, "Should return -1 if query is 'None'"),
+            ("פ",       -1, "Should return -1 for partial match"),
+            ("פרינץ",   0,  "Should return index in families if exact match is found"),
+            ("כהנא",    1,  "Should return index in families if exact match is found"),
+            ("נתאי",    2,  "Should return index in families if exact match is found")
         ]
 
-        for title, query, expected_index in test_cases:
-            with self.subTest(title=title):
+        for query, expected_index, message in test_cases:
+            with self.subTest(f"query: {query}"):
                 write_families(families=families)
                 families_file = load_families()
 
@@ -33,4 +33,4 @@ class TestFind(unittest.TestCase):
                 )
 
                 find_result = find(request)
-                self.assertEqual(expected_index, find_result)
+                self.assertEqual(expected_index, find_result, message)

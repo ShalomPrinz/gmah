@@ -18,20 +18,20 @@ class TestReportValidation(unittest.TestCase):
 
     def test_validate_no_driver_families(self):
         test_cases = [
-            ("None", [None], 1),
-            ("Empty String", [""], 1),
-            ("One Driver", ["שם נהג"], 0),
-            ("One of Two Drivers", ["נהג אחר", ""], 1),
-            ("Many Drivers", ["שם נהג", "", "נהג אחר", "פלוני", None], 2)
+            ([None],            1, "Should treat 'None' as indicating the lack of a driver name"),
+            ([""],              1, "Should treat empty string as indicating the lack of a driver name"),
+            (["שם נהג"],        0, "Should count all non-driver families"),
+            (["נהג אחר", ""],   1, "Should count all non-driver families"),
+            (["שם נהג", "", "נהג אחר", "פלוני", None], 2, "Should count all non-driver families")
         ]
 
-        for title, drivers, expected_count in test_cases:
-            with self.subTest(title=title):
+        for drivers, expected_count, message in test_cases:
+            with self.subTest(f"drivers: {drivers}"):
                 families = [Family({"שם מלא": "פרינץ", "נהג": driver_name}) for driver_name in drivers]
                 write_families(families=families)
                 error, no_driver_families = get_no_driver_families()
                 self.assertTrue(error is None, "Failed getting no driver families")
-                self.assertEqual(expected_count, no_driver_families)
+                self.assertEqual(expected_count, no_driver_families, message)
     
     def test_no_driver_families_special_family_name(self):
         special_names = ["", None]
@@ -42,7 +42,7 @@ class TestReportValidation(unittest.TestCase):
 
             error, no_driver_families = get_no_driver_families()
             self.assertTrue(error is None, "Failed getting no driver families")
-            self.assertEqual(0, no_driver_families)
+            self.assertEqual(0, no_driver_families, "Should not count any of 'special_names' (family names) as a non-driver family")
 
     def test_validate_no_manager_drivers(self):
         managers = [{ "id": 0, "name": "אחראי", "drivers": [
@@ -52,20 +52,20 @@ class TestReportValidation(unittest.TestCase):
         write_managers(managers)
 
         test_cases = [
-            ("None", [None], 0),
-            ("Empty String", [""], 0),
-            ("One Driver", ["שם נהג"], 1),
-            ("One of Two Drivers", ["נהג אחר", "אלמוני"], 1),
-            ("Many Drivers", ["שם נהג", "פלוני", "נהג כלשהו", "פלוני", None], 2)
+            ([None],     0, "Should not count 'None' as a non-manager driver"),
+            ([""],       0, "Should not count empty string as a non-manager driver"),
+            (["שם נהג"], 1, "Should return a list of all non-manager driver"),
+            (["נהג אחר", "אלמוני"], 1, "Should return a list of all non-manager driver"),
+            (["שם נהג", "פלוני", "נהג כלשהו", "פלוני", None], 2, "Should return a list of all non-manager driver")
         ]
 
-        for title, drivers, expected_count in test_cases:
-            with self.subTest(title=title):
+        for drivers, expected_count, message in test_cases:
+            with self.subTest(f"drivers: {drivers}"):
                 families = [Family({"שם מלא": "פרינץ", "נהג": driver_name}) for driver_name in drivers]
                 write_families(families=families)
                 error, no_manager_drivers = get_no_manager_drivers()
                 self.assertTrue(error is None, "Failed getting no manager drivers")
-                self.assertEqual(expected_count, len(no_manager_drivers))
+                self.assertEqual(expected_count, len(no_manager_drivers), message)
 
     def test_no_manager_drivers_count(self):
         managers = [{ "id": 0, "name": "אחראי", "drivers": [
@@ -79,8 +79,8 @@ class TestReportValidation(unittest.TestCase):
 
         error, no_manager_drivers = get_no_manager_drivers()
         self.assertTrue(error is None, "Failed getting no manager drivers")
-        self.assertIn({ "name": "פלוני", "count": 3}, no_manager_drivers)
-        self.assertIn({ "name": "נהג אחר", "count": 1}, no_manager_drivers)
+        self.assertIn({ "name": "פלוני", "count": 3}, no_manager_drivers, "Should return a driver occurrences count")
+        self.assertIn({ "name": "נהג אחר", "count": 1}, no_manager_drivers, "Should return a driver occurrences count")
 
 class TestReportGeneration(unittest.TestCase):
     def setUpClass():
