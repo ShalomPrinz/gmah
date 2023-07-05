@@ -9,7 +9,7 @@ const Search = ({ onChange, placeholder }: SearchProps) => (
     onChange={(e) => onChange(e.currentTarget.value)}
     placeholder={placeholder}
     style={{ border: "5px solid #a4d2f5" }}
-    type="text"
+    type="search"
   />
 );
 

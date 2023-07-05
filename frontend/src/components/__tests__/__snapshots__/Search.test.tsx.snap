@@ -1,0 +1,23 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Search > snapshot > should render empty search box 1`] = `
+<DocumentFragment>
+  <input
+    class="form-control search-input my-3 fs-1 p-4"
+    placeholder=""
+    style="border: 5px solid #a4d2f5;"
+    type="search"
+  />
+</DocumentFragment>
+`;
+
+exports[`Search > snapshot > should render search box with a placeholder 1`] = `
+<DocumentFragment>
+  <input
+    class="form-control search-input my-3 fs-1 p-4"
+    placeholder="some text"
+    style="border: 5px solid #a4d2f5;"
+    type="search"
+  />
+</DocumentFragment>
+`;
