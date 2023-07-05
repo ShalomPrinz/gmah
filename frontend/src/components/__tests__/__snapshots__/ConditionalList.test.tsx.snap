@@ -1,0 +1,45 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ConditionalList > snapshot > should render empty list 1`] = `<DocumentFragment />`;
+
+exports[`ConditionalList > snapshot > should render one item list 1`] = `
+<DocumentFragment>
+  <div>
+    item
+  </div>
+</DocumentFragment>
+`;
+
+exports[`ConditionalList > snapshot > should render three items list 1`] = `
+<DocumentFragment>
+  <h2>
+    first
+  </h2>
+  <h2>
+    second
+  </h2>
+  <h2>
+    third
+  </h2>
+</DocumentFragment>
+`;
+
+exports[`ConditionalList > snapshot > should retain items props 1`] = `
+<DocumentFragment>
+  <h1
+    class="first"
+  >
+    first
+  </h1>
+  <h1
+    class="second"
+  >
+    second
+  </h1>
+  <h1
+    class="third"
+  >
+    third
+  </h1>
+</DocumentFragment>
+`;
