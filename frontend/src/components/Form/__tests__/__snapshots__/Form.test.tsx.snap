@@ -1,0 +1,384 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Form > behavior > should display error in the DOM if schema validation failed 1`] = `
+<DocumentFragment>
+  <form>
+    <div
+      class="row"
+    >
+      <h1 />
+    </div>
+    <div
+      class="d-flex justify-content-center row"
+    >
+      <div
+        class="col-md-3"
+      >
+        <div
+          class="d-flex flex-column my-3"
+        >
+          <label
+            class="fs-4 my-2"
+            for="name"
+          >
+            Full Name
+          </label>
+          <input
+            class="fs-5 form-text-input p-1 m-1 text-center form-input-invalid"
+            name="name"
+            title="name must match the following: \\"/\\"password\\"/\\""
+            type="text"
+          />
+        </div>
+      </div>
+    </div>
+    <div
+      class="row"
+    >
+      <button
+        class="fs-1 bg-default w-50 mx-auto p-3 mt-5 rounded button-border-focus"
+        type="submit"
+      />
+    </div>
+  </form>
+</DocumentFragment>
+`;
+
+exports[`Form > behavior > should display error in the DOM if schema validation failed 2`] = `
+<DocumentFragment>
+  <form>
+    <div
+      class="row"
+    >
+      <h1 />
+    </div>
+    <div
+      class="d-flex justify-content-center row"
+    >
+      <div
+        class="col-md-3"
+      >
+        <div
+          class="d-flex flex-column my-3"
+        >
+          <label
+            class="fs-4 my-2"
+            for="name"
+          >
+            Full Name
+          </label>
+          <input
+            class="fs-5 form-text-input p-1 m-1 text-center"
+            name="name"
+            title="Full Name"
+            type="text"
+          />
+        </div>
+      </div>
+    </div>
+    <div
+      class="row"
+    >
+      <button
+        class="fs-1 bg-default w-50 mx-auto p-3 mt-5 rounded button-border-focus"
+        type="submit"
+      />
+    </div>
+  </form>
+</DocumentFragment>
+`;
+
+exports[`Form > snapshot > should ignore double size input if inputsInRow not set to '6' 1`] = `
+<DocumentFragment>
+  <form>
+    <div
+      class="row"
+    >
+      <h1 />
+    </div>
+    <div
+      class="d-flex justify-content-center row"
+    >
+      <div
+        class="col-md-3"
+      >
+        <div
+          class="d-flex flex-column my-3"
+        >
+          <label
+            class="fs-4 my-2"
+            for="name"
+          >
+            Name
+          </label>
+          <input
+            class="fs-5 form-text-input p-1 m-1 text-center"
+            name="name"
+            title="Name"
+            type="text"
+          />
+        </div>
+      </div>
+    </div>
+    <div
+      class="row"
+    >
+      <button
+        class="fs-1 bg-default w-50 mx-auto p-3 mt-5 rounded button-border-focus"
+        type="submit"
+      />
+    </div>
+  </form>
+</DocumentFragment>
+`;
+
+exports[`Form > snapshot > should render double size input if inputsInRow set to '6' 1`] = `
+<DocumentFragment>
+  <form>
+    <div
+      class="row"
+    >
+      <h1 />
+    </div>
+    <div
+      class="d-flex justify-content-center row"
+    >
+      <div
+        class="col-md-4"
+      >
+        <div
+          class="d-flex flex-column my-3"
+        >
+          <label
+            class="fs-4 my-2"
+            for="name"
+          >
+            Name
+          </label>
+          <input
+            class="fs-5 form-text-input p-1 m-1 text-center"
+            name="name"
+            title="Name"
+            type="text"
+          />
+        </div>
+      </div>
+    </div>
+    <div
+      class="row"
+    >
+      <button
+        class="fs-1 bg-default w-50 mx-auto p-3 mt-5 rounded button-border-focus"
+        type="submit"
+      />
+    </div>
+  </form>
+</DocumentFragment>
+`;
+
+exports[`Form > snapshot > should render empty form 1`] = `
+<DocumentFragment>
+  <form>
+    <div
+      class="row"
+    >
+      <h1 />
+    </div>
+    <div
+      class="d-flex justify-content-center row"
+    />
+    <div
+      class="row"
+    >
+      <button
+        class="fs-1 bg-default w-50 mx-auto p-3 mt-5 rounded button-border-focus"
+        type="submit"
+      />
+    </div>
+  </form>
+</DocumentFragment>
+`;
+
+exports[`Form > snapshot > should render form with one text input 1`] = `
+<DocumentFragment>
+  <form>
+    <div
+      class="row"
+    >
+      <h1>
+        Basic Form
+      </h1>
+    </div>
+    <div
+      class="d-flex justify-content-center row"
+    >
+      <div
+        class="col-md-3"
+      >
+        <div
+          class="d-flex flex-column my-3"
+        >
+          <label
+            class="fs-4 my-2"
+            for="name"
+          >
+            Name
+          </label>
+          <input
+            class="fs-5 form-text-input p-1 m-1 text-center"
+            name="name"
+            title="Name"
+            type="text"
+          />
+        </div>
+      </div>
+    </div>
+    <div
+      class="row"
+    >
+      <button
+        class="fs-1 bg-default w-50 mx-auto p-3 mt-5 rounded button-border-focus"
+        type="submit"
+      >
+        Basic Form
+      </button>
+    </div>
+  </form>
+</DocumentFragment>
+`;
+
+exports[`Form > snapshot > should render form with three text inputs 1`] = `
+<DocumentFragment>
+  <form>
+    <div
+      class="row"
+    >
+      <h1>
+        Three Inputs Form
+      </h1>
+    </div>
+    <div
+      class="d-flex justify-content-center row"
+    >
+      <div
+        class="col-md-3"
+      >
+        <div
+          class="d-flex flex-column my-3"
+        >
+          <label
+            class="fs-4 my-2"
+            for="name"
+          >
+            Name
+          </label>
+          <input
+            class="fs-5 form-text-input p-1 m-1 text-center"
+            name="name"
+            title="Name"
+            type="text"
+          />
+        </div>
+      </div>
+      <div
+        class="col-md-3"
+      >
+        <div
+          class="d-flex flex-column my-3"
+        >
+          <label
+            class="fs-4 my-2"
+            for="value"
+          >
+            Value
+          </label>
+          <input
+            class="fs-5 form-text-input p-1 m-1 text-center"
+            name="value"
+            title="Value"
+            type="text"
+          />
+        </div>
+      </div>
+      <div
+        class="col-md-3"
+      >
+        <div
+          class="d-flex flex-column my-3"
+        >
+          <label
+            class="fs-4 my-2"
+            for="content"
+          >
+            Content
+          </label>
+          <input
+            class="fs-5 form-text-input p-1 m-1 text-center"
+            name="content"
+            title="Content"
+            type="text"
+          />
+        </div>
+      </div>
+    </div>
+    <div
+      class="row"
+    >
+      <button
+        class="fs-1 bg-default w-50 mx-auto p-3 mt-5 rounded button-border-focus"
+        type="submit"
+      >
+        Three Inputs Form
+      </button>
+    </div>
+  </form>
+</DocumentFragment>
+`;
+
+exports[`Form > snapshot > should render form with unique submit text 1`] = `
+<DocumentFragment>
+  <form>
+    <div
+      class="row"
+    >
+      <h1>
+        Basic Form
+      </h1>
+    </div>
+    <div
+      class="d-flex justify-content-center row"
+    >
+      <div
+        class="col-md-3"
+      >
+        <div
+          class="d-flex flex-column my-3"
+        >
+          <label
+            class="fs-4 my-2"
+            for="name"
+          >
+            Name
+          </label>
+          <input
+            class="fs-5 form-text-input p-1 m-1 text-center"
+            name="name"
+            title="Name"
+            type="text"
+          />
+        </div>
+      </div>
+    </div>
+    <div
+      class="row"
+    >
+      <button
+        class="fs-1 bg-default w-50 mx-auto p-3 mt-5 rounded button-border-focus"
+        type="submit"
+      >
+        Submit This Form
+      </button>
+    </div>
+  </form>
+</DocumentFragment>
+`;
