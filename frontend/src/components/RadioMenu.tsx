@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Form from "react-bootstrap/Form";
+import FormCheck from "react-bootstrap/FormCheck";
 
 import { ConditionalList } from ".";
 
@@ -25,7 +25,7 @@ function RadioMenu({ buttons, menuId, onSelect }: RadioMenuProps) {
   };
 
   const buttonCallback = ({ id, text, value }: RadioButton) => (
-    <Form.Check
+    <FormCheck
       id={id}
       className="fs-5 my-0"
       checked={selected === value}
@@ -39,9 +39,9 @@ function RadioMenu({ buttons, menuId, onSelect }: RadioMenuProps) {
   );
 
   return (
-    <Form>
+    <form>
       <ConditionalList itemCallback={buttonCallback} list={buttons} />
-    </Form>
+    </form>
   );
 }
 

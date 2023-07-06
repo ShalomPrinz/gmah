@@ -1,0 +1,95 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`RadioMenu > snapshot > should render empty radio menu 1`] = `
+<DocumentFragment>
+  <form />
+</DocumentFragment>
+`;
+
+exports[`RadioMenu > snapshot > should render one radio button 1`] = `
+<DocumentFragment>
+  <form>
+    <div
+      class="fs-5 my-0 form-check form-check-reverse"
+    >
+      <input
+        checked=""
+        class="form-check-input"
+        id="1"
+        name="menu id"
+        type="radio"
+        value="hello world"
+      />
+      <label
+        class="form-check-label"
+        for="1"
+        title=""
+      >
+        button text
+      </label>
+    </div>
+  </form>
+</DocumentFragment>
+`;
+
+exports[`RadioMenu > snapshot > should render three radio buttons 1`] = `
+<DocumentFragment>
+  <form>
+    <div
+      class="fs-5 my-0 form-check form-check-reverse"
+    >
+      <input
+        checked=""
+        class="form-check-input"
+        id="1"
+        name="menu id"
+        type="radio"
+        value="hello world"
+      />
+      <label
+        class="form-check-label"
+        for="1"
+        title=""
+      >
+        button text
+      </label>
+    </div>
+    <div
+      class="fs-5 my-0 form-check form-check-reverse"
+    >
+      <input
+        class="form-check-input"
+        id="2"
+        name="menu id"
+        type="radio"
+        value="select me"
+      />
+      <label
+        class="form-check-label"
+        for="2"
+        title=""
+      >
+        other text
+      </label>
+    </div>
+    <div
+      class="fs-5 my-0 form-check form-check-reverse"
+    >
+      <input
+        class="form-check-input"
+        id="3"
+        name="menu id"
+        type="radio"
+        value="option 3"
+      />
+      <label
+        class="form-check-label"
+        for="3"
+        title=""
+      >
+        another
+      </label>
+    </div>
+  </form>
+</DocumentFragment>
+`;

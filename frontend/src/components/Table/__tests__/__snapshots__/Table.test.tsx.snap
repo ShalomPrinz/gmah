@@ -1,0 +1,244 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Table > snapshot > should render empty table 1`] = `
+<DocumentFragment>
+  <table
+    class="table rounded bg-white"
+  >
+    <thead>
+      <tr />
+    </thead>
+    <tbody />
+  </table>
+</DocumentFragment>
+`;
+
+exports[`Table > snapshot > should render table with one column 1`] = `
+<DocumentFragment>
+  <table
+    class="table rounded bg-white"
+  >
+    <thead>
+      <tr>
+        <th
+          class="fs-5 p-3"
+        >
+          name
+        </th>
+      </tr>
+    </thead>
+    <tbody />
+  </table>
+</DocumentFragment>
+`;
+
+exports[`Table > snapshot > should render table with one column and one data row 1`] = `
+<DocumentFragment>
+  <table
+    class="table rounded bg-white"
+  >
+    <thead>
+      <tr>
+        <th
+          class="fs-5 p-3"
+        >
+          name
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td
+          class="align-middle"
+        >
+          Shalom
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</DocumentFragment>
+`;
+
+exports[`Table > snapshot > should render table with one column, one data row, and one special column 1`] = `
+<DocumentFragment>
+  <table
+    class="table rounded bg-white"
+  >
+    <thead>
+      <tr>
+        <th
+          class="fs-5 p-3"
+        >
+          value
+        </th>
+        <th />
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td
+          class="align-middle"
+        >
+          result
+        </td>
+        <td>
+          <button>
+            Click Me! result
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</DocumentFragment>
+`;
+
+exports[`Table > snapshot > should render table with three columns 1`] = `
+<DocumentFragment>
+  <table
+    class="table rounded bg-white"
+  >
+    <thead>
+      <tr>
+        <th
+          class="fs-5 p-3"
+        >
+          name
+        </th>
+        <th
+          class="fs-5 p-3"
+        >
+          TITLE
+        </th>
+        <th
+          class="fs-5 p-3"
+        >
+          property
+        </th>
+      </tr>
+    </thead>
+    <tbody />
+  </table>
+</DocumentFragment>
+`;
+
+exports[`Table > snapshot > should render table with two columns and highlight the second 1`] = `
+<DocumentFragment>
+  <table
+    class="table rounded bg-white"
+  >
+    <thead>
+      <tr>
+        <th
+          class="fs-5 p-3"
+        >
+          value
+        </th>
+        <th
+          class="fs-5 p-3 bg-warning"
+        >
+          content
+        </th>
+      </tr>
+    </thead>
+    <tbody />
+  </table>
+</DocumentFragment>
+`;
+
+exports[`Table > snapshot > should render table with two columns and three data rows 1`] = `
+<DocumentFragment>
+  <table
+    class="table rounded bg-white"
+  >
+    <thead>
+      <tr>
+        <th
+          class="fs-5 p-3"
+        >
+          title
+        </th>
+        <th
+          class="fs-5 p-3"
+        >
+          description
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td
+          class="align-middle"
+        >
+          Shalom
+        </td>
+        <td
+          class="align-middle"
+        >
+          this is my first name
+        </td>
+      </tr>
+      <tr>
+        <td
+          class="align-middle"
+        >
+          Prinz
+        </td>
+        <td
+          class="align-middle"
+        >
+          this is my last name
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</DocumentFragment>
+`;
+
+exports[`Table > snapshot > should render table with two labeled columns and one data row 1`] = `
+<DocumentFragment>
+  <table
+    class="table rounded bg-white"
+  >
+    <thead>
+      <tr>
+        <th
+          class="fs-5 p-3"
+        >
+          First Name
+        </th>
+        <th
+          class="fs-5 p-3"
+        >
+          Last Name
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td
+          class="align-middle"
+        >
+          Shalom
+        </td>
+        <td
+          class="align-middle"
+        >
+          Prinz
+        </td>
+      </tr>
+      <tr>
+        <td
+          class="align-middle"
+        >
+          Yosi
+        </td>
+        <td
+          class="align-middle"
+        >
+          Cohen
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</DocumentFragment>
+`;
