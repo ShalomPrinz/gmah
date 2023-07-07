@@ -5,6 +5,9 @@ import { render, screen, setupUser } from "../../../../test";
 
 import Form from "../Form";
 
+// TODO
+// Check form reset
+
 const emptyOnSubmit = () => Promise.resolve();
 
 describe("Form", () => {
@@ -268,6 +271,35 @@ describe("Form", () => {
       await user.clear(inputElement);
 
       expect(asFragment()).toMatchSnapshot();
+    });
+
+    it("should reset form values after successful submission", async () => {
+      const user = setupUser();
+      const onSubmit = vi.fn((values: object) => Promise.resolve(true));
+      render(
+        <Form
+          onSubmit={onSubmit}
+          schema={object()}
+          textInputs={[
+            {
+              label: "Full Name",
+              path: "name",
+            },
+          ]}
+          title="Initial Data Form"
+        />
+      );
+
+      const dataToType = "Some Data";
+      const inputElement = screen.getByRole<HTMLInputElement>("textbox");
+      await user.type(inputElement, dataToType);
+
+      expect(inputElement.value).toBe(dataToType);
+
+      const submitButton = screen.getByRole("button");
+      await user.click(submitButton);
+
+      expect(inputElement.value).toBe("");
     });
   });
 });
