@@ -11,15 +11,22 @@ import IconComponent from "../Icon";
 import TableBody from "./TableBody";
 import TableHeader from "./TableHeader";
 import type { FormItem, FormValues, TableColumn } from "./types";
+
 import { formatFamilyKey } from "../../util";
+import type { NonEmptyString } from "../../types";
 
 interface InputTableProps {
   columns: TableColumn[];
   defaultItem: FormItem;
   initialValues: FormItem[];
-  formName: string;
+  formName: NonEmptyString;
   onSubmit: (values: FormItem[]) => void;
   schema: any;
+  text: {
+    submit: string;
+    /** When table has no values, noTable will be displayed */
+    noTable: string;
+  };
 }
 
 function InputTable({
@@ -29,10 +36,12 @@ function InputTable({
   formName,
   onSubmit,
   schema,
+  text: { submit, noTable },
 }: InputTableProps) {
+  const name = formName as string;
   const formMethods = useForm<FormValues>({
     defaultValues: {
-      [formName]: initialValues,
+      [name]: initialValues,
     },
     mode: "onBlur",
     resolver: yupResolver(schema),
@@ -45,25 +54,28 @@ function InputTable({
     getValues,
     formState: { isSubmitting },
   } = formMethods;
-  const displayTable = getValues()?.[formName]?.length > 0;
-  const fieldArrayMethods = useFieldArray({ name: formName, control });
+  const displayTable = getValues()?.[name]?.length > 0;
+  const fieldArrayMethods = useFieldArray({
+    name,
+    control,
+  });
 
   function onSubmitInit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     handleSubmit(
-      (data) => onSubmit(data[formName]),
+      (data) => onSubmit(data[name]),
       (errors) => handleErrorSubmission(errors)
     )();
   }
 
   function handleErrorSubmission(errors: FieldErrors<FormValues>) {
-    if (!errors || !errors[formName] || !Array.isArray(errors[formName])) {
+    if (!errors || !errors[name] || !Array.isArray(errors[name])) {
       toast.error("שגיאה לא צפויה");
       return;
     }
 
     // @ts-ignore typescript doesn't allow forEach here
-    errors[formName]?.forEach((familyErrors, index) => {
+    errors[name]?.forEach((familyErrors, index) => {
       familyErrors &&
         Object.entries(familyErrors).forEach(([field, error]) => {
           const key = formatFamilyKey(field);
@@ -84,7 +96,7 @@ function InputTable({
           <TableBody
             columns={columns}
             fieldArrayMethods={fieldArrayMethods}
-            formName={formName}
+            formName={name}
           />
         </table>
         <button
@@ -101,14 +113,10 @@ function InputTable({
             disabled={isSubmitting}
             type="submit"
           >
-            הוסף משפחות
+            {submit}
           </button>
         )}
-        {!displayTable && (
-          <h1 className="mt-5 pt-4 fw-light">
-            - כאן תוכל לערוך את המשפחות לאחר שתדביק את הטבלה -
-          </h1>
-        )}
+        {!displayTable && <h1 className="mt-5 pt-4 fw-light">{noTable}</h1>}
       </form>
     </FormProvider>
   );

@@ -5,9 +5,6 @@ import { render, screen, setupUser } from "../../../../test";
 
 import Form from "../Form";
 
-// TODO
-// Check form reset
-
 const emptyOnSubmit = () => Promise.resolve();
 
 describe("Form", () => {

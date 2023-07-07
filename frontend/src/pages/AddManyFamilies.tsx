@@ -87,6 +87,10 @@ function AddManyFamilies() {
           key={parseCount}
           onSubmit={(values) => handleSubmit(values as FormFamily[])}
           schema={familiesArraySchema}
+          text={{
+            noTable: "- כאן תוכל לערוך את המשפחות לאחר שתדביק את הטבלה -",
+            submit: "הוסף משפחות",
+          }}
         />
       </main>
     </>
