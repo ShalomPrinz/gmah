@@ -1,3 +1,5 @@
+import type { NonEmptyString } from "./string";
+
 type Driver = {
   name: string;
   phone: string;
@@ -10,7 +12,7 @@ interface NoManagerDriver {
 
 interface Manager {
   id: string;
-  name: string;
+  name: NonEmptyString;
   drivers: Driver[];
 }
 

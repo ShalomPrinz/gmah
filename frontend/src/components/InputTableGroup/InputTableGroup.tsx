@@ -12,18 +12,20 @@ import type {
   FormValues,
   TableColumn,
 } from "./types";
+import type { NonEmptyString } from "../../types";
 
 interface InputTableGroupProps {
   columns: TableColumn[];
   defaultItem: FormItem;
   initialValues: FormItem[];
-  formName: string;
+  formName: NonEmptyString;
   /** Parent should implement submit and reset functionality */
   registerReset: (resetFn: FormResetFn) => void;
   registerSubmit: (formkey: string, submitFn: FormSubmitFn) => void;
   schema: any;
 }
 
+/** Must be used inside of a FormForwardContext */
 function InputTableGroup({
   columns,
   defaultItem,
@@ -33,9 +35,10 @@ function InputTableGroup({
   registerSubmit,
   schema,
 }: InputTableGroupProps) {
+  const name = formName as string;
   const formMethods = useForm<FormValues>({
     defaultValues: {
-      [formName]: initialValues,
+      [name]: initialValues,
     },
     mode: "onBlur",
     resolver: yupResolver(schema),
@@ -43,10 +46,10 @@ function InputTableGroup({
 
   // All form methods are required for Form Context Provider
   const { control, handleSubmit, reset } = formMethods;
-  const fieldArrayMethods = useFieldArray({ name: formName, control });
+  const fieldArrayMethods = useFieldArray({ name: name, control });
 
   useEffect(() => {
-    registerSubmit(formName, handleSubmit);
+    registerSubmit(name, handleSubmit);
     registerReset(reset);
   }, []);
 
@@ -54,7 +57,7 @@ function InputTableGroup({
     useAppendButton({
       appendFunc: fieldArrayMethods.append,
       defaultItem,
-      formName,
+      formName: name,
     });
 
   return (
@@ -65,7 +68,7 @@ function InputTableGroup({
           <TableBody
             columns={columns}
             fieldArrayMethods={fieldArrayMethods}
-            formName={formName}
+            formName={name}
           />
         </table>
         <button

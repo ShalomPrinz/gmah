@@ -5,6 +5,11 @@ import { resolve } from "path";
 export default defineConfig({
   test: {
     environment: "jsdom",
+    reporters: ["default"],
+    coverage: {
+      provider: "v8",
+      reporter: ["html"],
+    },
   },
   plugins: [react()],
   resolve: {
