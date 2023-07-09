@@ -5,5 +5,12 @@ import RadioMenu from "./RadioMenu";
 import Table from "./Table/Table";
 
 export { InputTable } from "./InputTable";
-export { InputTableGroup, FormGroupForwardProvider } from "./InputTableGroup";
+export { InputTableGroup, SingleInputTable } from "./InputTableGroup";
 export { ConditionalList, Form, Navbar, RadioMenu, Table };
+
+export type {
+  FormResetFn,
+  FormSubmitFn,
+  RegisterReset,
+  RegisterSubmit,
+} from "./InputTableGroup";

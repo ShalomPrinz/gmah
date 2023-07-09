@@ -13,7 +13,17 @@ type FormValues = {
 };
 
 type FormResetFn = UseFormReset<FormValues>;
+type RegisterReset = (resetFn: FormResetFn) => void;
 
 type FormSubmitFn = UseFormHandleSubmit<FormValues, undefined>;
+type RegisterSubmit = (formkey: string, submitFn: FormSubmitFn) => void;
 
-export type { FormItem, FormResetFn, FormSubmitFn, FormValues, TableColumn };
+export type {
+  FormItem,
+  FormResetFn,
+  FormSubmitFn,
+  FormValues,
+  TableColumn,
+  RegisterReset,
+  RegisterSubmit,
+};

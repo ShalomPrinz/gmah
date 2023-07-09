@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-import {
-  ConditionalList,
-  FormGroupForwardProvider,
-  InputTableGroup,
+import { InputTableGroup, SingleInputTable } from "../components";
+import type {
+  FormResetFn,
+  FormSubmitFn,
+  RegisterReset,
+  RegisterSubmit,
 } from "../components";
-import type { FormResetFn, FormSubmitFn } from "../components/InputTableGroup";
 import IconComponent from "../components/Icon";
 import { driversArraySchema } from "../modules";
 import { updateManagers } from "../services";
@@ -54,7 +55,7 @@ function EditManagers() {
   const managerCallback = ({ name, drivers }: Manager) => (
     <div className="my-3" style={{ width: "45%" }}>
       <h2>{name}</h2>
-      <InputTableGroup
+      <SingleInputTable
         columns={driversColumns}
         defaultItem={defaultDriver}
         initialValues={drivers}
@@ -81,9 +82,7 @@ function EditManagers() {
         className="container text-center d-flex flex-wrap justify-content-evenly"
         style={{ marginBottom: "100px" }}
       >
-        <FormGroupForwardProvider>
-          <ConditionalList list={managers} itemCallback={managerCallback} />
-        </FormGroupForwardProvider>
+        <InputTableGroup tables={managers} tableCallback={managerCallback} />
       </main>
       <button
         className="fs-3 bg-default rounded p-4 mt-5 ms-5 mb-5 position-fixed bottom-0 start-0 button-hover"
@@ -112,7 +111,7 @@ function useLocationState() {
 function useFormsSubmission() {
   const [submitFunctions, setSubmitFunctions] = useState<SubmitFunctions>({});
   useEffect(() => () => setSubmitFunctions({}), []);
-  const registerSubmitFunction = (formKey: string, submitFn: FormSubmitFn) => {
+  const registerSubmitFunction: RegisterSubmit = (formKey, submitFn) => {
     setSubmitFunctions((prev) => ({ ...prev, [formKey]: submitFn }));
   };
 
@@ -158,7 +157,7 @@ function useFormsSubmission() {
 function useFormsReset() {
   const [resetFunctions, setResetFunctions] = useState<FormResetFn[]>([]);
   useEffect(() => () => setResetFunctions([]), []);
-  const registerResetFunction = (resetFn: FormResetFn) => {
+  const registerResetFunction: RegisterReset = (resetFn) => {
     setResetFunctions((prev) => [...prev, resetFn]);
   };
 
