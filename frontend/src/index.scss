@@ -1,6 +1,28 @@
 @import "~bootstrap/scss/bootstrap.scss";
 @import "react-toastify/dist/ReactToastify.css";
 
+@font-face {
+  font-display: swap;
+  font-family: 'Rubik';
+  font-style: normal;
+  font-weight: 300;
+  src: url('./res/fonts/Rubik_300.woff2') format('woff2');
+}
+@font-face {
+  font-display: swap;
+  font-family: 'Rubik';
+  font-style: normal;
+  font-weight: 400;
+  src: url('./res/fonts/Rubik_400.woff2') format('woff2');
+}
+@font-face {
+  font-display: swap;
+  font-family: 'Rubik';
+  font-style: normal;
+  font-weight: 700;
+  src: url('./res/fonts/Rubik_700.woff2') format('woff2');
+}
+
 :root {
   line-height: 1.5;
   font-weight: 400;
