@@ -1,8 +1,7 @@
-import { useLocation } from "react-router-dom";
-import { toast } from "react-toastify";
+import { useLocationState } from "../hooks";
 
 function MonthReceiptMark() {
-  const report = useLocationState();
+  const report = useLocationState<string>("MonthReceiptMark", "report");
   return (
     <>
       <div className="text-center mt-5">
@@ -10,18 +9,6 @@ function MonthReceiptMark() {
       </div>
     </>
   );
-}
-
-function useLocationState() {
-  const { state } = useLocation();
-  if (state && state.report) {
-    return state.report as string;
-  }
-
-  toast.error("יש בעיה בדרך בה הגעת לעמוד הזה. אם הבעיה חוזרת פנה לשלום", {
-    toastId: "MonthReceiptMark:wrongLocationState",
-  });
-  return undefined;
 }
 
 export default MonthReceiptMark;

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import { InputTableGroup, SingleInputTable } from "../components";
@@ -13,6 +13,7 @@ import IconComponent from "../components/Icon";
 import { driversArraySchema } from "../modules";
 import { updateManagers } from "../services";
 import type { Driver, Manager } from "../types";
+import { useLocationState } from "../hooks";
 
 const defaultDriver: Driver = {
   name: "",
@@ -35,7 +36,7 @@ function EditManagers() {
   const navigate = useNavigate();
   const { registerSubmitFunction, submitAll } = useFormsSubmission();
   const { registerResetFunction, resetAll } = useFormsReset();
-  const managers = useLocationState();
+  const managers = useLocationState<Manager[]>("EditManagers", "managers");
 
   if (typeof managers === "undefined") return <>Error</>;
 
@@ -94,18 +95,6 @@ function EditManagers() {
       </button>
     </>
   );
-}
-
-function useLocationState() {
-  const { state } = useLocation();
-  if (state && state.managers) {
-    return state.managers as Manager[];
-  }
-
-  toast.error("יש בעיה בדרך בה הגעת לעמוד הזה. אם הבעיה חוזרת פנה לשלום", {
-    toastId: "EditManagers:wrongLocationState",
-  });
-  return undefined;
 }
 
 function useFormsSubmission() {

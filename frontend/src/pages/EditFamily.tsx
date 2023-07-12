@@ -1,7 +1,7 @@
-import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import { Form } from "../components";
+import { useLocationState } from "../hooks";
 import {
   editFamilyInputs,
   familiesObjectSchema,
@@ -22,7 +22,7 @@ function getInitialFamily(family: Family) {
 }
 
 function EditFamily() {
-  const originalFamily = useLocationState();
+  const originalFamily = useLocationState<Family>("EditFamily", "family");
   if (originalFamily === undefined) return <>Error</>;
 
   const originalName = originalFamily[familyIdProp];
@@ -55,18 +55,6 @@ function EditFamily() {
       />
     </main>
   );
-}
-
-function useLocationState() {
-  const { state } = useLocation();
-  if (state && state.family) {
-    return state.family as Family;
-  }
-
-  toast.error("יש בעיה בדרך בה הגעת לעמוד הזה. אם הבעיה חוזרת פנה לשלום", {
-    toastId: "EditFamily:wrongLocationState",
-  });
-  return undefined;
 }
 
 export default EditFamily;
