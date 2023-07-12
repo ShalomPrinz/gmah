@@ -11,38 +11,21 @@ class SearchRequest:
     headers: List[str]
     query: str
     search_by: str
+    search_enum: Enum
 
 @dataclass
 class FindRequest:
     rows_iter: Generator[Worksheet, None, None]
     query: str
-
-class SearchBy(Enum):
-    NAME = 'name'
-    STREET = 'street'
-    PHONE = 'phone'
-    DRIVER = 'driver'
-
-    @classmethod
-    def get_search_columns(cls, search_by):
-        search_by = getattr(SearchBy, search_by.upper(), SearchBy.NAME)
-        match search_by:
-            case SearchBy.NAME:
-                return [0]
-            case SearchBy.STREET:
-                return [1]
-            case SearchBy.PHONE:
-                return [5, 6]
-            case SearchBy.DRIVER:
-                return [7]
-            case _:
-                return [0]
+    search_enum: Enum
 
 def search(request: SearchRequest):
-    searching_by_phone = request.search_by == SearchBy.PHONE.value
+    searching_by_phone = bool('PHONE' in request.search_enum.__members__ and \
+                         request.search_by == request.search_enum.PHONE.value)
     if searching_by_phone:
         request.query = without_hyphen(request.query)
-    search_columns = SearchBy.get_search_columns(request.search_by)
+
+    search_columns = request.search_enum.get_search_columns(request.search_by)
 
     matching_rows = []
     for row in request.rows_iter:
@@ -65,7 +48,7 @@ def find(request: FindRequest):
 
     If query is not found in rows_iter, returns -1.
     '''
-    search_columns = SearchBy.get_search_columns('name')
+    search_columns = request.search_enum.get_search_columns('name')
 
     for index, row in enumerate(request.rows_iter):
         for column in search_columns:

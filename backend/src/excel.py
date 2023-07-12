@@ -41,10 +41,11 @@ class Excel:
     def get_rows_iter(self):
         return self.worksheet.iter_rows(min_row=self.first_content_row)
 
-    def get_row_index(self, row_key):
+    def get_row_index(self, row_key, search_enum):
         request = FindRequest(
             rows_iter=self.get_rows_iter(),
-            query=row_key
+            query=row_key,
+            search_enum=search_enum
         )
 
         result = find(request)
@@ -53,12 +54,13 @@ class Excel:
         else:
             raise FamilyNotFoundError(f"המשפחה {row_key} לא נמצאת")
     
-    def search(self, query, search_by=''):
+    def search(self, query, search_enum, search_by=''):
         request = SearchRequest(
             rows_iter=self.get_rows_iter(),
             headers=self.get_headers(),
             query=query,
-            search_by=search_by
+            search_by=search_by,
+            search_enum=search_enum
         )
 
         return search(request)

@@ -1,8 +1,31 @@
+from enum import Enum
+
 from src.data import key_prop, family_properties, families_filename
 from src.excel import Excel
 from src.util import without_hyphen, insert_hyphen
 from src.results import Result, add_results, add_many_error, add_many_results
 from src.styles import families_cell_style
+
+class FamiliesSearchBy(Enum):
+    NAME = 'name'
+    STREET = 'street'
+    PHONE = 'phone'
+    DRIVER = 'driver'
+
+    @classmethod
+    def get_search_columns(cls, search_by):
+        search_by = getattr(FamiliesSearchBy, search_by.upper(), FamiliesSearchBy.NAME)
+        match search_by:
+            case FamiliesSearchBy.NAME:
+                return [0]
+            case FamiliesSearchBy.STREET:
+                return [1]
+            case FamiliesSearchBy.PHONE:
+                return [5, 6]
+            case FamiliesSearchBy.DRIVER:
+                return [7]
+            case _:
+                return [0]
 
 def load_families_file():
     '''
@@ -42,7 +65,7 @@ def search_families(families_file: Excel, query='', search_by=''):
     query = '' if query is None else query
     search_by = '' if search_by is None else search_by
 
-    return families_file.search(query, search_by)
+    return families_file.search(query, FamiliesSearchBy, search_by)
 
 def format_phone(family, attr_name):
     '''
@@ -78,7 +101,7 @@ def is_family_exists(families_file: Excel, family_name):
     Returns whether a family exists in the excel, by searching for
     a match of family name, assuming a family name property is unique.
     '''
-    search_result = families_file.search(family_name, 'name')
+    search_result = families_file.search(family_name, FamiliesSearchBy, 'name')
     if len(search_result) > 0 and \
         any(found_family[key_prop] == family_name for found_family in search_result):
             return True
@@ -136,7 +159,7 @@ def update_family(families_file: Excel, original_name, family):
     Changes the data of originalName family to the new family data.
     '''
     try:
-        index = families_file.get_row_index(original_name)
+        index = families_file.get_row_index(original_name, FamiliesSearchBy)
     except Exception as e:
         return e
     families_file.replace_row(index, family)

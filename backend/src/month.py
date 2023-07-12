@@ -1,3 +1,4 @@
+from enum import Enum
 from glob import glob
 from os.path import basename
 from openpyxl import load_workbook
@@ -7,6 +8,25 @@ from src.excel import Excel
 from src.families import load_families_file, search_families
 from src.managers import find_manager, load_managers_file
 from src.styles import report_cell_style
+
+class ReportSearchBy(Enum):
+    NAME = 'name'
+    MANAGER = 'manager'
+    DRIVER = 'driver'
+
+    @classmethod
+    def get_search_columns(cls, search_by):
+        search_by = getattr(ReportSearchBy, search_by.upper(), ReportSearchBy.NAME)
+        print("search by", search_by)
+        match search_by:
+            case ReportSearchBy.NAME:
+                return [0]
+            case ReportSearchBy.MANAGER:
+                return [1]
+            case ReportSearchBy.DRIVER:
+                return [2]
+            case _:
+                return [0]
 
 month_reports_folder = "דוחות קבלה"
 month_reports_path = f"{month_reports_folder}/"
@@ -164,4 +184,4 @@ def search_report(report_file: Excel, query='', search_by=''):
     query = '' if query is None else query
     search_by = '' if search_by is None else search_by
 
-    return report_file.search(query, search_by)
+    return report_file.search(query, ReportSearchBy, search_by)
