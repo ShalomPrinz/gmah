@@ -17,6 +17,7 @@ import AddFamily from "./AddFamily";
 import AddManyFamilies from "./AddManyFamilies";
 import Reports from "./Reports";
 import MonthTracker from "./MonthTracker";
+import MonthReceiptMark from "./MonthReceiptMark";
 
 import { HistoryProvider } from "../contexts";
 
@@ -51,6 +52,7 @@ const router = createBrowserRouter(
       </Route>
       <Route path="month">
         <Route index element={<MonthTracker />} />
+        <Route path="mark-receive" element={<MonthReceiptMark />} />
       </Route>
     </Route>
   )

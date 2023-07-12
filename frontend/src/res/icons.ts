@@ -1,6 +1,7 @@
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import {
   faBars,
+  faPeopleCarryBox,
   faCheck,
   faCircleMinus,
   faExclamationTriangle,
@@ -17,6 +18,7 @@ const icons = {
   addFamily: faUserPlus,
   editFamily: faUserPen,
   forwardItem: faShare,
+  markReceive: faPeopleCarryBox,
   navbarClosed: faBars,
   navbarExpanded: faTimes,
   removeItem: faCircleMinus,
