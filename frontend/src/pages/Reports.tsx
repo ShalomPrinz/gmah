@@ -56,6 +56,7 @@ function Reports() {
   const inputRef = useRef<HTMLInputElement>(null);
   const { noManagerFamilies, noDriverFamilies, noManagerDrivers } =
     useDriversValidation();
+  const { generateReport, isGeneratingReport } = useGenerateReport();
 
   const noManagerDriverCallback = (driver: NoManagerDriver) => (
     <h5>
@@ -126,12 +127,9 @@ function Reports() {
               type="text"
             />
             <button
-              className="fs-1 p-4 bg-default rounded"
-              onClick={() =>
-                generateMonthReport(
-                  inputRef?.current?.value || defaultReportName
-                )
-              }
+              className="fs-1 p-4 bg-default rounded button-hover"
+              disabled={isGeneratingReport}
+              onClick={() => generateReport(inputRef?.current?.value)}
             >
               צור דוח קבלה חדש
             </button>
@@ -164,6 +162,22 @@ function useDriversValidation() {
   }, []);
 
   return { noManagerFamilies, noDriverFamilies, noManagerDrivers };
+}
+
+function useGenerateReport() {
+  const [isGeneratingReport, setIsGenerating] = useState(false);
+
+  function generateReport(value: string | undefined) {
+    const reportName = value || defaultReportName;
+    setIsGenerating(true);
+    generateMonthReport(reportName)
+      .then(() => toast.success(`יצרת דוח קבלה חדש בשם ${reportName} בהצלחה`))
+      .catch(() =>
+        toast.error(`קרתה תקלה ביצירת דוח הקבלה, אם התקלה חוזרת אנא פנה לשלום`)
+      )
+      .finally(() => setIsGenerating(false));
+  }
+  return { generateReport, isGeneratingReport };
 }
 
 export default Reports;
