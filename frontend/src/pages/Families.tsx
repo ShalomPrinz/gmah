@@ -3,9 +3,8 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { Link } from "react-router-dom";
 
-import { RadioMenu, Table } from "../components";
+import { RadioMenu, Search, Table } from "../components";
 import IconComponent from "../components/Icon";
-import Search from "../components/Search";
 import { familiesTableHeaders, familyIdProp } from "../modules";
 import type { Family } from "../modules";
 import { searchFamilies } from "../services";

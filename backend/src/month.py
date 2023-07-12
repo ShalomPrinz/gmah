@@ -17,7 +17,6 @@ class ReportSearchBy(Enum):
     @classmethod
     def get_search_columns(cls, search_by):
         search_by = getattr(ReportSearchBy, search_by.upper(), ReportSearchBy.NAME)
-        print("search by", search_by)
         match search_by:
             case ReportSearchBy.NAME:
                 return [0]

@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
+import Col from "react-bootstrap/Col";
+import Row from "react-bootstrap/Row";
 import { Link } from "react-router-dom";
 
-import { Dropdown, Option, Table } from "../components";
+import { Dropdown, Option, RadioMenu, Search, Table } from "../components";
 import { familyIdProp, reportTableHeaders } from "../modules";
 import { getReport, getReportsList } from "../services";
 
@@ -14,11 +16,42 @@ const NoReportsMessage = () => (
   </h3>
 );
 
+const buttons = [
+  {
+    id: "search-by-name",
+    text: "שם",
+    value: "name",
+  },
+  {
+    id: "search-by-manager",
+    text: "אחראי",
+    value: "manager",
+  },
+  {
+    id: "search-by-driver",
+    text: "נהג",
+    value: "driver",
+  },
+];
+
+const getButtonTextByValue = (value: string) =>
+  buttons.find((b) => b.value === value)?.text || buttons[0].text;
+
+const getHeaderByButtonValue = (value: string) =>
+  ({
+    name: "שם מלא",
+    manager: "אחראי",
+    driver: "נהג",
+  }[value] || "NoSuchSearchOption");
+
 const defaultSelection = "0";
 function MonthTracker() {
+  const [query, setQuery] = useState("");
+  const [searchBy, setSearchBy] = useState("name");
+
   const options = useMonthReports();
   const { onSelect, selectedReport } = useReportSelection(options);
-  const report = useReportSearch(selectedReport, "", "");
+  const report = useReportSearch(selectedReport, query, searchBy);
 
   const hasOptions = options.length > 0;
 
@@ -36,11 +69,40 @@ function MonthTracker() {
       </div>
       <main className="mt-5 text-center mx-auto w-75">
         {hasOptions ? (
-          <Table
-            columns={reportTableHeaders}
-            data={report ?? []}
-            dataIdProp={familyIdProp}
-          />
+          <>
+            <Row className="mb-3">
+              <Col sm="3">
+                <h2>חפש באמצעות:</h2>
+                <RadioMenu
+                  buttons={buttons}
+                  menuId="search-by"
+                  onSelect={(value: string) => setSearchBy(value)}
+                />
+              </Col>
+              <Col>
+                <Search
+                  onChange={(q: string) => setQuery(q)}
+                  placeholder={`הכנס ${getButtonTextByValue(
+                    searchBy
+                  )} של משפחה...`}
+                />
+              </Col>
+              <Col sm="3">
+                <h2>מספר תוצאות</h2>
+                <p className="text-primary" style={{ fontSize: "50px" }}>
+                  {report.length}
+                </p>
+              </Col>
+            </Row>
+            <Row>
+              <Table
+                columns={reportTableHeaders}
+                data={report}
+                dataIdProp={familyIdProp}
+                headerHighlight={getHeaderByButtonValue(searchBy)}
+              />
+            </Row>
+          </>
         ) : (
           <NoReportsMessage />
         )}
@@ -80,7 +142,7 @@ function useReportSearch(
   query: string,
   searchBy: string
 ) {
-  const [report, setReport] = useState();
+  const [report, setReport] = useState([]);
 
   useEffect(() => {
     if (typeof reportName === "undefined") return;

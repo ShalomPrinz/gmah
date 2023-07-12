@@ -10,7 +10,7 @@ def load_report(name):
     else:
         return report_file
 
-def generate_report(get_report_path, assertTrue, families, name="שם דוח"):
+def generate_report(assertTrue, families, name="שם דוח"):
     '''
     Generates monthly report out of given families.
     Returns report path.

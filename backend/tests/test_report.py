@@ -1,7 +1,7 @@
 import unittest
 from os import path
 
-from src.month import generate_month_report, get_no_driver_families, get_no_manager_drivers, get_report_path, get_reports_list, month_report_prefix, month_report_suffix
+from src.month import generate_month_report, get_no_driver_families, get_no_manager_drivers, get_report_path, get_reports_list, search_report
 
 from tests.families_util import Family, write_families, setUpFamilies, tearDownFamilies
 from tests.managers_util import write_managers, setUpManagers, tearDownManagers
@@ -93,7 +93,7 @@ class TestReportGeneration(unittest.TestCase):
         tearDownMonth()
 
     def generate_report(self, families):
-        return generate_report(get_report_path, self.assertTrue, families)
+        return generate_report(self.assertTrue, families)
         
     def test_report_generated_in_folder(self):
         name = 'שם כלשהו'
@@ -150,7 +150,7 @@ class TestReportsInfo(unittest.TestCase):
 
     def generate_report(self, name):
         families = [Family({"שם מלא": "שלום פרינץ", "נהג": "נהגוס"})]
-        return generate_report(get_report_path, self.assertTrue, families, name)
+        return generate_report(self.assertTrue, families, name)
 
     def test_get_reports_list_count(self):
         test_cases = [
@@ -183,3 +183,101 @@ class TestReportsInfo(unittest.TestCase):
                 actual_reports_names = sorted(get_reports_list())
                 expected_reports_names = sorted(reports_names)
                 self.assertListEqual(actual_reports_names, expected_reports_names, message)
+
+class TestSearchReport(unittest.TestCase):
+    def setUpClass():
+        setUpFamilies()
+        setUpManagers()
+    
+    def tearDownClass():
+        tearDownFamilies()
+        tearDownManagers()
+        tearDownMonth()
+
+    def generate_report(self, families):
+        return generate_report(self.assertTrue, families)
+
+    def get_title(self, query):
+        return f"query: {query}"
+
+    def test_search_by_name(self):
+        families = [Family({"שם מלא": "פרינץ"}), Family({"שם מלא": "כהנא"}), Family({"שם מלא": "נתאי"})]
+        
+        test_cases = [
+            (None,  3, "Should return all families when query is 'None'"),
+            ("",    3, "Should return all families when query is empty string"),
+            ("י",   2, "Should return families that have names containing 'י'"),
+            ("פ",   1, "Should return families that have names containing 'פ'"),
+            ("ה",   1, "Should return families that have names containing 'ה'"),
+            ("אבג", 0, "Should return empty list when no families found for a query")
+        ]
+
+        for query, expected_len, message in test_cases:
+            with self.subTest(self.get_title(query)):
+                report_file = self.generate_report(families)
+                search_result = search_report(report_file, query)
+                self.assertEqual(expected_len, len(search_result), message)
+    
+    def test_search_by_manager(self):
+        managers = [
+            { "id": 0, "name": "שלמה", 
+                    "drivers": [{"name": "נהג 1", "phone": "000-0000000"}]},
+            { "id": 1, "name": "חיים",
+                    "drivers": [{"name": "נהג 2", "phone": "111-1111111"}]},
+            { "id": 2, "name": "נחום",
+                    "drivers": [{"name": "נהג 3", "phone": "222-2222222"}]}
+        ]
+        write_managers(managers)
+        families = [Family({"שם מלא": "פרינץ", "נהג": "נהג 1"}),
+            Family({"שם מלא": "כהנא", "נהג": "נהג 2"}),
+            Family({"שם מלא": "נתאי", "נהג": "נהג 3"})]
+        
+        test_cases = [
+            (None,  3, "Should return all families when query is 'None'"),
+            ("",    3, "Should return all families when query is empty string"),
+            ("ם",   2, "Should return families that have managers containing 'ם'"),
+            ("נח",  1, "Should return families that have managers containing 'נח'"),
+            ("ש",   1, "Should return families that have managers containing 'ש'"),
+            ("דהו", 0, "Should return empty list when no families found for a query")
+        ]
+
+        for query, expected_len, message in test_cases:
+            with self.subTest(self.get_title(query)):
+                report_file = self.generate_report(families)
+                search_result = search_report(report_file, query, 'manager')
+                self.assertEqual(expected_len, len(search_result), message)
+
+    def test_search_by_driver(self):
+        families = [Family({"שם מלא": "פרינץ", "נהג": "ארז משה"}),
+            Family({"שם מלא": "כהנא", "נהג": "אלי לולו"}),
+            Family({"שם מלא": "נתאי", "נהג": "יוסי זהר"})]
+        
+        test_cases = [
+            (None,  3, "Should return all families when query is 'None'"),
+            ("",    3, "Should return all families when query is empty string"),
+            ("א",   2, "Should return families that have drivers containing 'א'"),
+            ("מ",   1, "Should return families that have drivers containing 'מ'"),
+            ("ר",   2, "Should return families that have drivers containing 'ר'"),
+            ("זחט", 0, "Should return empty list when no families found for a query")
+        ]
+
+        for query, expected_len, message in test_cases:
+            with self.subTest(self.get_title(query)):
+                report_file = self.generate_report(families)
+                search_result = search_report(report_file, query, 'driver')
+                self.assertEqual(expected_len, len(search_result), message)
+
+    def test_search_no_value_cell(self):
+        families = [Family({"שם מלא": "פרינץ", "נהג": None})]
+        
+        test_cases = [
+            (None,  0, "Should not return a family if its searched value is None"),
+            ("",    0, "Should not return a family if its searched value is None"),
+            ("פ",   0, "Should not return a family if its searched value is None")
+        ]
+
+        for query, expected_len, message in test_cases:
+            with self.subTest(self.get_title(query)):
+                report_file = self.generate_report(families)
+                search_result = search_report(report_file, query, 'driver')
+                self.assertEqual(expected_len, len(search_result), message)

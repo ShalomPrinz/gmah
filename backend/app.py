@@ -105,5 +105,5 @@ def query_report():
     if error is not None:
         return error_response(error)
     
-    query_result = month.search_families(report_file, query, search_by)
+    query_result = month.search_report(report_file, query, search_by)
     return jsonify(report=query_result), 200
