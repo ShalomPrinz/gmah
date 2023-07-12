@@ -16,6 +16,7 @@ import FamilyManager from "./FamilyManager";
 import AddFamily from "./AddFamily";
 import AddManyFamilies from "./AddManyFamilies";
 import Reports from "./Reports";
+import MonthTracker from "./MonthTracker";
 
 import { HistoryProvider } from "../contexts";
 
@@ -47,6 +48,9 @@ const router = createBrowserRouter(
       </Route>
       <Route path="reports">
         <Route index element={<Reports />} />
+      </Route>
+      <Route path="month">
+        <Route index element={<MonthTracker />} />
       </Route>
     </Route>
   )

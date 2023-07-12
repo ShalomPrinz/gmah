@@ -8,4 +8,8 @@ function getNoManagerDrivers() {
   return get("validate/drivers");
 }
 
-export { generateMonthReport, getNoManagerDrivers };
+function getReportsList() {
+  return get("reports");
+}
+
+export { generateMonthReport, getNoManagerDrivers, getReportsList };

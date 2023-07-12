@@ -89,3 +89,8 @@ def generate_month():
     if error is not None:
         return error_response(error)
     return jsonify(), 200
+
+@app.route('/reports')
+def get_reports_list():
+    reports = month.get_reports_list()
+    return jsonify(reports=reports), 200

@@ -126,6 +126,11 @@ function NavbarWrapper() {
       name: "דוחות קבלה",
       url: "/reports",
     },
+    {
+      id: 4,
+      name: "מעקב חודשי",
+      url: "/month",
+    },
   ];
 
   return <AppNavbar pages={pages} />;

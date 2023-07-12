@@ -1,11 +1,11 @@
 import unittest
 from os import path
 
-from src.month import generate_month_report, get_no_driver_families, get_no_manager_drivers, get_report_path
+from src.month import generate_month_report, get_no_driver_families, get_no_manager_drivers, get_report_path, get_reports_list, month_report_prefix, month_report_suffix
 
 from tests.families_util import Family, write_families, setUpFamilies, tearDownFamilies
 from tests.managers_util import write_managers, setUpManagers, tearDownManagers
-from tests.report_util import load_report, tearDownMonth
+from tests.report_util import generate_report, tearDownMonth, remove_all_reports
 
 class TestReportValidation(unittest.TestCase):
     def setUpClass():
@@ -93,18 +93,7 @@ class TestReportGeneration(unittest.TestCase):
         tearDownMonth()
 
     def generate_report(self, families):
-        '''
-        Generates monthly report out of given families.
-        Returns report path.
-        '''
-        write_families(families)
-
-        name = "שם דוח"
-        error = generate_month_report(name)
-        self.assertTrue(error is None, "Failed generating month report")
-
-        path = get_report_path(name)
-        return load_report(path)
+        return generate_report(get_report_path, self.assertTrue, families)
         
     def test_report_generated_in_folder(self):
         name = 'שם כלשהו'
@@ -149,3 +138,48 @@ class TestReportGeneration(unittest.TestCase):
         self.assertEqual(families_on_report, expected_families_count,
                          "Should generate line in report even for families without driver")
 
+class TestReportsInfo(unittest.TestCase):
+    def setUpClass():
+        setUpFamilies()
+        setUpManagers()
+    
+    def tearDownClass():
+        tearDownFamilies()
+        tearDownManagers()
+        tearDownMonth()
+
+    def generate_report(self, name):
+        families = [Family({"שם מלא": "שלום פרינץ", "נהג": "נהגוס"})]
+        return generate_report(get_report_path, self.assertTrue, families, name)
+
+    def test_get_reports_list_count(self):
+        test_cases = [
+            (0, "Should not generate reports, and return empty list"),
+            (1, "Should generate 1 report, and return 1 element list"),
+            (3, "Should generate 3 reports, and return 3 elements list")
+        ]
+
+        for reports_count, message in test_cases:
+            with self.subTest(f"reports count: {reports_count}"):
+                for current in range(reports_count):
+                    self.generate_report(f"report_{current}")
+                
+                actual_reports_count = len(get_reports_list())
+                self.assertEqual(actual_reports_count, reports_count, message)
+    
+    def test_get_reports_list_names(self):
+        test_cases = [
+            ([],            "Should not generate reports, and return empty list"),
+            (["single"],    "Should generate 1 report, and return 3 elements list"),
+            (["first", "second", "third"], "Should not generate reports, and return empty list")
+        ]
+
+        for reports_names, message in test_cases:
+            with self.subTest(f"reports names: {reports_names}"):
+                remove_all_reports()
+                for name in reports_names:
+                    self.generate_report(name)
+                
+                actual_reports_names = sorted(get_reports_list())
+                expected_reports_names = sorted(reports_names)
+                self.assertListEqual(actual_reports_names, expected_reports_names, message)

@@ -1,3 +1,5 @@
+from glob import glob
+from os.path import basename
 from openpyxl import load_workbook
 
 from src.data import key_prop
@@ -12,6 +14,7 @@ month_reports_template = f"{month_reports_path}template.xlsx"
 
 month_report_prefix = "דוח קבלה "
 month_report_suffix = ".xlsx"
+month_reports_pattern = f"{month_reports_path}{month_report_prefix}*{month_report_suffix}"
 
 default_driver = ""
 default_manager = ""
@@ -21,6 +24,14 @@ def get_report_path(report_name):
     Returns report path from project parent directory.
     '''
     return f'{month_reports_path}{month_report_prefix}{report_name}{month_report_suffix}'
+
+def get_reports_list():
+    '''
+    Returns a list with all the generated monthly reports.
+    '''
+    start_index = len(month_report_prefix)
+    end_index = len(month_report_suffix)
+    return [basename(file)[start_index:-end_index] for file in glob(month_reports_pattern)]
 
 def load_report_file(path):
     '''
