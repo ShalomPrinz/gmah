@@ -3,7 +3,6 @@ import { toast } from "react-toastify";
 
 function useLocationState<T>(page: string, stateProp: string) {
   const { state } = useLocation();
-  console.log("state", state);
   if (state && state[stateProp]) {
     return state[stateProp] as T;
   }

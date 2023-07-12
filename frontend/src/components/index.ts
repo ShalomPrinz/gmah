@@ -1,3 +1,4 @@
+import ColumnList from "./ColumnList";
 import ConditionalList from "./ConditionalList";
 import Dropdown from "./Dropdown";
 import Form from "./Form/Form";
@@ -8,7 +9,16 @@ import Table from "./Table/Table";
 
 export { InputTable } from "./InputTable";
 export { InputTableGroup, SingleInputTable } from "./InputTableGroup";
-export { ConditionalList, Dropdown, Form, Navbar, RadioMenu, Search, Table };
+export {
+  ColumnList,
+  ConditionalList,
+  Dropdown,
+  Form,
+  Navbar,
+  RadioMenu,
+  Search,
+  Table,
+};
 
 export type { Option } from "./Dropdown";
 export type {
