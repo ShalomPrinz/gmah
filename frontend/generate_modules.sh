@@ -1,20 +1,30 @@
 #!/bin/bash
 
-# Preparation
+# Data Preparation
 family_id_prop="שם מלא"
 family_attributes=([0]=$family_id_prop [1]="רחוב" [2]="בניין" [3]="דירה" [4]="קומה" [5]="מס' בית" [6]="מס' פלאפון" [7]="נהג" [8]="נהג במקור" [9]="ממליץ" [10]="הערות")
 add_family_exclude="7 8 10"
 table_headers_exclude="8"
 
+report_columns=([0]=$family_id_prop [1]="אחראי" [2]="נהג" [3]="תאריך" [4]="קיבל/ה")
+
+# Path Preparation
+
 dir_path="src/modules/"
+index_file="${dir_path}index.ts"
 
 output_filename="families"
 output_file="${dir_path}${output_filename}.ts"
 echo "" > $output_file
-
-index_file="${dir_path}index.ts"
 index_exports=""
 index_type_exports=""
+
+reports_filename="reports"
+reports_file="${dir_path}${reports_filename}.ts"
+echo "" > $reports_file
+report_exports=""
+
+# Families File
 
 # Replaces ' with $, to prevent react-hook-form key error
 function prepare_path {
@@ -134,14 +144,36 @@ fip_name="familyIdProp"
 echo "export const $fip_name = \"$family_id_prop\"" >> $output_file
 index_exports+="$fip_name"
 
+# Reports File
+
+function add_report_headers {
+    local var_name=$1
+    echo "export const $var_name = " >> $reports_file
+
+    local var_text="["
+    for idx in ${!report_columns[@]}; do
+        var_text+='{id: '$idx', 'path': "'${report_columns[$idx]}'"},'
+    done
+    var_text+="]"
+
+    echo -e "$var_text\n" >> $reports_file
+    report_exports+="$var_name,"
+}
+
+add_report_headers "reportTableHeaders"
+
 # Index File
 
 # Save schemas exports, which are external to this script
 schemas_exports=$(awk '/export/{rec=""; f=1} f{rec = rec $0 RS} END{printf "%s", rec}' "$index_file")
 
 # Write regular exports to index
-first_export='export { '$index_exports' } from "./'$output_filename'"'
-echo -e "$first_export\n" > $index_file
+families_export_declaration='export { '$index_exports' } from "./'$output_filename'"'
+echo -e "$families_export_declaration\n" > $index_file
+
+# Write reports file exports to index
+reports_export_declaration='export { '$report_exports' } from "./'$reports_filename'"'
+echo -e "$reports_export_declaration\n" >> $index_file
 
 # Write type exports to index
 type_export='export type { '$index_type_exports' } from "./'$output_filename'"'

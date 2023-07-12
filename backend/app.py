@@ -94,3 +94,16 @@ def generate_month():
 def get_reports_list():
     reports = month.get_reports_list()
     return jsonify(reports=reports), 200
+
+@app.route('/report')
+def query_report():
+    report_name = request.args.get('report_name')
+    query = request.args.get('query')
+    search_by = request.args.get('by')
+
+    error, report_file = month.load_report_file(report_name)
+    if error is not None:
+        return error_response(error)
+    
+    query_result = month.search_families(report_file, query, search_by)
+    return jsonify(report=query_result), 200

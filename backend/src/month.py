@@ -25,22 +25,15 @@ def get_report_path(report_name):
     '''
     return f'{month_reports_path}{month_report_prefix}{report_name}{month_report_suffix}'
 
-def get_reports_list():
+def load_report_file(report_name):
     '''
-    Returns a list with all the generated monthly reports.
-    '''
-    start_index = len(month_report_prefix)
-    end_index = len(month_report_suffix)
-    return [basename(file)[start_index:-end_index] for file in glob(month_reports_pattern)]
-
-def load_report_file(path):
-    '''
-    Connects to the new report file.
+    Connects to a report file.
 
     Returns a tuple: (error, file)
         - If connection has failed, file will be None
         - If connection has succeed, error will be None
     '''
+    path = get_report_path(report_name)
     try:
         report = Excel(
             filename=path,
@@ -61,13 +54,12 @@ def load_template(template_path, sheet_title):
 
 def create_from_template(name):
     '''
-    Creates blank month report and returns its filepath.
+    Creates empty month report.
     '''
     sheet_title = f'{month_report_prefix}{name}'
     workbook = load_template(month_reports_template, sheet_title)
     filepath = get_report_path(name)
     workbook.save(filepath)
-    return filepath
 
 def to_excel_row(family, managers_file):
     '''
@@ -88,8 +80,6 @@ def generate_month_report(name):
     '''
     Generates new month report with the given name, based on current families and managers files.
     '''
-    filepath = create_from_template(name)
-
     error, families_file = load_families_file()
     if error is not None:
         return error
@@ -98,7 +88,8 @@ def generate_month_report(name):
     if error is not None:
         return error
     
-    error, report_file = load_report_file(filepath)
+    create_from_template(name)
+    error, report_file = load_report_file(name)
     if error is not None:
         return error
     
@@ -156,3 +147,21 @@ def get_no_driver_families():
             no_driver_families += 1
 
     return None, no_driver_families
+
+def get_reports_list():
+    '''
+    Returns a list with all the generated monthly reports.
+    '''
+    start_index = len(month_report_prefix)
+    end_index = len(month_report_suffix)
+    return [basename(file)[start_index:-end_index] for file in glob(month_reports_pattern)]
+
+def search_report(report_file: Excel, query='', search_by=''):
+    '''
+    Returns list of families from the given report_file,
+    who their value of the search_by cell matches the given query
+    '''
+    query = '' if query is None else query
+    search_by = '' if search_by is None else search_by
+
+    return report_file.search(query, search_by)

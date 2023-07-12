@@ -12,4 +12,14 @@ function getReportsList() {
   return get("reports");
 }
 
-export { generateMonthReport, getNoManagerDrivers, getReportsList };
+function getReport(reportName: string, query: string, by: string) {
+  return get("report", {
+    params: {
+      report_name: reportName,
+      query,
+      by,
+    },
+  });
+}
+
+export { generateMonthReport, getNoManagerDrivers, getReportsList, getReport };

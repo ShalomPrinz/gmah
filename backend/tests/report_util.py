@@ -3,8 +3,8 @@ import os
 from src.month import generate_month_report, load_report_file
 from tests.families_util import write_families
 
-def load_report(path):
-    error, report_file = load_report_file(path)
+def load_report(name):
+    error, report_file = load_report_file(name)
     if error is not None:
         raise Exception("Couldn't load report file", error)
     else:
@@ -20,8 +20,7 @@ def generate_report(get_report_path, assertTrue, families, name="שם דוח"):
     error = generate_month_report(name)
     assertTrue(error is None, "Failed generating month report")
 
-    path = get_report_path(name)
-    return load_report(path)
+    return load_report(name)
 
 def remove_all_reports():
     '''
