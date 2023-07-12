@@ -7,9 +7,8 @@ export const editFamilyInputs = [
   { id: 5, label: "מס' בית", path: "מס$ בית" },
   { id: 6, label: "מס' פלאפון", path: "מס$ פלאפון" },
   { id: 7, label: "נהג", path: "נהג" },
-  { id: 8, label: "נהג במקור", path: "נהג במקור" },
-  { id: 9, label: "ממליץ", path: "ממליץ" },
-  { id: 10, label: "הערות", path: "הערות", doubleSize: true },
+  { id: 8, label: "ממליץ", path: "ממליץ" },
+  { id: 9, label: "הערות", path: "הערות", doubleSize: true },
 ];
 
 export const addFamilyHeaders = [
@@ -20,7 +19,7 @@ export const addFamilyHeaders = [
   { id: 4, label: "קומה", path: "קומה" },
   { id: 5, label: "מס' בית", path: "מס$ בית" },
   { id: 6, label: "מס' פלאפון", path: "מס$ פלאפון" },
-  { id: 9, label: "ממליץ", path: "ממליץ" },
+  { id: 8, label: "ממליץ", path: "ממליץ" },
 ];
 
 export const familiesTableHeaders = [
@@ -32,8 +31,8 @@ export const familiesTableHeaders = [
   { id: 5, path: "מס' בית" },
   { id: 6, path: "מס' פלאפון" },
   { id: 7, path: "נהג" },
-  { id: 9, path: "ממליץ" },
-  { id: 10, path: "הערות" },
+  { id: 8, path: "ממליץ" },
+  { id: 9, path: "הערות" },
 ];
 
 export const familyProperties = [
@@ -45,7 +44,6 @@ export const familyProperties = [
   "מס' בית",
   "מס' פלאפון",
   "נהג",
-  "נהג במקור",
   "ממליץ",
   "הערות",
 ];
@@ -59,7 +57,6 @@ export const defaultFamily = {
   "מס$ בית": "",
   "מס$ פלאפון": "",
   נהג: "",
-  "נהג במקור": "",
   ממליץ: "",
   הערות: "",
 };
@@ -73,7 +70,6 @@ export type Family = {
   "מס' בית": string;
   "מס' פלאפון": string;
   נהג: string;
-  "נהג במקור": string;
   ממליץ: string;
   הערות: string;
 };
@@ -87,7 +83,6 @@ export type FormFamily = {
   "מס$ בית": string;
   "מס$ פלאפון": string;
   נהג: string;
-  "נהג במקור": string;
   ממליץ: string;
   הערות: string;
 };

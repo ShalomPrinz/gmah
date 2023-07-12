@@ -2,9 +2,9 @@
 
 # Data Preparation
 family_id_prop="שם מלא"
-family_attributes=([0]=$family_id_prop [1]="רחוב" [2]="בניין" [3]="דירה" [4]="קומה" [5]="מס' בית" [6]="מס' פלאפון" [7]="נהג" [8]="נהג במקור" [9]="ממליץ" [10]="הערות")
-add_family_exclude="7 8 10"
-table_headers_exclude="8"
+family_attributes=([0]=$family_id_prop [1]="רחוב" [2]="בניין" [3]="דירה" [4]="קומה" [5]="מס' בית" [6]="מס' פלאפון" [7]="נהג" [8]="ממליץ" [9]="הערות")
+add_family_exclude="7 9"
+table_headers_exclude=""
 
 report_columns=([0]=$family_id_prop [1]="אחראי" [2]="נהג" [3]="תאריך" [4]="קיבל/ה")
 
