@@ -107,3 +107,19 @@ def query_report():
     
     query_result = month.search_report(report_file, query, search_by)
     return jsonify(report=query_result), 200
+
+@app.route('/report/update', methods=["PUT"])
+def update_receipt_status():
+    report_name = request.json['report_name']
+    family_name = request.json['family_name']
+    receipt = request.json['receipt']
+
+    error, report_file = month.load_report_file(report_name)
+    if error is not None:
+        return error_response(error)
+    
+    error = month.update_receipt_status(report_file, family_name, receipt)
+    if error is not None:
+        return error_response(error)
+    
+    return jsonify(), 200

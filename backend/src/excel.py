@@ -81,12 +81,12 @@ class Excel:
             
         self.save()
 
-    def replace_row(self, row_index, row_data):
+    def replace_row(self, row_index, row_data, row_properties):
         for key, value in row_data.items():
-            if key not in family_properties:
+            if key not in row_properties:
                 continue
 
-            col_index = family_properties.index(key) + 1
+            col_index = row_properties.index(key) + 1
             cell = self.worksheet.cell(row=row_index, column=col_index)
             cell.value = value
 

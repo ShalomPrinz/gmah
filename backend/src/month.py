@@ -3,7 +3,7 @@ from glob import glob
 from os.path import basename
 from openpyxl import load_workbook
 
-from src.data import key_prop
+from src.data import key_prop, report_properties, date_prop, status_prop
 from src.excel import Excel
 from src.families import load_families_file, search_families
 from src.managers import find_manager, load_managers_file
@@ -184,3 +184,17 @@ def search_report(report_file: Excel, query='', search_by=''):
     search_by = '' if search_by is None else search_by
 
     return report_file.search(query, ReportSearchBy, search_by)
+
+def update_receipt_status(report_file: Excel, family_name, receipt):
+    '''
+    Updates receipt status of family_name in report_file to be the given receipt.
+    '''
+    try:
+        index = report_file.get_row_index(family_name, ReportSearchBy)
+    except Exception as e:
+        return e
+    
+    family_report_data = report_file.search(family_name, ReportSearchBy, 'name')[0]
+    family_report_data[date_prop] = receipt.get("date", family_report_data[date_prop])
+    family_report_data[status_prop] = receipt.get("status", family_report_data[status_prop])
+    report_file.replace_row(index, family_report_data, report_properties)

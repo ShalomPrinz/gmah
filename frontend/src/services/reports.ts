@@ -1,4 +1,5 @@
-import { get, post } from "./http";
+import { get, post, put } from "./http";
+import type { Receipt } from "../types";
 
 function generateMonthReport(name: string) {
   return post("generate/month", { name });
@@ -22,4 +23,22 @@ function getReport(reportName: string, query: string, by: string) {
   });
 }
 
-export { generateMonthReport, getNoManagerDrivers, getReportsList, getReport };
+function updateFamilyReceipt(
+  reportName: string,
+  familyName: string,
+  receipt: Receipt
+) {
+  return put("/report/update", {
+    report_name: reportName,
+    family_name: familyName,
+    receipt,
+  });
+}
+
+export {
+  generateMonthReport,
+  getNoManagerDrivers,
+  getReportsList,
+  getReport,
+  updateFamilyReceipt,
+};

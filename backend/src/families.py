@@ -162,4 +162,4 @@ def update_family(families_file: Excel, original_name, family):
         index = families_file.get_row_index(original_name, FamiliesSearchBy)
     except Exception as e:
         return e
-    families_file.replace_row(index, family)
+    families_file.replace_row(index, family, family_properties)
