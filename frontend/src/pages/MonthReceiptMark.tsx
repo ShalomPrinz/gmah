@@ -13,7 +13,7 @@ import {
   updateFamilyReceipt,
 } from "../services";
 import type { Receipt } from "../types";
-import { concatArray } from "../util";
+import { concatArray, getTodayDate } from "../util";
 
 interface MarkMode {
   id: string;
@@ -120,15 +120,33 @@ function ReceiptForm({ initialReceipt, onSubmit }: ReceiptFormProps) {
   const dateRef = useRef<HTMLInputElement>(null);
   const statusRef = useRef<HTMLInputElement>(null);
 
+  const submit = () => {
+    onSubmit({
+      date: dateRef.current?.value ?? "",
+      status: statusRef.current?.checked ?? false,
+    });
+  };
+
+  const markToday = (status: boolean) => {
+    if (!dateRef.current || !statusRef.current) {
+      toast.error("קרתה שגיאה לא צפויה");
+      return;
+    }
+
+    dateRef.current.value = getTodayDate();
+    statusRef.current.checked = status;
+    submit();
+  };
+
+  const markReceivedToday = () => markToday(true);
+  const markNotReceivedToday = () => markToday(false);
+
   return (
     <form
       className="my-4"
       onSubmit={(e) => {
         e.preventDefault();
-        onSubmit({
-          date: dateRef.current?.value ?? "",
-          status: statusRef.current?.checked ?? false,
-        });
+        submit();
       }}
     >
       <Row>
@@ -159,10 +177,24 @@ function ReceiptForm({ initialReceipt, onSubmit }: ReceiptFormProps) {
       </Row>
       <Row className="mt-5 d-flex justify-content-center">
         <button
-          className="w-25 mx-3 fs-3 p-3 rounded bg-default button-hover"
+          className="w-25 mx-2 fs-4 p-2 rounded bg-default button-hover"
           type="submit"
         >
           שמור שינויים
+        </button>
+        <button
+          className="w-25 mx-2 fs-4 p-2 rounded bg-default button-hover"
+          onClick={markReceivedToday}
+          type="button"
+        >
+          קיבל/ה היום
+        </button>
+        <button
+          className="w-25 mx-2 fs-4 p-2 rounded bg-default button-hover"
+          onClick={markNotReceivedToday}
+          type="button"
+        >
+          לא קיבל/ה היום
         </button>
       </Row>
     </form>
