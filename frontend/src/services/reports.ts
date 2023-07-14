@@ -23,6 +23,25 @@ function getReport(reportName: string, query: string, by: string) {
   });
 }
 
+function getReportColumn(reportName: string, query: string, by: string) {
+  return get("report/column", {
+    params: {
+      report_name: reportName,
+      query,
+      by,
+    },
+  });
+}
+
+function getReceiptStatus(reportName: string, familyName: string) {
+  return get("report/get", {
+    params: {
+      report_name: reportName,
+      family_name: familyName,
+    },
+  });
+}
+
 function updateFamilyReceipt(
   reportName: string,
   familyName: string,
@@ -38,7 +57,9 @@ function updateFamilyReceipt(
 export {
   generateMonthReport,
   getNoManagerDrivers,
-  getReportsList,
+  getReceiptStatus,
   getReport,
+  getReportColumn,
+  getReportsList,
   updateFamilyReceipt,
 };

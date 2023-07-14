@@ -2,7 +2,7 @@ from openpyxl import load_workbook
 from os import path
 
 from src.data import family_properties
-from src.search import SearchRequest, search, FindRequest, find
+from src.search import SearchRequest, search, search_column, FindRequest, find
 from src.errors import FileResourcesMissingError, FamilyNotFoundError
 from src.util import letter_by_index
 from src.styles import RequiredStyle
@@ -54,7 +54,7 @@ class Excel:
         else:
             raise FamilyNotFoundError(f"המשפחה {row_key} לא נמצאת")
     
-    def search(self, query, search_enum, search_by=''):
+    def search(self, query, search_enum, search_by='', column_search=False):
         request = SearchRequest(
             rows_iter=self.get_rows_iter(),
             headers=self.get_headers(),
@@ -63,7 +63,10 @@ class Excel:
             search_enum=search_enum
         )
 
-        return search(request)
+        if column_search:
+            return search_column(request)
+        else:
+            return search(request)
 
     def append_rows(self, families, to_excel_row):
         for family in families:    

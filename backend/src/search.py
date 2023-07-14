@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from typing import List, Generator
 from enum import Enum
 
+from src.data import search_column_prop
 from src.util import without_hyphen
 
 @dataclass
@@ -39,6 +40,20 @@ def search(request: SearchRequest):
                 matching_row = {
                     request.headers[index]: cell.value for index, cell in enumerate(row)}
                 matching_rows.append(matching_row)
+                break # Row added to matching_rows, skip to next row
+    return matching_rows
+
+def search_column(request: SearchRequest):
+    search_columns = request.search_enum.get_search_columns(request.search_by)
+
+    matching_rows = []
+    for row in request.rows_iter:
+        for column in search_columns:
+            cell_value = row[column].value
+            if cell_value is None:
+                continue # Don't insert no value cell into search result
+            if request.query in cell_value:
+                matching_rows.append({ search_column_prop: cell_value })
                 break # Row added to matching_rows, skip to next row
     return matching_rows
 

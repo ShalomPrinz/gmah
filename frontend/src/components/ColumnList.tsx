@@ -2,7 +2,7 @@ import ListGroup from "react-bootstrap/ListGroup";
 import ConditionalList from "./ConditionalList";
 import { useEffect, useState } from "react";
 
-interface ListItem {
+export interface ListItem {
   title: string;
 }
 

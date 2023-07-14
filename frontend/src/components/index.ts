@@ -20,6 +20,7 @@ export {
   Table,
 };
 
+export type { ListItem } from "./ColumnList";
 export type { Option } from "./Dropdown";
 export type {
   FormResetFn,

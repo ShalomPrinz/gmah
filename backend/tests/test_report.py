@@ -1,8 +1,8 @@
 import unittest
 from os import path
 
-from src.data import date_prop, status_prop
-from src.month import generate_month_report, get_no_driver_families, get_no_manager_drivers, get_report_path, get_reports_list, search_report, update_receipt_status
+from src.data import date_prop, status_prop, search_column_prop, key_prop, driver_prop_index
+from src.month import generate_month_report, get_no_driver_families, get_no_manager_drivers, get_report_path, get_reports_list, search_report, search_report_column, update_receipt_status, get_receipt_status
 
 from tests.families_util import Family, write_families, setUpFamilies, tearDownFamilies
 from tests.managers_util import write_managers, setUpManagers, tearDownManagers
@@ -283,6 +283,42 @@ class TestSearchReport(unittest.TestCase):
                 search_result = search_report(report_file, query, 'driver')
                 self.assertEqual(expected_len, len(search_result), message)
 
+    def test_search_column_name(self):        
+        test_cases = [
+            ([None],    "Should return empty list"),
+            ([],        "Should return empty list"),
+            (["פרינץ"], "Should return a list with all family names"),
+            (["פרינץ", "שלום", "נתאי"], "Should return a list with all family names")
+        ]
+
+        for families_list, message in test_cases:
+            with self.subTest(families_list):
+                families = list(map(lambda family: Family({ key_prop: family }), families_list))
+                report_file = self.generate_report(families)
+                expected_list = map(lambda family: { search_column_prop: family.excel_row[0] }, families)
+                expected_list = list(filter(lambda family: family[search_column_prop] is not None, expected_list))
+
+                search_result = search_report_column(report_file, '', 'name')
+                self.assertListEqual(search_result, expected_list, message)
+    
+    def test_search_column_driver(self):        
+        test_cases = [
+            ([None],    "Should return empty list"),
+            ([],        "Should return empty list"),
+            (["נהגוס"], "Should return a list with all families drivers"),
+            (["פרינץ", "שלום", "נתאי"], "Should return a list with all family drivers")
+        ]
+
+        for index, (families_list, message) in enumerate(test_cases):
+            with self.subTest(families_list):
+                families = list(map(lambda driver: Family({ key_prop: f"family_{index}", "נהג": driver }), families_list))
+                report_file = self.generate_report(families)
+                expected_list = map(lambda family: { search_column_prop: family.excel_row[driver_prop_index] }, families)
+                expected_list = list(filter(lambda family: family[search_column_prop] is not None, expected_list))
+
+                search_result = search_report_column(report_file, '', 'driver')
+                self.assertListEqual(search_result, expected_list, message)
+
 class TestMarkReport(unittest.TestCase):
     def setUpClass():
         setUpFamilies()
@@ -293,8 +329,7 @@ class TestMarkReport(unittest.TestCase):
         tearDownManagers()
         tearDownMonth()
 
-    def generate_report(self):
-        family_name = "פרינץ"
+    def generate_report(self, family_name="פרינץ"):
         families = [Family({"שם מלא": family_name})]
         return family_name, generate_report(self.assertTrue, families)
     
@@ -306,13 +341,11 @@ class TestMarkReport(unittest.TestCase):
         self.assertIsNone(result[0][status_prop], "Receipt status should be None after generating report")
 
     def test_update_receipt_status(self):
-        family_name, report_file = self.generate_report()
-
         test_cases = [
             ({}, None, None, "Empty object should not update family receipt"),
             ({ "some": "2023-12-12" }, None,         None, "Wrong props should not update family receipt"),
             ({ "date": "2023-12-12" }, "2023-12-12", None, "Single right prop should update family receipt"),
-            ({ "status": True },                     None, True, "Single right prop should update family receipt"),
+            ({ "status": True },       None,         True, "Single right prop should update family receipt"),
             ({ "date": "2000-01-01", "status": False }, "2000-01-01", False, "Both right props should update family receipt")
         ]
 
@@ -322,8 +355,40 @@ class TestMarkReport(unittest.TestCase):
 
                 error = update_receipt_status(report_file, family_name, update_obj)
                 if error is not None:
-                    self.fail("Updating receipt status failed, error thrown from update function")
+                    self.fail(f"Updating receipt status failed: {error}")
 
                 result = search_report(report_file, family_name, 'name')
                 self.assertEqual(result[0][date_prop], expected_date, message)
                 self.assertEqual(result[0][status_prop], expected_status, message)
+    
+    def test_get_receipt_status_not_found(self):
+        default_receipt_status = {
+            "date": "",
+            "status": False,
+        }
+
+        test_cases = [
+            (None, default_receipt_status, "Should return default receipt status if family not found"),
+            ("", default_receipt_status, "Should return default receipt status if family not found"),
+        ]
+
+        for family_name, expected_receipt_status, message in test_cases:
+            with self.subTest(f"{family_name}"):
+                _, report_file = self.generate_report(family_name)
+                receipt_status = get_receipt_status(report_file, family_name)
+                self.assertEqual(receipt_status, expected_receipt_status, message)
+
+    def test_get_receipt_status_found(self):
+        expected_receipt_status = {
+            "date": "1928-12-12",
+            "status": True,
+        }
+        family_name, report_file = self.generate_report()
+        error = update_receipt_status(report_file, family_name, expected_receipt_status)
+        if error is not None:
+            self.fail(f"Updating receipt status failed: {error}")
+        
+        receipt_status = get_receipt_status(report_file, family_name)
+        self.assertEqual(receipt_status, expected_receipt_status, "Should return updated receipt status")
+
+        

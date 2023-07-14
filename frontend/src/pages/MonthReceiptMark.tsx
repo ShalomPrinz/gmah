@@ -2,13 +2,18 @@ import { useEffect, useRef, useState } from "react";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
+import { toast } from "react-toastify";
 
-import { ColumnList, ConditionalList, Search } from "../components";
+import { ColumnList, ListItem, Search } from "../components";
 import { useLocationState } from "../hooks";
 import { familyIdProp } from "../modules";
-import { getReport, updateFamilyReceipt } from "../services";
+import {
+  getReceiptStatus,
+  getReportColumn,
+  updateFamilyReceipt,
+} from "../services";
 import type { Receipt } from "../types";
-import { toast } from "react-toastify";
+import { concatArray } from "../util";
 
 interface MarkMode {
   id: string;
@@ -17,103 +22,84 @@ interface MarkMode {
   searchBy: string;
 }
 
-const driverMarkMode = {
-  id: "BY_DRIVER",
-  label: "סימון לפי נהג",
-  property: "נהג",
-  searchBy: "driver",
-};
-
-const manualMarkMode = {
+const manualMarkMode: MarkMode = {
   id: "MANUAL",
   label: "סימון ידני",
   property: familyIdProp,
   searchBy: "name",
 };
 
-const markModes = [driverMarkMode, manualMarkMode];
-const defaultMode = driverMarkMode;
-
-const extractPropertyToList = (list: any[], property: string) =>
-  Array.from<string>(
-    list.reduce((set, item) => {
-      set.add(item[property]);
-      return set;
-    }, new Set<string>())
-  ).map((item: string) => ({
-    title: item,
-  }));
-
-const getReceiptStatus = (list: any[], itemKey: any) => {
-  const item = list.find((item) => itemKey === item?.[familyIdProp]);
-  return {
-    date: (item?.["תאריך"] ?? "") as string,
-    status: (item?.["קיבל/ה"] ?? false) as boolean,
-  };
-};
-
-function MonthReceiptMark() {
+function MonthReceiptMarkWrapper() {
   const reportName =
     useLocationState<string>("MonthReceiptMark", "report") ?? "";
 
+  const reportColumn = useReportColumn(reportName);
+
+  return (
+    <MonthReceiptMark
+      columnList={reportColumn}
+      key={reportColumn.length}
+      reportName={reportName}
+    />
+  );
+}
+
+interface MonthReceiptMarkProps {
+  columnList: ListItem[];
+  reportName: string;
+}
+
+function MonthReceiptMark({ columnList, reportName }: MonthReceiptMarkProps) {
   const [query, setQuery] = useState("");
-  const [markMode, setMarkMode] = useState(defaultMode);
+  const searchResult = columnList.filter(({ title }) => title.includes(query));
 
-  const searchResult = useReportSearch(reportName, query, markMode.searchBy);
-  const columnListData = extractPropertyToList(searchResult, markMode.property);
+  const [familyName, setFamilyName] = useState("");
+  const familyNotFound = familyName === "";
 
-  const [selectedItem, setSelectedItem] = useState("");
-  const receiptStatus = getReceiptStatus(searchResult, selectedItem);
+  const receiptStatus = useReceiptStatus(reportName, familyName);
 
-  const modeButtonCallback = (mode: MarkMode) => {
-    const color =
-      markMode.id === mode.id
-        ? "bg-primary text-white"
-        : "bg-white text-secondary";
-    return (
-      <button
-        className={`m-2 p-3 ${color} rounded fs-4 border border-0`}
-        onClick={() => setMarkMode(mode)}
-      >
-        {mode.label}
-      </button>
-    );
-  };
+  const receiptFormKey = concatArray(
+    familyName,
+    receiptStatus.date,
+    receiptStatus.status,
+    searchResult.length
+  );
 
   return (
     <>
       <div className="d-flex justify-content-center mt-5">
         <h1 className="mx-5 my-auto">סימון קבלה - {reportName}</h1>
-        <ConditionalList list={markModes} itemCallback={modeButtonCallback} />
       </div>
       <main className="d-flex">
         <div className="mx-5" style={{ width: "40%" }}>
           <Search
             onChange={(q: string) => setQuery(q)}
-            placeholder={`הכנס ${markMode.property} של משפחה...`}
+            placeholder={`הכנס ${manualMarkMode.property} של משפחה...`}
           />
           <ColumnList
-            list={columnListData}
-            key={`${columnListData.length}${markMode.id}`}
-            onItemSelect={setSelectedItem}
+            key={searchResult.length}
+            list={searchResult}
+            onItemSelect={setFamilyName}
           />
         </div>
         <div className="text-center my-3 mx-5" style={{ width: "45%" }}>
-          <h2 className="mt-4">{selectedItem}</h2>
-          {markMode.id === manualMarkMode.id && (
+          <h2 className="mt-4">{familyName}</h2>
+          {familyNotFound ? (
+            <h3 className="my-5 fw-light">לא מצאנו משפחה כזו בדוח הקבלה</h3>
+          ) : (
             <ReceiptForm
               initialReceipt={receiptStatus}
-              key={selectedItem}
+              key={receiptFormKey}
               onSubmit={(receipt) =>
-                updateFamilyReceipt(reportName, selectedItem, receipt)
+                updateFamilyReceipt(reportName, familyName, receipt)
                   .then(() =>
                     toast.success(
-                      `שינית את סטטוס הקבלה עבור משפחת ${selectedItem} בהצלחה`
+                      `שינית את סטטוס הקבלה עבור משפחת ${familyName} בהצלחה`
                     )
                   )
                   .catch(() =>
                     toast.error(
-                      `קרתה שגיאה בניסיון לשנות את סטטוס הקבלה עבור משפחת ${selectedItem}`
+                      `קרתה שגיאה בניסיון לשנות את סטטוס הקבלה עבור משפחת ${familyName}`
                     )
                   )
               }
@@ -183,24 +169,38 @@ function ReceiptForm({ initialReceipt, onSubmit }: ReceiptFormProps) {
   );
 }
 
-function useReportSearch(
-  reportName: string | undefined,
-  query: string,
-  searchBy: string
-) {
-  const [report, setReport] = useState(Array());
+function useReportColumn(reportName: string) {
+  const [searchResult, setSearchResult] = useState([]);
 
   useEffect(() => {
-    if (typeof reportName === "undefined") return;
-
-    getReport(reportName, query, searchBy)
-      .then((res) => setReport(res.data.report))
+    getReportColumn(reportName, "", manualMarkMode.searchBy)
+      .then((res) => setSearchResult(res.data.report_column))
       .catch((error) =>
         console.error("Error occurred while trying to search in report", error)
       );
-  }, [reportName, query, searchBy]);
+  }, [reportName]);
 
-  return report;
+  return searchResult;
 }
 
-export default MonthReceiptMark;
+function useReceiptStatus(reportName: string, familyName: string) {
+  const [receiptStatus, setReceiptStatus] = useState<Receipt>({
+    date: "",
+    status: false,
+  });
+
+  useEffect(() => {
+    getReceiptStatus(reportName, familyName)
+      .then((res) => setReceiptStatus(res.data.receipt_status))
+      .catch((error) =>
+        console.error(
+          "Error occurred while trying to get receipt status",
+          error
+        )
+      );
+  }, [reportName, familyName]);
+
+  return receiptStatus;
+}
+
+export default MonthReceiptMarkWrapper;

@@ -108,6 +108,19 @@ def query_report():
     query_result = month.search_report(report_file, query, search_by)
     return jsonify(report=query_result), 200
 
+@app.route('/report/column')
+def query_report_column():
+    report_name = request.args.get('report_name')
+    query = request.args.get('query')
+    search_by = request.args.get('by')
+
+    error, report_file = month.load_report_file(report_name)
+    if error is not None:
+        return error_response(error)
+    
+    query_result = month.search_report_column(report_file, query, search_by)
+    return jsonify(report_column=query_result), 200
+
 @app.route('/report/update', methods=["PUT"])
 def update_receipt_status():
     report_name = request.json['report_name']
@@ -123,3 +136,15 @@ def update_receipt_status():
         return error_response(error)
     
     return jsonify(), 200
+
+@app.route('/report/get')
+def get_receipt_status():
+    report_name = request.args.get('report_name')
+    family_name = request.args.get('family_name')
+
+    error, report_file = month.load_report_file(report_name)
+    if error is not None:
+        return error_response(error)
+    
+    receipt_status = month.get_receipt_status(report_file, family_name)
+    return jsonify(receipt_status=receipt_status)

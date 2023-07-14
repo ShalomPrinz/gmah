@@ -185,6 +185,31 @@ def search_report(report_file: Excel, query='', search_by=''):
 
     return report_file.search(query, ReportSearchBy, search_by)
 
+def search_report_column(report_file: Excel, query='', search_by=''):
+    '''
+    Returns list of families value of the given search_by column from the report_file.
+    '''
+    query = '' if query is None else query
+    search_by = '' if search_by is None else search_by
+
+    return report_file.search(query, ReportSearchBy, search_by, True)
+
+def get_receipt_status(report_file: Excel, family_name):
+    '''
+    Returns receipt status of family_name in report_file.
+    If family_name not found, returns default receipt status.
+    '''    
+    default_date = ""
+    default_status = False
+
+    report = report_file.search(family_name, ReportSearchBy, 'name')
+    family_report_data = report[0] if report else {}
+
+    return {
+        "date": family_report_data.get(date_prop, default_date),
+        "status": family_report_data.get(status_prop, default_status)
+    }
+
 def update_receipt_status(report_file: Excel, family_name, receipt):
     '''
     Updates receipt status of family_name in report_file to be the given receipt.

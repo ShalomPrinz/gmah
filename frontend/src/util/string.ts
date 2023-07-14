@@ -6,4 +6,8 @@ function isString(str: any) {
   return typeof str === "string" || str instanceof String;
 }
 
-export { getLines, isString };
+function concatArray(...values: any[]) {
+  return values.reduce((acc, curr) => `${acc}${curr}`, "") as string;
+}
+
+export { concatArray, getLines, isString };
