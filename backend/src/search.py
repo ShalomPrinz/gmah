@@ -1,6 +1,6 @@
 from openpyxl.worksheet.worksheet import Worksheet
 from dataclasses import dataclass
-from typing import List, Generator
+from typing import Any, Dict, List, Generator
 from enum import Enum
 
 from src.data import search_column_prop
@@ -13,6 +13,8 @@ class SearchRequest:
     query: str
     search_by: str
     search_enum: Enum
+    search_style: str
+    style_map: Dict[str, Any]
 
 @dataclass
 class FindRequest:
@@ -27,6 +29,7 @@ def search(request: SearchRequest):
         request.query = without_hyphen(request.query)
 
     search_columns = request.search_enum.get_search_columns(request.search_by)
+    style_columns = request.search_enum.get_search_columns(request.search_style)
 
     matching_rows = []
     for row in request.rows_iter:
@@ -37,8 +40,14 @@ def search(request: SearchRequest):
             if searching_by_phone:
                 cell_value = without_hyphen(cell_value)
             if request.query in cell_value:
-                matching_row = {
-                    request.headers[index]: cell.value for index, cell in enumerate(row)}
+                matching_row = {}
+                for index, cell in enumerate(row):
+                    key = request.headers[index]
+                    if index in style_columns:
+                        style_value = request.style_map.get(cell.style, None)
+                        matching_row |= { key: style_value }
+                    else:
+                        matching_row |= { key: cell.value }
                 matching_rows.append(matching_row)
                 break # Row added to matching_rows, skip to next row
     return matching_rows

@@ -7,15 +7,19 @@ from src.data import key_prop, report_properties, date_prop, status_prop
 from src.excel import Excel
 from src.families import load_families_file, search_families
 from src.managers import find_manager, load_managers_file
-from src.styles import report_cell_style
+from src.styles import report_cell_style, report_received_style, report_not_received_style, report_received_name, report_not_received_name, style_name
 
 class ReportSearchBy(Enum):
     NAME = 'name'
     MANAGER = 'manager'
     DRIVER = 'driver'
+    RECEIVE = 'recieve'
 
     @classmethod
     def get_search_columns(cls, search_by):
+        if search_by is None:
+            return []
+        
         search_by = getattr(ReportSearchBy, search_by.upper(), ReportSearchBy.NAME)
         match search_by:
             case ReportSearchBy.NAME:
@@ -24,8 +28,16 @@ class ReportSearchBy(Enum):
                 return [1]
             case ReportSearchBy.DRIVER:
                 return [2]
+            case ReportSearchBy.RECEIVE:
+                return [4]
             case _:
                 return [0]
+
+report_style_map = {
+    style_name: None,
+    report_received_name: True,
+    report_not_received_name: False
+}
 
 month_reports_folder = "דוחות קבלה"
 month_reports_path = f"{month_reports_folder}/"
@@ -56,8 +68,11 @@ def load_report_file(report_name):
     try:
         report = Excel(
             filename=path,
+            row_properties=report_properties,
             required_style=report_cell_style
         )
+        report.add_named_style(report_received_style)
+        report.add_named_style(report_not_received_style)
         return (None, report)
     except Exception as e:
         return (e, None)
@@ -183,7 +198,8 @@ def search_report(report_file: Excel, query='', search_by=''):
     query = '' if query is None else query
     search_by = '' if search_by is None else search_by
 
-    return report_file.search(query, ReportSearchBy, search_by)
+    return report_file.search(query, ReportSearchBy, search_by,
+                              search_style='receive', style_map=report_style_map)
 
 def search_report_column(report_file: Excel, query='', search_by=''):
     '''
@@ -202,7 +218,8 @@ def get_receipt_status(report_file: Excel, family_name):
     default_date = ""
     default_status = False
 
-    report = report_file.search(family_name, ReportSearchBy, 'name')
+    report = report_file.search(family_name, ReportSearchBy, 'name',
+                                search_style='receive', style_map=report_style_map)
     family_report_data = report[0] if report else {}
 
     return {
@@ -219,7 +236,15 @@ def update_receipt_status(report_file: Excel, family_name, receipt):
     except Exception as e:
         return e
     
-    family_report_data = report_file.search(family_name, ReportSearchBy, 'name')[0]
-    family_report_data[date_prop] = receipt.get("date", family_report_data[date_prop])
-    family_report_data[status_prop] = receipt.get("status", family_report_data[status_prop])
-    report_file.replace_row(index, family_report_data, report_properties)
+    if (date := receipt.get("date", None)) is not None:
+        report_file.replace_cell(index, {
+            "key": date_prop,
+            "value": date
+        })
+
+    if (status := receipt.get("status", None)) is not None:
+        style = report_received_name if status else report_not_received_name
+        report_file.replace_cell(index, {
+            "key": status_prop,
+            "style": style
+        })

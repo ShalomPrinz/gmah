@@ -1,16 +1,13 @@
 from openpyxl import load_workbook
 from os import path
 
-from src.data import family_properties
 from src.search import SearchRequest, search, search_column, FindRequest, find
 from src.errors import FileResourcesMissingError, FamilyNotFoundError
 from src.util import letter_by_index
-from src.styles import RequiredStyle
-
-last_excel_column = letter_by_index(len(family_properties))
+from src.styles import NamedStyle
 
 class Excel:
-    def __init__(self, filename: str, required_style: RequiredStyle, table_name: str = ""):
+    def __init__(self, filename: str, row_properties, required_style: NamedStyle, table_name: str = ""):
         if not path.exists(filename):
             raise FileNotFoundError(f'הקובץ {filename} לא נמצא')
 
@@ -20,11 +17,12 @@ class Excel:
 
         self.table_name = table_name
         self.cell_style = required_style.name
-        self.last_column = last_excel_column
+
+        self.row_properties = row_properties
+        self.last_column = letter_by_index(len(row_properties))
         self.first_content_row = 2 # First row is 1, and contains titles
 
-        if self.cell_style not in self.workbook.named_styles:
-            self.add_named_style(required_style.style)
+        self.add_named_style(required_style)
         
         if self.table_name and self.table_name not in self.worksheet.tables:
             raise FileResourcesMissingError(f"על הקובץ {filename} להכיל טבלה בשם '{self.table_name}'")
@@ -54,13 +52,15 @@ class Excel:
         else:
             raise FamilyNotFoundError(f"המשפחה {row_key} לא נמצאת")
     
-    def search(self, query, search_enum, search_by='', column_search=False):
+    def search(self, query, search_enum, search_by='', column_search=False, search_style=None, style_map={}):
         request = SearchRequest(
             rows_iter=self.get_rows_iter(),
             headers=self.get_headers(),
             query=query,
             search_by=search_by,
-            search_enum=search_enum
+            search_enum=search_enum,
+            search_style=search_style,
+            style_map=style_map
         )
 
         if column_search:
@@ -84,17 +84,37 @@ class Excel:
             
         self.save()
 
-    def replace_row(self, row_index, row_data, row_properties):
+    def replace_row(self, row_index, row_data):
         for key, value in row_data.items():
-            if key not in row_properties:
+            if key not in self.row_properties:
                 continue
 
-            col_index = row_properties.index(key) + 1
+            col_index = self.row_properties.index(key) + 1
             cell = self.worksheet.cell(row=row_index, column=col_index)
             cell.value = value
 
         self.save()
 
-    def add_named_style(self, named_style):
-        self.workbook.add_named_style(named_style)
+    def replace_cell(self, row_index, cell_data):
+        '''
+        Replaces a single cell with the given cell_data.
+        Expects cell_data to be a dict with a "key" attr, in addition to a "style" or "value"
+        attributes. If both present, "value" will be ignored.
+        '''
+        if cell_data["key"] not in self.row_properties:
+            return
+        
+        col_index = self.row_properties.index(cell_data["key"]) + 1
+        cell = self.worksheet.cell(row=row_index, column=col_index)
+        
+        if "style" in cell_data:
+            cell.style = cell_data["style"]
+        elif "value" in cell_data:
+            cell.value = cell_data["value"]
+
         self.save()
+
+    def add_named_style(self, named_style):
+        if named_style.name not in self.workbook.named_styles:
+            self.workbook.add_named_style(named_style)
+            self.save()

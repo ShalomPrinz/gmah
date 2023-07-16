@@ -97,6 +97,12 @@ function MonthTracker() {
         </Row>
         <Row>
           <Table
+            columnBackground={{
+              "קיבל/ה": (received) => {
+                if (received === true) return "received";
+                if (received === false) return "not-received";
+              },
+            }}
             columns={reportTableHeaders}
             data={report}
             dataIdProp={familyIdProp}

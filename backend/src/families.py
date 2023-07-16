@@ -14,6 +14,9 @@ class FamiliesSearchBy(Enum):
 
     @classmethod
     def get_search_columns(cls, search_by):
+        if search_by is None:
+            return []
+        
         search_by = getattr(FamiliesSearchBy, search_by.upper(), FamiliesSearchBy.NAME)
         match search_by:
             case FamiliesSearchBy.NAME:
@@ -38,6 +41,7 @@ def load_families_file():
     try:
         families_file = Excel(
             filename=families_filename,
+            row_properties=family_properties,
             required_style=families_cell_style,
             table_name='נתמכים')
         return (None, families_file)
@@ -162,4 +166,4 @@ def update_family(families_file: Excel, original_name, family):
         index = families_file.get_row_index(original_name, FamiliesSearchBy)
     except Exception as e:
         return e
-    families_file.replace_row(index, family, family_properties)
+    families_file.replace_row(index, family)

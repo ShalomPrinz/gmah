@@ -76,3 +76,11 @@ button:disabled {
   background-color: var(--default-bg-color);
   color: var(--default-color);
 }
+
+.bg-received {
+  background-color: #58e05a !important;
+}
+
+.bg-not-received {
+  background-color: #e23b3b !important;
+}
