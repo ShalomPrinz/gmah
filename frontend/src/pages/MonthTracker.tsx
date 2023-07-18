@@ -5,7 +5,11 @@ import { Link } from "react-router-dom";
 
 import { Dropdown, Option, RadioMenu, Search, Table } from "../components";
 import IconComponent from "../components/Icon";
-import { familyIdProp, reportTableHeaders } from "../modules";
+import {
+  familyIdProp,
+  reportReceiveProp,
+  reportTableHeaders,
+} from "../modules";
 import { getReport, getReportsList } from "../services";
 
 const NoReportsMessage = () => (
@@ -46,14 +50,21 @@ const getHeaderByButtonValue = (value: string) =>
   }[value] || "NoSuchSearchOption");
 
 const defaultSelection = "0";
+
+const defaultQuery = "";
+const defaultSearchBy = "name";
+
 function MonthTracker() {
-  const [query, setQuery] = useState("");
-  const [searchBy, setSearchBy] = useState("name");
+  const [query, setQuery] = useState(defaultQuery);
+  const [searchBy, setSearchBy] = useState(defaultSearchBy);
 
   const options = useMonthReports();
   const { onSelect, selectedReport } = useReportSelection(options);
+
   const report = useReportSearch(selectedReport, query, searchBy);
 
+  const isDefaultSearch =
+    query === defaultQuery && searchBy === defaultSearchBy;
   const hasOptions = options.length > 0;
 
   if (!hasOptions)
@@ -89,16 +100,22 @@ function MonthTracker() {
             />
           </Col>
           <Col sm="3">
-            <h2>מספר תוצאות</h2>
-            <p className="text-primary" style={{ fontSize: "50px" }}>
-              {report.length}
-            </p>
+            {isDefaultSearch ? (
+              <ReportStats report={report as []} />
+            ) : (
+              <>
+                <h2>מספר תוצאות</h2>
+                <p className="text-primary" style={{ fontSize: "50px" }}>
+                  {report.length}
+                </p>
+              </>
+            )}
           </Col>
         </Row>
         <Row>
           <Table
             columnBackground={{
-              "קיבל/ה": (received) => {
+              [reportReceiveProp]: (received) => {
                 if (received === true) return "received";
                 if (received === false) return "not-received";
               },
@@ -166,6 +183,40 @@ function useReportSearch(
   }, [reportName, query, searchBy]);
 
   return report;
+}
+
+interface ReportStatsProps {
+  report: [];
+}
+
+function ReportStats({ report }: ReportStatsProps) {
+  const reportFamiliesCount = report.length;
+
+  const familiesReceived = report.filter(
+    (family) => family[reportReceiveProp] === true
+  ).length;
+  const familiesNotReceived = report.filter(
+    (family) => family[reportReceiveProp] === false
+  ).length;
+  const familiesNotSent =
+    reportFamiliesCount - familiesReceived - familiesNotReceived;
+
+  return (
+    <Row>
+      <Col>
+        <h5>סה"כ משפחות</h5>
+        <p className="fs-3 text-primary">{reportFamiliesCount}</p>
+        <h5>לא נשלח</h5>
+        <p className="fs-3 text-secondary">{familiesNotSent}</p>
+      </Col>
+      <Col>
+        <h5>קיבלו</h5>
+        <p className="fs-3 text-success">{familiesReceived}</p>
+        <h5>לא קיבלו</h5>
+        <p className="fs-3 text-danger">{familiesNotReceived}</p>
+      </Col>
+    </Row>
+  );
 }
 
 export default MonthTracker;

@@ -6,7 +6,8 @@ family_attributes=([0]=$family_id_prop [1]="רחוב" [2]="בניין" [3]="די
 add_family_exclude="7 9"
 table_headers_exclude=""
 
-report_columns=([0]=$family_id_prop [1]="אחראי" [2]="נהג" [3]="תאריך" [4]="קיבל/ה")
+report_receive_prop="קיבל/ה"
+report_columns=([0]=$family_id_prop [1]="אחראי" [2]="נהג" [3]="תאריך" [4]=$report_receive_prop)
 
 # Path Preparation
 
@@ -161,6 +162,11 @@ function add_report_headers {
 }
 
 add_report_headers "reportTableHeaders"
+
+# Report Receive Prop
+rrp_name="reportReceiveProp"
+echo "export const $rrp_name = \"$report_receive_prop\"" >> $reports_file
+report_exports+="$rrp_name"
 
 # Index File
 

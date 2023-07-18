@@ -5,3 +5,5 @@ export const reportTableHeaders = [
   { id: 3, path: "תאריך" },
   { id: 4, path: "קיבל/ה" },
 ];
+
+export const reportReceiveProp = "קיבל/ה";
