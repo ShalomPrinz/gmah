@@ -97,11 +97,16 @@ function MonthReceiptMark({ columnList, reportName }: MonthReceiptMarkProps) {
                       `שינית את סטטוס הקבלה עבור משפחת ${familyName} בהצלחה`
                     )
                   )
-                  .catch(() =>
+                  .catch((err) => {
+                    const message =
+                      err?.response?.data?.description || "שגיאה לא צפויה";
                     toast.error(
-                      `קרתה שגיאה בניסיון לשנות את סטטוס הקבלה עבור משפחת ${familyName}`
-                    )
-                  )
+                      `קרתה שגיאה בניסיון לשנות את סטטוס הקבלה עבור משפחת ${familyName}: ${message}`,
+                      {
+                        toastId: `${familyName}:${message}`,
+                      }
+                    );
+                  })
               }
             />
           )}

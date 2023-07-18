@@ -3,6 +3,7 @@ from os import path
 
 from src.data import date_prop, status_prop, search_column_prop, key_prop, driver_prop_index
 from src.month import generate_month_report, get_no_driver_families, get_no_manager_drivers, get_report_path, get_reports_list, search_report, search_report_column, update_receipt_status, get_receipt_status
+from src.results import receipt_update_results
 
 from tests.families_util import Family, write_families, setUpFamilies, tearDownFamilies
 from tests.managers_util import write_managers, setUpManagers, tearDownManagers
@@ -345,7 +346,8 @@ class TestMarkReport(unittest.TestCase):
             ({}, None, None, "Empty object should not update family receipt"),
             ({ "some": "2023-12-12" }, None,         None, "Wrong props should not update family receipt"),
             ({ "date": "2023-12-12" }, "2023-12-12", None, "Single right prop should update family receipt"),
-            ({ "status": True },       None,         True, "Single right prop should update family receipt"),
+            ({ "status": True },       None,         None, "Should not update family receipt if date is not present"),
+            ({ "status": True, "date": "" }, None,   None, "Should not update family receipt if date is empty string"),
             ({ "date": "2000-01-01", "status": False }, "2000-01-01", False, "Both right props should update family receipt")
         ]
 
@@ -353,13 +355,28 @@ class TestMarkReport(unittest.TestCase):
             with self.subTest(f"{update_obj}"):
                 family_name, report_file = self.generate_report()
 
-                error = update_receipt_status(report_file, family_name, update_obj)
-                if error is not None:
-                    self.fail(f"Updating receipt status failed: {error}")
+                update_receipt_status(report_file, family_name, update_obj)
 
                 result = search_report(report_file, family_name, 'name')
                 self.assertEqual(result[0][date_prop], expected_date, message)
                 self.assertEqual(result[0][status_prop], expected_status, message)
+    
+    def test_update_receipt_status_result(self):
+        test_cases = [
+            ({}, receipt_update_results["MISSING_DATE"], "Empty object should return missing date result"),
+            ({ "some": "2023-12-12" }, receipt_update_results["MISSING_DATE"], "Wrong props should return missing date result"),
+            ({ "date": "2023-12-12" }, receipt_update_results["RECEIPT_UPDATED"], "Date prop only should update family receipt"),
+            ({ "date": "19-04-2023" }, receipt_update_results["DATE_MALFORMED"], "Should return malformed date result if date isn't formed correctly"),
+            ({ "status": True },       receipt_update_results["MISSING_DATE"], "Status prop only should return missing date result"),
+            ({ "status": True, "date": "" }, receipt_update_results["MISSING_DATE"], "Should return missing date result if date is empty string"),
+            ({ "date": "2000-01-01", "status": False }, receipt_update_results["RECEIPT_UPDATED"], "Both right props should return receipt updated result")
+        ]
+
+        for update_obj, expected_result, message in test_cases:
+            with self.subTest(f"{update_obj}"):
+                family_name, report_file = self.generate_report()
+                actual_update_result = update_receipt_status(report_file, family_name, update_obj)
+                self.assertEqual(actual_update_result, expected_result, message)
     
     def test_get_receipt_status_not_found(self):
         default_receipt_status = {
@@ -368,15 +385,15 @@ class TestMarkReport(unittest.TestCase):
         }
 
         test_cases = [
-            (None, default_receipt_status, "Should return default receipt status if family not found"),
-            ("", default_receipt_status, "Should return default receipt status if family not found"),
+            (None,  "Should return default receipt status if family not found"),
+            ("",    "Should return default receipt status if family not found"),
         ]
 
-        for family_name, expected_receipt_status, message in test_cases:
+        for family_name, message in test_cases:
             with self.subTest(f"{family_name}"):
                 _, report_file = self.generate_report(family_name)
                 receipt_status = get_receipt_status(report_file, family_name)
-                self.assertEqual(receipt_status, expected_receipt_status, message)
+                self.assertEqual(receipt_status, default_receipt_status, message)
 
     def test_get_receipt_status_found(self):
         expected_receipt_status = {
@@ -384,9 +401,7 @@ class TestMarkReport(unittest.TestCase):
             "status": True,
         }
         family_name, report_file = self.generate_report()
-        error = update_receipt_status(report_file, family_name, expected_receipt_status)
-        if error is not None:
-            self.fail(f"Updating receipt status failed: {error}")
+        update_receipt_status(report_file, family_name, expected_receipt_status)
         
         receipt_status = get_receipt_status(report_file, family_name)
         self.assertEqual(receipt_status, expected_receipt_status, "Should return updated receipt status")

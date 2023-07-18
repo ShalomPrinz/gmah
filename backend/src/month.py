@@ -2,12 +2,14 @@ from enum import Enum
 from glob import glob
 from os import path
 from openpyxl import load_workbook
+from re import match
 
 from src.data import key_prop, report_properties, date_prop, status_prop
-from src.errors import FileAlreadyExists
+from src.errors import FamilyNotFoundError, FileAlreadyExists
 from src.excel import Excel
 from src.families import load_families_file, search_families
 from src.managers import find_manager, load_managers_file
+from src.results import receipt_update_results
 from src.styles import report_cell_style, report_received_style, report_not_received_style, report_received_name, report_not_received_name, style_name
 
 class ReportSearchBy(Enum):
@@ -238,20 +240,32 @@ def get_receipt_status(report_file: Excel, family_name):
         "status": family_report_data.get(status_prop, default_status)
     }
 
+date_pattern = r'^\d{4}-\d{2}-\d{2}$'
+def validate_date_format(date):
+    return True if date and isinstance(date, str) and match(date_pattern, date) else False
+
 def update_receipt_status(report_file: Excel, family_name, receipt):
     '''
-    Updates receipt status of family_name in report_file to be the given receipt.
+    Updates receipt status of family_name in report_file to be the given receipt,
+    only if there is a date property in the receipt.
+    Returns proper Result object.
     '''
     try:
         index = report_file.get_row_index(family_name)
-    except Exception as e:
-        return e
+    except FamilyNotFoundError as e:
+        return e.result
+        
+    date = receipt.get("date")
+    if not date:
+        return receipt_update_results["MISSING_DATE"]
     
-    if (date := receipt.get("date", None)) is not None:
-        report_file.replace_cell(index, {
-            "key": date_prop,
-            "value": date
-        })
+    if not validate_date_format(date):
+        return receipt_update_results["DATE_MALFORMED"]
+    
+    report_file.replace_cell(index, {
+        "key": date_prop,
+        "value": date
+    })
 
     if (status := receipt.get("status", None)) is not None:
         style = report_received_name if status else report_not_received_name
@@ -259,3 +273,5 @@ def update_receipt_status(report_file: Excel, family_name, receipt):
             "key": status_prop,
             "style": style
         })
+    
+    return receipt_update_results["RECEIPT_UPDATED"]

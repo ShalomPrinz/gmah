@@ -7,7 +7,7 @@ import src.managers as managers
 import src.families as families
 import src.month as month
 
-from src.results import get_result
+from src.results import get_result, Result
 
 load_dotenv()
 FRONTEND_DOMAIN = getenv('FRONTEND_DOMAIN')
@@ -15,9 +15,12 @@ FRONTEND_DOMAIN = getenv('FRONTEND_DOMAIN')
 app = Flask(__name__)
 cors = CORS(app, resources={r"/*": {"origins": FRONTEND_DOMAIN}})
 
+def result_error_response(result: Result):
+    return jsonify(error=result.title, description=result.description), result.status
+
 def error_response(error: Exception):
     result = get_result(error)
-    return jsonify(error=result.title, description=result.description), result.status
+    return result_error_response(result)
 
 @app.before_request
 def load_files():
@@ -132,9 +135,9 @@ def update_receipt_status():
     if error is not None:
         return error_response(error)
     
-    error = month.update_receipt_status(report_file, family_name, receipt)
-    if error is not None:
-        return error_response(error)
+    result = month.update_receipt_status(report_file, family_name, receipt)
+    if result.status != 200:
+        return result_error_response(result)
     
     return jsonify(), 200
 
