@@ -1,9 +1,10 @@
 from enum import Enum
 from glob import glob
-from os.path import basename
+from os import path
 from openpyxl import load_workbook
 
 from src.data import key_prop, report_properties, date_prop, status_prop
+from src.errors import FileAlreadyExists
 from src.excel import Excel
 from src.families import load_families_file, search_families
 from src.managers import find_manager, load_managers_file
@@ -55,6 +56,13 @@ def get_report_path(report_name):
     Returns report path from project parent directory.
     '''
     return f'{month_reports_path}{month_report_prefix}{report_name}{month_report_suffix}'
+
+def is_report_name_exists(report_name):
+    '''
+    Validates if a report already exists in generated reports.
+    '''
+    filepath = get_report_path(report_name)
+    return not path.isfile(filepath)
 
 def load_report_file(report_name):
     '''
@@ -111,10 +119,14 @@ def to_excel_row(family, managers_file):
 
     return [family_key, manager, driver, None, None]
 
-def generate_month_report(name):
+def generate_month_report(name, override_name=False):
     '''
     Generates new month report with the given name, based on current families and managers files.
+    Allows override of exist report by setting override_name to True.
     '''
+    if not override_name and not is_report_name_exists(name):
+        return FileAlreadyExists(f"דוח קבלה בשם {name} קיים כבר")
+    
     error, families_file = load_families_file()
     if error is not None:
         return error
@@ -189,7 +201,7 @@ def get_reports_list():
     '''
     start_index = len(month_report_prefix)
     end_index = len(month_report_suffix)
-    return [basename(file)[start_index:-end_index] for file in glob(month_reports_pattern)]
+    return [path.basename(file)[start_index:-end_index] for file in glob(month_reports_pattern)]
 
 def search_report(report_file: Excel, query='', search_by=''):
     '''

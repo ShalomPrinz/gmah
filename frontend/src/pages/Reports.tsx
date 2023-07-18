@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
+import Form from "react-bootstrap/Form";
 import { toast } from "react-toastify";
 
 import { ConditionalList } from "../components";
@@ -54,9 +55,11 @@ interface ValidationRow {
 
 function Reports() {
   const inputRef = useRef<HTMLInputElement>(null);
+  const overrideRef = useRef<HTMLInputElement>(null);
   const { noManagerFamilies, noDriverFamilies, noManagerDrivers } =
     useDriversValidation();
-  const { generateReport, isGeneratingReport } = useGenerateReport();
+  const { hadNameExistsError, generateReport, isGeneratingReport } =
+    useGenerateReport();
 
   const noManagerDriverCallback = (driver: NoManagerDriver) => (
     <h5>
@@ -129,10 +132,30 @@ function Reports() {
             <button
               className="fs-1 p-4 bg-default rounded button-hover"
               disabled={isGeneratingReport}
-              onClick={() => generateReport(inputRef?.current?.value)}
+              onClick={() =>
+                generateReport(
+                  inputRef?.current?.value,
+                  overrideRef?.current?.checked
+                )
+              }
             >
               צור דוח קבלה חדש
             </button>
+            {hadNameExistsError && (
+              <div className="my-4 d-flex justify-content-center">
+                <span className="fs-5 my-auto">
+                  <b>שים לב! </b>
+                  באפשרותך למחוק את הדוח הקודם בשם זה וליצור חדש במקומו.
+                </span>
+                <Form.Switch
+                  className="fs-1"
+                  defaultChecked={false}
+                  name="overrideReportName"
+                  ref={overrideRef}
+                  style={{ transform: "scaleX(-1)" }}
+                />
+              </div>
+            )}
           </Col>
         </Row>
       </main>
@@ -166,18 +189,39 @@ function useDriversValidation() {
 
 function useGenerateReport() {
   const [isGeneratingReport, setIsGenerating] = useState(false);
+  const [hadNameExistsError, setHadNameExistsError] = useState(false);
 
-  function generateReport(value: string | undefined) {
+  function generateReport(
+    value: string | undefined,
+    overrideName: boolean | undefined
+  ) {
     const reportName = value || defaultReportName;
+    const override = overrideName || false;
+
     setIsGenerating(true);
-    generateMonthReport(reportName)
-      .then(() => toast.success(`יצרת דוח קבלה חדש בשם ${reportName} בהצלחה`))
-      .catch(() =>
-        toast.error(`קרתה תקלה ביצירת דוח הקבלה, אם התקלה חוזרת אנא פנה לשלום`)
-      )
+    generateMonthReport(reportName, override)
+      .then(() => {
+        toast.success(`יצרת דוח קבלה חדש בשם ${reportName} בהצלחה`, {
+          toastId: `reportSuccess:${reportName}`,
+        });
+        setHadNameExistsError(false);
+      })
+      .catch((err) => {
+        if (err?.response?.data?.error === "File Already Exists") {
+          toast.error(err.response.data.description, {
+            toastId: `reportExists:${reportName}`,
+          });
+          setHadNameExistsError(true);
+        } else {
+          toast.error(
+            "קרתה תקלה ביצירת דוח הקבלה, אם התקלה חוזרת אנא פנה לשלום",
+            { toastId: `reportFailure:${reportName}` }
+          );
+        }
+      })
       .finally(() => setIsGenerating(false));
   }
-  return { generateReport, isGeneratingReport };
+  return { hadNameExistsError, generateReport, isGeneratingReport };
 }
 
 export default Reports;

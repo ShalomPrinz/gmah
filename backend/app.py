@@ -85,7 +85,8 @@ def validate_drivers():
 @app.route('/generate/month', methods=["POST"])
 def generate_month():
     name = request.json['name']
-    error = month.generate_month_report(name)
+    override_name = request.json['override_name']
+    error = month.generate_month_report(name, override_name)
     if error is not None:
         return error_response(error)
     return jsonify(), 200

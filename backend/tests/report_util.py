@@ -10,14 +10,14 @@ def load_report(name):
     else:
         return report_file
 
-def generate_report(assertTrue, families, name="שם דוח"):
+def generate_report(assertTrue, families, name="שם דוח", override_name=True):
     '''
     Generates monthly report out of given families.
     Returns report path.
     '''
     write_families(families)
 
-    error = generate_month_report(name)
+    error = generate_month_report(name, override_name)
     assertTrue(error is None, "Failed generating month report")
 
     return load_report(name)

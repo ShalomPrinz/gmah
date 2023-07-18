@@ -1,8 +1,8 @@
 import { get, post, put } from "./http";
 import type { Receipt } from "../types";
 
-function generateMonthReport(name: string) {
-  return post("generate/month", { name });
+function generateMonthReport(name: string, override: boolean) {
+  return post("generate/month", { name, override_name: override });
 }
 
 function getNoManagerDrivers() {

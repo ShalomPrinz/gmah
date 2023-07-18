@@ -23,3 +23,11 @@ class FamilyNotFoundError(Exception):
     def __init__(self, description):
         super().__init__()
         self.result = Result(404, "Family Not Found", description)
+
+class FileAlreadyExists(Exception):
+    '''
+    File already exists.
+    '''
+    def __init__(self, description):
+        super().__init__()
+        self.result = Result(409, "File Already Exists", description)
