@@ -7,20 +7,31 @@ from src.data import search_column_prop
 from src.util import without_hyphen
 
 @dataclass
-class SearchRequest:
+class BaseRequest:
+    '''
+    Provides properties for all search requests, for internal module use only.
+    '''
     rows_iter: Generator[Worksheet, None, None]
-    headers: List[str]
     query: str
-    search_by: str
     search_enum: Enum
-    search_style: str
-    style_map: Dict[str, Any]
 
 @dataclass
-class FindRequest:
-    rows_iter: Generator[Worksheet, None, None]
-    query: str
-    search_enum: Enum
+class FindRequest(BaseRequest):
+    pass
+
+@dataclass
+class ColumnSearchRequest(BaseRequest):
+    search_by: str
+
+@dataclass
+class SearchRequest(BaseRequest):
+    headers: List[str]
+    search_by: str
+
+@dataclass
+class StyleSearchRequest(SearchRequest):
+    search_style: str
+    style_map: Dict[str, Any]
 
 def search(request: SearchRequest):
     searching_by_phone = bool('PHONE' in request.search_enum.__members__ and \
@@ -29,7 +40,6 @@ def search(request: SearchRequest):
         request.query = without_hyphen(request.query)
 
     search_columns = request.search_enum.get_search_columns(request.search_by)
-    style_columns = request.search_enum.get_search_columns(request.search_style)
 
     matching_rows = []
     for row in request.rows_iter:
@@ -39,6 +49,23 @@ def search(request: SearchRequest):
                 continue # Don't insert no value cell into search result
             if searching_by_phone:
                 cell_value = without_hyphen(cell_value)
+            if request.query in cell_value:
+                matching_rows.append({
+                    request.headers[index]: cell.value for index, cell in enumerate(row)
+                })
+                break # Row added to matching_rows, skip to next row
+    return matching_rows
+
+def style_search(request: StyleSearchRequest):
+    search_columns = request.search_enum.get_search_columns(request.search_by)
+    style_columns = request.search_enum.get_search_columns(request.search_style)
+
+    matching_rows = []
+    for row in request.rows_iter:
+        for column in search_columns:
+            cell_value = row[column].value
+            if cell_value is None:
+                continue # Don't insert no value cell into search result
             if request.query in cell_value:
                 matching_row = {}
                 for index, cell in enumerate(row):
@@ -52,7 +79,7 @@ def search(request: SearchRequest):
                 break # Row added to matching_rows, skip to next row
     return matching_rows
 
-def search_column(request: SearchRequest):
+def search_column(request: ColumnSearchRequest):
     search_columns = request.search_enum.get_search_columns(request.search_by)
 
     matching_rows = []

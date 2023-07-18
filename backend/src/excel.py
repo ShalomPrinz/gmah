@@ -1,13 +1,14 @@
 from openpyxl import load_workbook
 from os import path
 
-from src.search import SearchRequest, search, search_column, FindRequest, find
+from src.search import SearchRequest, search, StyleSearchRequest, style_search, ColumnSearchRequest, search_column, FindRequest, find
 from src.errors import FileResourcesMissingError, FamilyNotFoundError
 from src.util import letter_by_index
 from src.styles import NamedStyle
 
 class Excel:
-    def __init__(self, filename: str, row_properties, required_style: NamedStyle, table_name: str = ""):
+    def __init__(self, filename: str, row_properties, search_enum,
+                 required_style: NamedStyle, table_name: str = ""):
         if not path.exists(filename):
             raise FileNotFoundError(f'הקובץ {filename} לא נמצא')
 
@@ -19,6 +20,7 @@ class Excel:
         self.cell_style = required_style.name
 
         self.row_properties = row_properties
+        self.search_enum = search_enum
         self.last_column = letter_by_index(len(row_properties))
         self.first_content_row = 2 # First row is 1, and contains titles
 
@@ -39,11 +41,11 @@ class Excel:
     def get_rows_iter(self):
         return self.worksheet.iter_rows(min_row=self.first_content_row)
 
-    def get_row_index(self, row_key, search_enum):
+    def get_row_index(self, row_key):
         request = FindRequest(
             rows_iter=self.get_rows_iter(),
             query=row_key,
-            search_enum=search_enum
+            search_enum=self.search_enum
         )
 
         result = find(request)
@@ -52,21 +54,39 @@ class Excel:
         else:
             raise FamilyNotFoundError(f"המשפחה {row_key} לא נמצאת")
     
-    def search(self, query, search_enum, search_by='', column_search=False, search_style=None, style_map={}):
+    def search(self, query, search_by=''):
         request = SearchRequest(
             rows_iter=self.get_rows_iter(),
             headers=self.get_headers(),
             query=query,
             search_by=search_by,
-            search_enum=search_enum,
+            search_enum=self.search_enum,
+        )
+
+        return search(request)
+        
+    def style_search(self, query, search_by='', search_style=None, style_map={}):
+        request = StyleSearchRequest(
+            headers=self.get_headers(),
+            query=query,
+            rows_iter=self.get_rows_iter(),
+            search_by=search_by,
+            search_enum=self.search_enum,
             search_style=search_style,
             style_map=style_map
         )
 
-        if column_search:
-            return search_column(request)
-        else:
-            return search(request)
+        return style_search(request)
+    
+    def column_search(self, query, search_by=''):
+        request = ColumnSearchRequest(
+            query=query,
+            rows_iter=self.get_rows_iter(),
+            search_by=search_by,
+            search_enum=self.search_enum
+        )
+
+        return search_column(request)
 
     def append_rows(self, families, to_excel_row):
         for family in families:    

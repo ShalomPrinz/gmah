@@ -42,6 +42,7 @@ def load_families_file():
         families_file = Excel(
             filename=families_filename,
             row_properties=family_properties,
+            search_enum=FamiliesSearchBy,
             required_style=families_cell_style,
             table_name='נתמכים')
         return (None, families_file)
@@ -69,7 +70,7 @@ def search_families(families_file: Excel, query='', search_by=''):
     query = '' if query is None else query
     search_by = '' if search_by is None else search_by
 
-    return families_file.search(query, FamiliesSearchBy, search_by)
+    return families_file.search(query, search_by)
 
 def format_phone(family, attr_name):
     '''
@@ -105,7 +106,7 @@ def is_family_exists(families_file: Excel, family_name):
     Returns whether a family exists in the excel, by searching for
     a match of family name, assuming a family name property is unique.
     '''
-    search_result = families_file.search(family_name, FamiliesSearchBy, 'name')
+    search_result = search_families(families_file, family_name, 'name')
     if len(search_result) > 0 and \
         any(found_family[key_prop] == family_name for found_family in search_result):
             return True
@@ -163,7 +164,7 @@ def update_family(families_file: Excel, original_name, family):
     Changes the data of originalName family to the new family data.
     '''
     try:
-        index = families_file.get_row_index(original_name, FamiliesSearchBy)
+        index = families_file.get_row_index(original_name)
     except Exception as e:
         return e
     families_file.replace_row(index, family)

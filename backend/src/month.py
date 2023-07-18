@@ -69,6 +69,7 @@ def load_report_file(report_name):
         report = Excel(
             filename=path,
             row_properties=report_properties,
+            search_enum=ReportSearchBy,
             required_style=report_cell_style
         )
         report.add_named_style(report_received_style)
@@ -198,8 +199,7 @@ def search_report(report_file: Excel, query='', search_by=''):
     query = '' if query is None else query
     search_by = '' if search_by is None else search_by
 
-    return report_file.search(query, ReportSearchBy, search_by,
-                              search_style='receive', style_map=report_style_map)
+    return report_file.style_search(query, search_by, search_style='receive', style_map=report_style_map)
 
 def search_report_column(report_file: Excel, query='', search_by=''):
     '''
@@ -208,7 +208,7 @@ def search_report_column(report_file: Excel, query='', search_by=''):
     query = '' if query is None else query
     search_by = '' if search_by is None else search_by
 
-    return report_file.search(query, ReportSearchBy, search_by, True)
+    return report_file.column_search(query, search_by)
 
 def get_receipt_status(report_file: Excel, family_name):
     '''
@@ -218,8 +218,7 @@ def get_receipt_status(report_file: Excel, family_name):
     default_date = ""
     default_status = False
 
-    report = report_file.search(family_name, ReportSearchBy, 'name',
-                                search_style='receive', style_map=report_style_map)
+    report = report_file.style_search(family_name, 'name', search_style='receive', style_map=report_style_map)
     family_report_data = report[0] if report else {}
 
     return {
@@ -232,7 +231,7 @@ def update_receipt_status(report_file: Excel, family_name, receipt):
     Updates receipt status of family_name in report_file to be the given receipt.
     '''
     try:
-        index = report_file.get_row_index(family_name, ReportSearchBy)
+        index = report_file.get_row_index(family_name)
     except Exception as e:
         return e
     
