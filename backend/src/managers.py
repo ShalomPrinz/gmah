@@ -36,3 +36,11 @@ def find_manager(managers_file: Json, driver_name):
             return manager['name']
     
     return None
+
+def remove_manager(managers_file: Json, manager_id):
+    '''
+    Removes given manager and all his data from managers_file.
+    '''
+    managers = managers_file.load_json()
+    new_managers = list(filter(lambda manager: manager["id"] != str(manager_id), managers))
+    return update_managers(managers_file, new_managers)

@@ -73,6 +73,14 @@ def update_managers():
         return error_response(error)
     return jsonify(), 200
 
+@app.route('/managers/remove', methods=["DELETE"])
+def remove_manager():
+    manager_id = request.args.get('manager_id')
+    error = managers.remove_manager(g.managers_file, manager_id)
+    if error is not None:
+        return error_response(error)
+    return jsonify(), 200
+
 @app.route('/validate/drivers')
 def validate_drivers():
     error, no_manager_drivers = month.get_no_manager_drivers()
