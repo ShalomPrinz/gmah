@@ -7,3 +7,4 @@ export const reportTableHeaders = [
 ];
 
 export const reportReceiveProp = "קיבל/ה";
+export const reportDateProp = "תאריך";

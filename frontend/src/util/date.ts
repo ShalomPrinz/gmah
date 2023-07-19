@@ -8,4 +8,30 @@ function getTodayDate() {
   return `${year}-${month}-${day}`;
 }
 
-export { getTodayDate };
+const hebrewMonthNames = [
+  "ינואר",
+  "פברואר",
+  "מרץ",
+  "אפריל",
+  "מאי",
+  "יוני",
+  "יולי",
+  "אוגוסט",
+  "ספטמבר",
+  "אוקטובר",
+  "נובמבר",
+  "דצמבר",
+];
+
+/** Gets date in yyyy-mm-dd format and returns hebrew string, e.g. 2023-07-19 -> 2023 (יולי) 19 */
+function formatDate(date: string | undefined) {
+  if (typeof date === "undefined" || !date) return undefined;
+
+  const [year, month, day] = date.split("-");
+  const intMonth = parseInt(month) - 1;
+  if (intMonth < 0 || intMonth > hebrewMonthNames.length) return undefined;
+
+  return `${day} ${hebrewMonthNames[intMonth]} ${year}`;
+}
+
+export { getTodayDate, formatDate };

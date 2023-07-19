@@ -7,10 +7,12 @@ import { Dropdown, Option, RadioMenu, Search, Table } from "../components";
 import IconComponent from "../components/Icon";
 import {
   familyIdProp,
+  reportDateProp,
   reportReceiveProp,
   reportTableHeaders,
 } from "../modules";
 import { getReport, getReportsList } from "../services";
+import { formatDate } from "../util";
 
 const NoReportsMessage = () => (
   <h3 className="text-center mt-5">
@@ -114,10 +116,18 @@ function MonthTracker() {
         </Row>
         <Row>
           <Table
-            columnBackground={{
+            columnMapper={{
               [reportReceiveProp]: (received) => {
-                if (received === true) return "received";
-                if (received === false) return "not-received";
+                let background = undefined;
+                if (received === true) {
+                  background = "received";
+                } else if (received === false) {
+                  background = "not-received";
+                }
+                return { background };
+              },
+              [reportDateProp]: (date) => {
+                return { text: formatDate(date) };
               },
             }}
             columns={reportTableHeaders}

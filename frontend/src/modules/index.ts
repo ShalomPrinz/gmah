@@ -7,7 +7,11 @@ export {
   familyIdProp,
 } from "./families";
 
-export { reportTableHeaders, reportReceiveProp } from "./reports";
+export {
+  reportTableHeaders,
+  reportReceiveProp,
+  reportDateProp,
+} from "./reports";
 
 export type { Family, FormFamily } from "./families";
 
