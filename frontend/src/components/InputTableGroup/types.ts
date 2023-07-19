@@ -8,8 +8,12 @@ interface TableColumn {
 
 type FormItem = { [key: string]: string };
 
+/** title property allows editing [key: string] */
 type FormValues = {
-  [key: string]: FormItem[];
+  [key: string]: {
+    title: string;
+    values: FormItem[];
+  };
 };
 
 type FormResetFn = UseFormReset<FormValues>;

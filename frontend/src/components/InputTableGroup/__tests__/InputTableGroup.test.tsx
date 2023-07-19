@@ -29,6 +29,7 @@ describe("InputTableGroup", () => {
           registerReset={emptyRegister}
           registerSubmit={emptyRegister}
           schema={object()}
+          titleDescription="test title description"
         />
       );
 
@@ -51,6 +52,7 @@ describe("InputTableGroup", () => {
           registerReset={emptyRegister}
           registerSubmit={emptyRegister}
           schema={object()}
+          titleDescription="test title description"
         />
       );
 
@@ -77,6 +79,7 @@ describe("InputTableGroup", () => {
           registerReset={emptyRegister}
           registerSubmit={emptyRegister}
           schema={object()}
+          titleDescription="test title description"
         />
       );
 
@@ -111,6 +114,7 @@ describe("InputTableGroup", () => {
           registerReset={emptyRegister}
           registerSubmit={emptyRegister}
           schema={object()}
+          titleDescription="test title description"
         />
       );
 

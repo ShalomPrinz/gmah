@@ -1,5 +1,10 @@
 import { useEffect } from "react";
-import { FormProvider, useFieldArray, useForm } from "react-hook-form";
+import {
+  FormProvider,
+  useFieldArray,
+  useForm,
+  useFormContext,
+} from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 import { useFormForwardContext } from "./FormForwardContext";
@@ -19,10 +24,12 @@ interface SingleInputTableProps {
   defaultItem: FormItem;
   initialValues: FormItem[];
   formName: NonEmptyString;
-  /** Parent should implement submit and reset functionality */
+  /** Parent should implement reset functionality */
   registerReset: RegisterReset;
+  /** Parent should implement submit functionality */
   registerSubmit: RegisterSubmit;
   schema: any;
+  titleDescription: string;
 }
 
 function SingleInputTable({
@@ -33,11 +40,15 @@ function SingleInputTable({
   registerReset,
   registerSubmit,
   schema,
+  titleDescription,
 }: SingleInputTableProps) {
   const name = formName as string;
   const formMethods = useForm<FormValues>({
     defaultValues: {
-      [name]: initialValues,
+      [name]: {
+        title: name,
+        values: initialValues,
+      },
     },
     mode: "onBlur",
     resolver: yupResolver(schema),
@@ -45,7 +56,7 @@ function SingleInputTable({
 
   // All form methods are required for Form Context Provider
   const { control, handleSubmit, reset } = formMethods;
-  const fieldArrayMethods = useFieldArray({ name: name, control });
+  const fieldArrayMethods = useFieldArray({ name: `${name}.values`, control });
 
   useEffect(() => {
     registerSubmit(name, handleSubmit);
@@ -62,6 +73,7 @@ function SingleInputTable({
   return (
     <FormProvider {...formMethods}>
       <form onSubmit={(e) => e.preventDefault()}>
+        <TitleInput formName={name} titleDescription={titleDescription} />
         <table className="bg-white mx-auto">
           <TableHeader columns={columns} />
           <TableBody
@@ -80,6 +92,41 @@ function SingleInputTable({
         </button>
       </form>
     </FormProvider>
+  );
+}
+
+interface TitleInputProps {
+  formName: string;
+  titleDescription: string;
+}
+
+function TitleInput({ formName, titleDescription }: TitleInputProps) {
+  const {
+    formState: { dirtyFields, errors },
+    register,
+  } = useFormContext();
+
+  function getErrorMessage() {
+    const isDirty = dirtyFields[formName]?.title || false;
+    if (!isDirty) return undefined;
+    // @ts-ignore errors object at runtime is of different type
+    const error = errors[formName]?.title || undefined;
+    if (typeof error === "undefined") return undefined;
+    return error.message || "שגיאה לא צפויה";
+  }
+
+  const errorMessage = getErrorMessage();
+  const hasError = typeof errorMessage !== "undefined";
+
+  return (
+    <input
+      className={`fs-2 w-50 text-center form-text-input${
+        hasError ? " form-input-invalid" : " border border-3 border-primary"
+      }`}
+      title={hasError ? errorMessage : titleDescription}
+      type="text"
+      {...register(`${formName}.title`)}
+    />
   );
 }
 

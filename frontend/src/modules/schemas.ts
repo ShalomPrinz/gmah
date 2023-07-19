@@ -49,7 +49,10 @@ const driverObjectSchema = object({
 
 const driversArraySchema = (name: string) =>
   object({
-    [name]: array().of(driverObjectSchema),
+    [name]: object({
+      title: string().required("לאחראי חייב להיות שם"),
+      values: array().of(driverObjectSchema),
+    }),
   });
 
 export { driversArraySchema, familiesArraySchema, familiesObjectSchema };

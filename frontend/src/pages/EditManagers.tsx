@@ -6,14 +6,17 @@ import { InputTableGroup, SingleInputTable } from "../components";
 import type {
   FormResetFn,
   FormSubmitFn,
+  InputGroupFormValues,
   RegisterReset,
   RegisterSubmit,
 } from "../components";
 import IconComponent from "../components/Icon";
+
 import { driversArraySchema } from "../modules";
 import { updateManagers } from "../services";
 import type { Driver, Manager } from "../types";
 import { useLocationState } from "../hooks";
+import { findDuplicatedProperty } from "../util";
 
 const defaultDriver: Driver = {
   name: "",
@@ -44,10 +47,15 @@ function EditManagers() {
     const submitResult = await submitAll();
     if (!submitResult) return;
 
+    const duplicated = findDuplicatedProperty(submitResult, "title");
+    if (duplicated && typeof duplicated === "string") {
+      toast.error(`אי אפשר שיהיו שני אחראי נהגים עם אותו שם: ${duplicated}`);
+      return;
+    }
+
     const updated = managers.map((m) => {
-      if (Object.hasOwn(submitResult, m.name)) {
-        return { ...m, drivers: submitResult[m.name] };
-      } else return m;
+      const { title, values } = submitResult[m.name];
+      return { id: m.id, drivers: values, name: title };
     });
 
     updateManagers(updated).then(() => navigate("/managers"));
@@ -55,7 +63,6 @@ function EditManagers() {
 
   const managerCallback = ({ name, drivers }: Manager) => (
     <div className="my-3" style={{ width: "45%" }}>
-      <h2>{name}</h2>
       <SingleInputTable
         columns={driversColumns}
         defaultItem={defaultDriver}
@@ -64,6 +71,7 @@ function EditManagers() {
         registerReset={registerResetFunction}
         registerSubmit={registerSubmitFunction}
         schema={driversArraySchema(name)}
+        titleDescription="שם אחראי"
       />
     </div>
   );
@@ -106,7 +114,7 @@ function useFormsSubmission() {
 
   const submitAll = async () => {
     let hasError = false;
-    let result: { [formName: string]: Driver[] } = {};
+    let result: InputGroupFormValues = {};
     let promises: Promise<void>[] = [];
 
     Object.values(submitFunctions).forEach((submitFn) =>
@@ -116,8 +124,18 @@ function useFormsSubmission() {
           (errors) => {
             hasError = true;
             Object.entries(errors).forEach(([formKey, errorObject]) => {
+              if (errorObject?.title) {
+                const message =
+                  errorObject.title?.message || "שגיאה בלתי צפויה";
+                toast.warn(
+                  `יש בעיה אצל ${formKey}, בשם החדש של האחראי: ${message}`,
+                  {
+                    toastId: `${formKey}:${errorObject.title}`,
+                  }
+                );
+              }
               // @ts-ignore typescript doesn't allow forEach here
-              errorObject?.forEach((error, index) => {
+              errorObject?.values?.forEach((error, index) => {
                 Object.entries(error).forEach(([errorKey, errorValue]) => {
                   const hebrewKey = toHebrew(errorKey);
                   const driverNumber = index + 1;

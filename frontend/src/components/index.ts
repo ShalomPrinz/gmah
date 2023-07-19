@@ -25,6 +25,7 @@ export type { Option } from "./Dropdown";
 export type {
   FormResetFn,
   FormSubmitFn,
+  InputGroupFormValues,
   RegisterReset,
   RegisterSubmit,
 } from "./InputTableGroup";

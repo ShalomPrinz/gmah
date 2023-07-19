@@ -6,6 +6,7 @@ export { InputTableGroup, SingleInputTable };
 export type {
   FormResetFn,
   FormSubmitFn,
+  FormValues as InputGroupFormValues,
   RegisterReset,
   RegisterSubmit,
 } from "./types";

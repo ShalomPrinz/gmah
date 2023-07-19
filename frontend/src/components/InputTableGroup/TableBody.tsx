@@ -3,11 +3,11 @@ import { UseFieldArrayReturn, useFormContext } from "react-hook-form";
 import { useFormForwardContext } from "./FormForwardContext";
 
 import RowButton from "../RowButton";
-import type { TableColumn } from "./types";
+import type { FormValues, TableColumn } from "./types";
 
 export interface TableBodyProps {
   columns: TableColumn[];
-  fieldArrayMethods: UseFieldArrayReturn;
+  fieldArrayMethods: UseFieldArrayReturn<FormValues, `${string}.values`, "id">;
   formName: string;
 }
 
@@ -25,10 +25,10 @@ const TableBody = ({
 
   function cellCallback({ id, label, path }: TableColumn, rowIndex: number) {
     function getErrorMessage() {
-      const dirtyCells = dirtyFields[formName]?.[rowIndex] || {};
+      const dirtyCells = dirtyFields[formName]?.values?.[rowIndex] || {};
       if (Object.keys(dirtyCells).includes(path)) {
         // @ts-ignore errors object at runtime is of different type
-        const errorCells = errors[formName]?.[rowIndex] || {};
+        const errorCells = errors[formName]?.values?.[rowIndex] || {};
         if (Object.hasOwn(errorCells, path)) {
           return errorCells[path].message || "שגיאה לא צפויה";
         }
@@ -38,7 +38,7 @@ const TableBody = ({
 
     return (
       <TableTextInput
-        fieldName={`${formName}.${rowIndex}.${path}`}
+        fieldName={`${formName}.values.${rowIndex}.${path}`}
         getErrorMessage={getErrorMessage}
         key={id}
         title={label}
@@ -51,7 +51,7 @@ const TableBody = ({
       remove(rowIndex);
       endForward();
     };
-    const rowValue = getValues()?.[formName]?.[rowIndex];
+    const rowValue = getValues()?.[formName]?.values?.[rowIndex];
     const origin = { formName, rowIndex };
     const forward = () =>
       setForward({ origin, item: rowValue, removeFromOrigin: removeFunc });

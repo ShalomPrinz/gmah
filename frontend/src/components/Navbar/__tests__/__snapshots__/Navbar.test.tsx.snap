@@ -49,6 +49,12 @@ exports[`Navbar > snapshot > should render navbar 1`] = `
         >
           דוחות קבלה
         </a>
+        <a
+          class="nav-item nav-links fw-light"
+          href="/month"
+        >
+          מעקב חודשי
+        </a>
       </div>
     </div>
     <button

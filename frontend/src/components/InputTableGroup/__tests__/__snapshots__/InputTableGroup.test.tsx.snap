@@ -5,6 +5,12 @@ exports[`InputTableGroup > snapshot > should render empty input table group 1`] 
 exports[`InputTableGroup > snapshot > should render input table group with a single table 1`] = `
 <DocumentFragment>
   <form>
+    <input
+      class="fs-2 w-50 text-center form-text-input border border-3 border-primary"
+      name="testSingleTable.title"
+      title="test title description"
+      type="text"
+    />
     <table
       class="bg-white mx-auto"
     >
@@ -30,7 +36,7 @@ exports[`InputTableGroup > snapshot > should render input table group with a sin
           >
             <input
               class="form-text-input p-1 m-1 text-center"
-              name="testSingleTable.0.name"
+              name="testSingleTable.values.0.name"
               style="max-width: 150px;"
               title="Name"
               type="text"
@@ -108,6 +114,12 @@ exports[`InputTableGroup > snapshot > should render input table group with a sin
 exports[`InputTableGroup > snapshot > should render input table group with one table, which has two columns and three rows 1`] = `
 <DocumentFragment>
   <form>
+    <input
+      class="fs-2 w-50 text-center form-text-input border border-3 border-primary"
+      name="testTwoColsThreeRows.title"
+      title="test title description"
+      type="text"
+    />
     <table
       class="bg-white mx-auto"
     >
@@ -138,7 +150,7 @@ exports[`InputTableGroup > snapshot > should render input table group with one t
           >
             <input
               class="form-text-input p-1 m-1 text-center"
-              name="testTwoColsThreeRows.0.name"
+              name="testTwoColsThreeRows.values.0.name"
               style="max-width: 150px;"
               title="Name"
               type="text"
@@ -149,7 +161,7 @@ exports[`InputTableGroup > snapshot > should render input table group with one t
           >
             <input
               class="form-text-input p-1 m-1 text-center"
-              name="testTwoColsThreeRows.0.points"
+              name="testTwoColsThreeRows.values.0.points"
               style="max-width: 150px;"
               title="Score"
               type="text"
@@ -223,7 +235,7 @@ exports[`InputTableGroup > snapshot > should render input table group with one t
           >
             <input
               class="form-text-input p-1 m-1 text-center"
-              name="testTwoColsThreeRows.1.name"
+              name="testTwoColsThreeRows.values.1.name"
               style="max-width: 150px;"
               title="Name"
               type="text"
@@ -234,7 +246,7 @@ exports[`InputTableGroup > snapshot > should render input table group with one t
           >
             <input
               class="form-text-input p-1 m-1 text-center"
-              name="testTwoColsThreeRows.1.points"
+              name="testTwoColsThreeRows.values.1.points"
               style="max-width: 150px;"
               title="Score"
               type="text"
@@ -308,7 +320,7 @@ exports[`InputTableGroup > snapshot > should render input table group with one t
           >
             <input
               class="form-text-input p-1 m-1 text-center"
-              name="testTwoColsThreeRows.2.name"
+              name="testTwoColsThreeRows.values.2.name"
               style="max-width: 150px;"
               title="Name"
               type="text"
@@ -319,7 +331,7 @@ exports[`InputTableGroup > snapshot > should render input table group with one t
           >
             <input
               class="form-text-input p-1 m-1 text-center"
-              name="testTwoColsThreeRows.2.points"
+              name="testTwoColsThreeRows.values.2.points"
               style="max-width: 150px;"
               title="Score"
               type="text"
@@ -397,6 +409,12 @@ exports[`InputTableGroup > snapshot > should render input table group with one t
 exports[`InputTableGroup > snapshot > should render input table group with two simple tables 1`] = `
 <DocumentFragment>
   <form>
+    <input
+      class="fs-2 w-50 text-center form-text-input border border-3 border-primary"
+      name="testSingleTable.title"
+      title="test title description"
+      type="text"
+    />
     <table
       class="bg-white mx-auto"
     >
@@ -422,7 +440,7 @@ exports[`InputTableGroup > snapshot > should render input table group with two s
           >
             <input
               class="form-text-input p-1 m-1 text-center"
-              name="testSingleTable.0.name"
+              name="testSingleTable.values.0.name"
               style="max-width: 150px;"
               title="Name"
               type="text"
@@ -495,6 +513,12 @@ exports[`InputTableGroup > snapshot > should render input table group with two s
     </button>
   </form>
   <form>
+    <input
+      class="fs-2 w-50 text-center form-text-input border border-3 border-primary"
+      name="testSingleTable.title"
+      title="test title description"
+      type="text"
+    />
     <table
       class="bg-white mx-auto"
     >
@@ -520,7 +544,7 @@ exports[`InputTableGroup > snapshot > should render input table group with two s
           >
             <input
               class="form-text-input p-1 m-1 text-center"
-              name="testSingleTable.0.name"
+              name="testSingleTable.values.0.name"
               style="max-width: 150px;"
               title="Name"
               type="text"
@@ -598,6 +622,12 @@ exports[`InputTableGroup > snapshot > should render input table group with two s
 exports[`InputTableGroup > snapshot > should render input table group with two tables, each has two columns and three rows 1`] = `
 <DocumentFragment>
   <form>
+    <input
+      class="fs-2 w-50 text-center form-text-input border border-3 border-primary"
+      name="testTwoColsThreeRows.title"
+      title="test title description"
+      type="text"
+    />
     <table
       class="bg-white mx-auto"
     >
@@ -628,7 +658,7 @@ exports[`InputTableGroup > snapshot > should render input table group with two t
           >
             <input
               class="form-text-input p-1 m-1 text-center"
-              name="testTwoColsThreeRows.0.name"
+              name="testTwoColsThreeRows.values.0.name"
               style="max-width: 150px;"
               title="Name"
               type="text"
@@ -639,7 +669,7 @@ exports[`InputTableGroup > snapshot > should render input table group with two t
           >
             <input
               class="form-text-input p-1 m-1 text-center"
-              name="testTwoColsThreeRows.0.points"
+              name="testTwoColsThreeRows.values.0.points"
               style="max-width: 150px;"
               title="Score"
               type="text"
@@ -713,7 +743,7 @@ exports[`InputTableGroup > snapshot > should render input table group with two t
           >
             <input
               class="form-text-input p-1 m-1 text-center"
-              name="testTwoColsThreeRows.1.name"
+              name="testTwoColsThreeRows.values.1.name"
               style="max-width: 150px;"
               title="Name"
               type="text"
@@ -724,7 +754,7 @@ exports[`InputTableGroup > snapshot > should render input table group with two t
           >
             <input
               class="form-text-input p-1 m-1 text-center"
-              name="testTwoColsThreeRows.1.points"
+              name="testTwoColsThreeRows.values.1.points"
               style="max-width: 150px;"
               title="Score"
               type="text"
@@ -798,7 +828,7 @@ exports[`InputTableGroup > snapshot > should render input table group with two t
           >
             <input
               class="form-text-input p-1 m-1 text-center"
-              name="testTwoColsThreeRows.2.name"
+              name="testTwoColsThreeRows.values.2.name"
               style="max-width: 150px;"
               title="Name"
               type="text"
@@ -809,7 +839,7 @@ exports[`InputTableGroup > snapshot > should render input table group with two t
           >
             <input
               class="form-text-input p-1 m-1 text-center"
-              name="testTwoColsThreeRows.2.points"
+              name="testTwoColsThreeRows.values.2.points"
               style="max-width: 150px;"
               title="Score"
               type="text"
@@ -882,6 +912,12 @@ exports[`InputTableGroup > snapshot > should render input table group with two t
     </button>
   </form>
   <form>
+    <input
+      class="fs-2 w-50 text-center form-text-input border border-3 border-primary"
+      name="testTwoColsThreeRows.title"
+      title="test title description"
+      type="text"
+    />
     <table
       class="bg-white mx-auto"
     >
@@ -912,7 +948,7 @@ exports[`InputTableGroup > snapshot > should render input table group with two t
           >
             <input
               class="form-text-input p-1 m-1 text-center"
-              name="testTwoColsThreeRows.0.name"
+              name="testTwoColsThreeRows.values.0.name"
               style="max-width: 150px;"
               title="Name"
               type="text"
@@ -923,7 +959,7 @@ exports[`InputTableGroup > snapshot > should render input table group with two t
           >
             <input
               class="form-text-input p-1 m-1 text-center"
-              name="testTwoColsThreeRows.0.points"
+              name="testTwoColsThreeRows.values.0.points"
               style="max-width: 150px;"
               title="Score"
               type="text"
@@ -997,7 +1033,7 @@ exports[`InputTableGroup > snapshot > should render input table group with two t
           >
             <input
               class="form-text-input p-1 m-1 text-center"
-              name="testTwoColsThreeRows.1.name"
+              name="testTwoColsThreeRows.values.1.name"
               style="max-width: 150px;"
               title="Name"
               type="text"
@@ -1008,7 +1044,7 @@ exports[`InputTableGroup > snapshot > should render input table group with two t
           >
             <input
               class="form-text-input p-1 m-1 text-center"
-              name="testTwoColsThreeRows.1.points"
+              name="testTwoColsThreeRows.values.1.points"
               style="max-width: 150px;"
               title="Score"
               type="text"
@@ -1082,7 +1118,7 @@ exports[`InputTableGroup > snapshot > should render input table group with two t
           >
             <input
               class="form-text-input p-1 m-1 text-center"
-              name="testTwoColsThreeRows.2.name"
+              name="testTwoColsThreeRows.values.2.name"
               style="max-width: 150px;"
               title="Name"
               type="text"
@@ -1093,7 +1129,7 @@ exports[`InputTableGroup > snapshot > should render input table group with two t
           >
             <input
               class="form-text-input p-1 m-1 text-center"
-              name="testTwoColsThreeRows.2.points"
+              name="testTwoColsThreeRows.values.2.points"
               style="max-width: 150px;"
               title="Score"
               type="text"
