@@ -16,8 +16,11 @@ class FamiliesSearchBy(Enum):
     def get_search_columns(cls, search_by):
         if search_by is None:
             return []
-        
-        search_by = getattr(FamiliesSearchBy, search_by.upper(), FamiliesSearchBy.NAME)
+
+        search_by = getattr(
+            FamiliesSearchBy,
+            search_by.upper(),
+            FamiliesSearchBy.NAME)
         match search_by:
             case FamiliesSearchBy.NAME:
                 return [0]
@@ -75,7 +78,7 @@ def search_families(families_file: Excel, query='', search_by=''):
 def format_phone(family, attr_name):
     '''
     Validates phone is 9 or 10 digits only.
-    
+
     Returns:
         - None: Family doesn't have attr_name
         - AddFamilyResult key: Validation failed
@@ -83,22 +86,22 @@ def format_phone(family, attr_name):
     '''
     if attr_name not in family:
         return None
-    
+
     phone = family[attr_name]
     if phone is None or phone == '':
         return None
-        
+
     phone = without_hyphen(str(phone))
     if not phone.replace('0', '').isdigit():
         return add_results["PHONE_NOT_DIGITS"]
-    
+
     if len(phone) == 9:
         phone = insert_hyphen(phone, 2)
     elif len(phone) == 10:
         phone = insert_hyphen(phone, 3)
     else:
         return add_results["PHONE_WRONG_LEN"]
-    
+
     return phone
 
 def is_family_exists(families_file: Excel, family_name):
@@ -107,15 +110,15 @@ def is_family_exists(families_file: Excel, family_name):
     a match of family name, assuming a family name property is unique.
     '''
     search_result = search_families(families_file, family_name, 'name')
-    if len(search_result) > 0 and \
-        any(found_family[key_prop] == family_name for found_family in search_result):
-            return True
+    if len(search_result) > 0 and any(
+            found_family[key_prop] == family_name for found_family in search_result):
+        return True
     return False
 
 def validate_phones(family):
     '''
     Validates and formats phone numbers for a given family.
-    
+
     Returns:
         - If a phone number is invalid, an AddFamilyResult is returned.
         - If all phone numbers are valid and formatted, None is returned.
@@ -134,7 +137,7 @@ def add_family(families_file: Excel, family):
     Adds the given family to the families file. family should be a dictionary
     with custom family properties, key_prop property required
     '''
-    if not key_prop in family:
+    if key_prop not in family:
         return add_results["MISSING_FULL_NAME"]
 
     if is_family_exists(families_file, family[key_prop]):
@@ -150,7 +153,7 @@ def add_families(families_file: Excel, families):
     '''
     Adds a list of families to the families file.
 
-    If error occurres in adding a family, the function will 
+    If error occurres in adding a family, the function will
     stop the addition of families and return error information.
     '''
     for family in families:

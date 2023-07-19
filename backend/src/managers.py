@@ -34,11 +34,11 @@ def find_manager(managers_file: Json, driver_name):
     '''
     if not driver_name:
         return None
-    
+
     for manager in managers_file.load_json():
         if any(driver_name == driver['name'] for driver in manager['drivers']):
             return manager['name']
-    
+
     return None
 
 def remove_manager(managers_file: Json, manager_id):
@@ -47,9 +47,12 @@ def remove_manager(managers_file: Json, manager_id):
     '''
     if not manager_id:
         return
-    
+
     managers = managers_file.load_json()
-    new_managers = list(filter(lambda manager: manager["id"] != str(manager_id), managers))
+    new_managers = list(
+        filter(
+            lambda manager: manager["id"] != str(manager_id),
+            managers))
     return update_managers(managers_file, new_managers)
 
 def add_manager(managers_file: Json, manager_name):
@@ -59,7 +62,7 @@ def add_manager(managers_file: Json, manager_name):
     '''
     if not manager_name:
         return
-    
+
     managers = managers_file.load_json()
     managers.append({
         "id": generate_random_id(),

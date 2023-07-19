@@ -25,10 +25,11 @@ class Excel:
         self.first_content_row = 2 # First row is 1, and contains titles
 
         self.add_named_style(required_style)
-        
+
         if self.table_name and self.table_name not in self.worksheet.tables:
-            raise FileResourcesMissingError(f"על הקובץ {filename} להכיל טבלה בשם '{self.table_name}'")
-    
+            raise FileResourcesMissingError(
+                f"על הקובץ {filename} להכיל טבלה בשם '{self.table_name}'")
+
     def save(self):
         self.workbook.save(self.filename)
 
@@ -53,7 +54,7 @@ class Excel:
             return result + self.first_content_row
         else:
             raise FamilyNotFoundError(f"המשפחה {row_key} לא נמצאת")
-    
+
     def search(self, query, search_by=''):
         request = SearchRequest(
             rows_iter=self.get_rows_iter(),
@@ -64,8 +65,13 @@ class Excel:
         )
 
         return search(request)
-        
-    def style_search(self, query, search_by='', search_style=None, style_map={}):
+
+    def style_search(
+            self,
+            query,
+            search_by='',
+            search_style=None,
+            style_map={}):
         request = StyleSearchRequest(
             headers=self.get_headers(),
             query=query,
@@ -77,7 +83,7 @@ class Excel:
         )
 
         return style_search(request)
-    
+
     def column_search(self, query, search_by=''):
         request = ColumnSearchRequest(
             query=query,
@@ -89,7 +95,7 @@ class Excel:
         return search_column(request)
 
     def append_rows(self, families, to_excel_row):
-        for family in families:    
+        for family in families:
             new_row = self.get_rows_num() + 1
             self.worksheet.insert_rows(idx=new_row, amount=1)
 
@@ -101,7 +107,7 @@ class Excel:
 
             if self.table_name:
                 self.worksheet.tables[self.table_name].ref = f'A1:{self.last_column}{new_row}'
-            
+
         self.save()
 
     def replace_row(self, row_index, row_data):
@@ -123,10 +129,10 @@ class Excel:
         '''
         if cell_data["key"] not in self.row_properties:
             return
-        
+
         col_index = self.row_properties.index(cell_data["key"]) + 1
         cell = self.worksheet.cell(row=row_index, column=col_index)
-        
+
         if "style" in cell_data:
             cell.style = cell_data["style"]
         elif "value" in cell_data:

@@ -5,7 +5,7 @@ class Json():
     def __init__(self, filename):
         if not path.exists(filename):
             raise FileNotFoundError(f'הקובץ {filename} לא נמצא')
-        
+
         self.filename = filename
 
     def load_json(self):

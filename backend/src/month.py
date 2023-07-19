@@ -22,8 +22,11 @@ class ReportSearchBy(Enum):
     def get_search_columns(cls, search_by):
         if search_by is None:
             return []
-        
-        search_by = getattr(ReportSearchBy, search_by.upper(), ReportSearchBy.NAME)
+
+        search_by = getattr(
+            ReportSearchBy,
+            search_by.upper(),
+            ReportSearchBy.NAME)
         match search_by:
             case ReportSearchBy.NAME:
                 return [0]
@@ -115,7 +118,7 @@ def to_excel_row(family, managers_file):
     family_key = family.get(key_prop, None)
     if family_key is None:
         raise Exception(f"שגיאה ביצירת דוח קבלה חודשי: למשפחה {family} אין שם")
-    
+
     driver = family.get("נהג", default_driver)
     manager = find_manager(managers_file, driver) or default_manager
 
@@ -128,22 +131,24 @@ def generate_month_report(name, override_name=False):
     '''
     if not override_name and not is_report_name_exists(name):
         return FileAlreadyExists(f"דוח קבלה בשם {name} קיים כבר")
-    
+
     error, families_file = load_families_file()
     if error is not None:
         return error
-    
+
     error, managers_file = load_managers_file()
     if error is not None:
         return error
-    
+
     create_from_template(name)
     error, report_file = load_report_file(name)
     if error is not None:
         return error
-    
-    family_to_excel_row = lambda family: to_excel_row(family, managers_file)
-    report_file.append_rows(search_families(families_file), family_to_excel_row)
+
+    def family_to_excel_row(family): return to_excel_row(family, managers_file)
+    report_file.append_rows(
+        search_families(families_file),
+        family_to_excel_row)
 
 def get_no_manager_drivers():
     '''
@@ -152,11 +157,11 @@ def get_no_manager_drivers():
     error, families_file = load_families_file()
     if error is not None:
         return error, None
-    
+
     error, managers_file = load_managers_file()
     if error is not None:
         return error, None
-    
+
     no_manager_drivers = []
 
     for family in search_families(families_file):
@@ -183,14 +188,14 @@ def get_no_driver_families():
     error, families_file = load_families_file()
     if error is not None:
         return error, None
-    
+
     no_driver_families = 0
 
     for family in search_families(families_file):
         family_key = family.get(key_prop, None)
         if family_key is None:
             continue
-        
+
         driver = family.get("נהג", None)
         if driver is None:
             no_driver_families += 1
@@ -203,7 +208,8 @@ def get_reports_list():
     '''
     start_index = len(month_report_prefix)
     end_index = len(month_report_suffix)
-    return [path.basename(file)[start_index:-end_index] for file in glob(month_reports_pattern)]
+    return [path.basename(file)[start_index:-end_index]
+            for file in glob(month_reports_pattern)]
 
 def search_report(report_file: Excel, query='', search_by=''):
     '''
@@ -213,7 +219,11 @@ def search_report(report_file: Excel, query='', search_by=''):
     query = '' if query is None else query
     search_by = '' if search_by is None else search_by
 
-    return report_file.style_search(query, search_by, search_style='receive', style_map=report_style_map)
+    return report_file.style_search(
+        query,
+        search_by,
+        search_style='receive',
+        style_map=report_style_map)
 
 def search_report_column(report_file: Excel, query='', search_by=''):
     '''
@@ -228,11 +238,15 @@ def get_receipt_status(report_file: Excel, family_name):
     '''
     Returns receipt status of family_name in report_file.
     If family_name not found, returns default receipt status.
-    '''    
+    '''
     default_date = ""
     default_status = False
 
-    report = report_file.style_search(family_name, 'name', search_style='receive', style_map=report_style_map)
+    report = report_file.style_search(
+        family_name,
+        'name',
+        search_style='receive',
+        style_map=report_style_map)
     family_report_data = report[0] if report else {}
 
     return {
@@ -242,7 +256,9 @@ def get_receipt_status(report_file: Excel, family_name):
 
 date_pattern = r'^\d{4}-\d{2}-\d{2}$'
 def validate_date_format(date):
-    return True if date and isinstance(date, str) and match(date_pattern, date) else False
+    return True if date and isinstance(
+        date, str) and match(
+        date_pattern, date) else False
 
 def update_receipt_status(report_file: Excel, family_name, receipt):
     '''
@@ -254,14 +270,14 @@ def update_receipt_status(report_file: Excel, family_name, receipt):
         index = report_file.get_row_index(family_name)
     except FamilyNotFoundError as e:
         return e.result
-        
+
     date = receipt.get("date")
     if not date:
         return receipt_update_results["MISSING_DATE"]
-    
+
     if not validate_date_format(date):
         return receipt_update_results["DATE_MALFORMED"]
-    
+
     report_file.replace_cell(index, {
         "key": date_prop,
         "value": date
@@ -273,5 +289,5 @@ def update_receipt_status(report_file: Excel, family_name, receipt):
             "key": status_prop,
             "style": style
         })
-    
+
     return receipt_update_results["RECEIPT_UPDATED"]

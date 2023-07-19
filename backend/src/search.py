@@ -34,8 +34,8 @@ class StyleSearchRequest(SearchRequest):
     style_map: Dict[str, Any]
 
 def search(request: SearchRequest):
-    searching_by_phone = bool('PHONE' in request.search_enum.__members__ and \
-                         request.search_by == request.search_enum.PHONE.value)
+    searching_by_phone = bool('PHONE' in request.search_enum.__members__ and
+                              request.search_by == request.search_enum.PHONE.value)
     if searching_by_phone:
         request.query = without_hyphen(request.query)
 
@@ -58,7 +58,8 @@ def search(request: SearchRequest):
 
 def style_search(request: StyleSearchRequest):
     search_columns = request.search_enum.get_search_columns(request.search_by)
-    style_columns = request.search_enum.get_search_columns(request.search_style)
+    style_columns = request.search_enum.get_search_columns(
+        request.search_style)
 
     matching_rows = []
     for row in request.rows_iter:
