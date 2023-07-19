@@ -9,6 +9,7 @@ def write_managers(managers):
     if error is not None:
         raise Exception("Couldn't load managers file", error)
     managers_file.update_json(managers)
+    return managers_file
 
 def setUpManagers():
     copy(managers_filename, 'temp_managers.json')

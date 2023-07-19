@@ -32,6 +32,9 @@ def find_manager(managers_file: Json, driver_name):
     '''
     Returns the corresponding manager to the given driver, or None if not found.
     '''
+    if not driver_name:
+        return None
+    
     for manager in managers_file.load_json():
         if any(driver_name == driver['name'] for driver in manager['drivers']):
             return manager['name']
@@ -42,6 +45,9 @@ def remove_manager(managers_file: Json, manager_id):
     '''
     Removes given manager and all his data from managers_file.
     '''
+    if not manager_id:
+        return
+    
     managers = managers_file.load_json()
     new_managers = list(filter(lambda manager: manager["id"] != str(manager_id), managers))
     return update_managers(managers_file, new_managers)
@@ -51,6 +57,9 @@ def add_manager(managers_file: Json, manager_name):
     Adds a manager with the given name to managers_file, and gives him a unique id,
     and empty array of drivers.
     '''
+    if not manager_name:
+        return
+    
     managers = managers_file.load_json()
     managers.append({
         "id": generate_random_id(),
