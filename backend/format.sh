@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Add files from src folder to this list if you want to ignore them
-declare -a ignore_list=("results.py")
+declare -a ignore_list=("results.py" "styles.py")
 
 # Construct ignore_files
 ignore_files=""
