@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 def without_hyphen(string: str):
     return string.replace('-', '')
 
@@ -9,3 +11,6 @@ def letter_by_index(index: int):
     Index starts at 1. To get the letter A, call the function with index = 1.
     '''
     return chr(ord('A') + index - 1)
+
+def generate_random_id():
+    return str(uuid4())

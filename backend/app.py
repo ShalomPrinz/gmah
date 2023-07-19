@@ -81,6 +81,14 @@ def remove_manager():
         return error_response(error)
     return jsonify(), 200
 
+@app.route('/managers/add', methods=["POST"])
+def add_manager():
+    manager_name = request.json['manager_name']
+    error = managers.add_manager(g.managers_file, manager_name)
+    if error is not None:
+        return error_response(error)
+    return jsonify(), 200
+
 @app.route('/validate/drivers')
 def validate_drivers():
     error, no_manager_drivers = month.get_no_manager_drivers()

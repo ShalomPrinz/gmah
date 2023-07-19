@@ -1,5 +1,6 @@
 from src.data import managers_filename
 from src.json import Json
+from src.util import generate_random_id
 
 def load_managers_file():
     '''
@@ -44,3 +45,16 @@ def remove_manager(managers_file: Json, manager_id):
     managers = managers_file.load_json()
     new_managers = list(filter(lambda manager: manager["id"] != str(manager_id), managers))
     return update_managers(managers_file, new_managers)
+
+def add_manager(managers_file: Json, manager_name):
+    '''
+    Adds a manager with the given name to managers_file, and gives him a unique id,
+    and empty array of drivers.
+    '''
+    managers = managers_file.load_json()
+    managers.append({
+        "id": generate_random_id(),
+        "name": manager_name,
+        "drivers": []
+    })
+    return update_managers(managers_file, managers)

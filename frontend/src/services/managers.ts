@@ -12,4 +12,8 @@ async function removeManager(managerId: string) {
   return remove("managers/remove", { params: { manager_id: managerId } });
 }
 
-export { getManagers, updateManagers, removeManager };
+async function addManager(managerName: string) {
+  return post("managers/add", { manager_name: managerName });
+}
+
+export { addManager, getManagers, updateManagers, removeManager };

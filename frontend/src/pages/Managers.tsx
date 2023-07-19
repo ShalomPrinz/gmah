@@ -4,7 +4,12 @@ import { toast } from "react-toastify";
 
 import { ConditionalList, Table } from "../components";
 import IconComponent from "../components/Icon";
-import { getManagers, removeManager, updateManagers } from "../services";
+import {
+  addManager,
+  getManagers,
+  removeManager,
+  updateManagers,
+} from "../services";
 import type { Manager } from "../types";
 
 const driversColumns = [
@@ -13,7 +18,12 @@ const driversColumns = [
 ];
 
 function Managers() {
-  const { managers, deleteManager, restoreInitialManagers } = useManagers();
+  const [isAddingManager, setIsAddingManager] = useState(false);
+  const switchIsAddingManager = () => setIsAddingManager((adding) => !adding);
+  const newManagerRef = useRef<HTMLInputElement>(null);
+
+  const { managers, deleteManager, newManager, restoreInitialManagers } =
+    useManagers();
 
   const managerCallback = ({ id, name, drivers }: Manager) => (
     <div className="my-3" style={{ width: "35%" }}>
@@ -37,16 +47,46 @@ function Managers() {
         אחראי נהגים
         <button
           className="me-5 p-3 fs-3 bg-warning border border-dark border-4 rounded"
-          onClick={restoreInitialManagers}
+          onClick={() => {
+            restoreInitialManagers();
+            setIsAddingManager(false);
+          }}
           type="button"
         >
           נקה שינויים
+        </button>
+        <button
+          className="me-5 p-3 fs-3 bg-white text-primary border border-primary border-4 rounded"
+          onClick={switchIsAddingManager}
+          type="button"
+        >
+          {isAddingManager ? "בטל הוספה" : "הוסף אחראי"}
         </button>
       </h1>
       <main
         className="container text-center d-flex flex-wrap justify-content-evenly"
         style={{ marginBottom: "100px" }}
       >
+        {isAddingManager && (
+          <div className="col-12 my-5 fs-5">
+            <h2 className="mb-3">שם האחראי החדש:</h2>
+            <input
+              className="ms-3 p-2 rounded"
+              placeholder="לדוגמא: שלום"
+              ref={newManagerRef}
+              type="text"
+            />
+            <button
+              className="p-2 rounded fw-bold bg-white text-success border border-3 border-success"
+              onClick={() => {
+                if (newManager(newManagerRef.current?.value))
+                  switchIsAddingManager();
+              }}
+            >
+              הוסף אחראי
+            </button>
+          </div>
+        )}
         <ConditionalList list={managers} itemCallback={managerCallback} />
       </main>
       <Link
@@ -105,6 +145,33 @@ function useManagers() {
       );
   }, [managersVersion]);
 
+  function newManager(name: string | undefined) {
+    if (typeof name === "undefined" || name === "") {
+      toast.error("לא ניתן להוסיף אחראי ללא שם");
+      return false;
+    }
+
+    if (managers.findIndex((manager) => manager.name === name) !== -1) {
+      toast.error(
+        `יש כבר אחראי בשם ${name}, אי אפשר שיהיו שני אחראים בעלי אותו שם`
+      );
+      return false;
+    }
+
+    let successfulAdd = true;
+    addManager(name)
+      .then(() => {
+        toast.success(`הוספת אחראי חדש בשם ${name} בהצלחה`);
+        advanceManagersVersion();
+      })
+      .catch(() => {
+        toast.error(`קרתה שגיאה לא צפויה בניסיון להוסיף אחראי בשם ${name}`);
+        successfulAdd = false;
+      });
+
+    return successfulAdd;
+  }
+
   function deleteManager(managerId: string) {
     const managerName = managers.find((m) => m.id === managerId)?.name;
     if (typeof managerName === "undefined") {
@@ -138,7 +205,7 @@ function useManagers() {
       .catch(() => toast.error("קרתה שגיאה בניסיון לשחזר את האחראים שהוסרו"));
   }
 
-  return { managers, deleteManager, restoreInitialManagers };
+  return { managers, deleteManager, newManager, restoreInitialManagers };
 }
 
 export default Managers;
