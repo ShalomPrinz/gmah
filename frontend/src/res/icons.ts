@@ -1,6 +1,7 @@
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import {
   faBars,
+  faRightFromBracket,
   faPeopleCarryBox,
   faCheck,
   faCircleMinus,
@@ -21,6 +22,7 @@ const icons = {
   markReceive: faPeopleCarryBox,
   navbarClosed: faBars,
   navbarExpanded: faTimes,
+  options: faRightFromBracket,
   removeItem: faCircleMinus,
   updateManagers: faFilePen,
   validateFailure: faXmark,

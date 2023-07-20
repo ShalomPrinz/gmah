@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 import { RadioMenu, Search, Table } from "../components";
 import IconComponent from "../components/Icon";
 import { familiesTableHeaders, familyIdProp } from "../modules";
 import type { Family } from "../modules";
-import { searchFamilies } from "../services";
+import { removeFamily, searchFamilies } from "../services";
+import { getFormattedToday } from "../util";
 
 const buttons = [
   {
@@ -43,64 +45,186 @@ const getHeaderByButtonValue = (value: string) =>
     driver: "נהג",
   }[value] || "NoSuchSearchOption");
 
+async function removeFamilyWrapper(
+  familyName: string,
+  onRemoveSuccess: () => void
+) {
+  return removeFamily(familyName, getFormattedToday() ?? "", "")
+    .then(() => {
+      toast.success(`העברת את משפחת ${familyName} להסטוריית הנתמכים`, {
+        toastId: `removeSuccess:${familyName}`,
+      });
+      onRemoveSuccess();
+    })
+    .catch(({ response }) => {
+      toast.error(
+        `לא הצלחנו להעביר את המשפחה ${familyName} להסטוריית הנתמכים: ${response.data.description}`,
+        {
+          toastId: `removeFailure:${familyName}`,
+        }
+      );
+    });
+}
+
+const marginFromBottomMenuStyle = (familiesLength: number) => {
+  let marginBottom = "30px";
+  if (familiesLength === 2) marginBottom = "90px";
+  if (familiesLength > 2) marginBottom = "150px";
+
+  return {
+    marginBottom,
+    minHeight: "80vh",
+  };
+};
+
 function Families() {
   const [query, setQuery] = useState("");
   const [searchBy, setSearchBy] = useState("name");
-  const families = useFamiliesSearch(query, searchBy);
+  const { families, reloadFamilies } = useFamiliesSearch(query, searchBy);
 
-  const LastTableColumn = ({ item }: { item: any }) => (
+  const {
+    isFamilySelected,
+    selected,
+    setSelected,
+    setNoSelectedFamily,
+    selectedFamilyName,
+  } = useFamilySelection();
+
+  const onFamilyRemove = () =>
+    removeFamilyWrapper(selectedFamilyName, () => {
+      setNoSelectedFamily();
+      reloadFamilies();
+    });
+
+  return (
+    <>
+      <main
+        className="container text-center mx-auto"
+        style={
+          isFamilySelected ? marginFromBottomMenuStyle(families.length) : {}
+        }
+      >
+        <Row>
+          <h1 className="mt-5 mb-4">חיפוש משפחות</h1>
+        </Row>
+        <Row className="mb-3">
+          <Col sm="3">
+            <h2>חפש באמצעות:</h2>
+            <RadioMenu
+              buttons={buttons}
+              menuId="search-by"
+              onSelect={(value: string) => setSearchBy(value)}
+            />
+          </Col>
+          <Col>
+            <Search
+              onChange={(q: string) => setQuery(q)}
+              placeholder={`הכנס ${getButtonTextByValue(searchBy)} של משפחה...`}
+            />
+          </Col>
+          <Col sm="3">
+            <h2>מספר תוצאות</h2>
+            <p className="text-primary" style={{ fontSize: "50px" }}>
+              {families.length}
+            </p>
+          </Col>
+        </Row>
+        <Row>
+          <Table
+            columns={familiesTableHeaders}
+            data={families}
+            dataIdProp={familyIdProp}
+            headerHighlight={getHeaderByButtonValue(searchBy)}
+            LastColumn={MenuOpenWrapper(setSelected)}
+          />
+        </Row>
+      </main>
+      {isFamilySelected && (
+        <div className="bottom-menu p-4 d-flex">
+          <span className="fs-3 mx-5 my-auto">{selectedFamilyName}</span>
+          <div className="justify-content-center">
+            <EditFamily family={selected!} />
+            <RemoveFamily onRemove={onFamilyRemove} />
+          </div>
+          <MenuClose close={setNoSelectedFamily} />
+        </div>
+      )}
+    </>
+  );
+}
+
+function MenuOpenWrapper(open: (family: Family) => void) {
+  return ({ item }: { item: any }) => (
+    <button
+      className="fs-5 p-2 rounded bg-default border border-none border-0"
+      onClick={() => open(item as Family)}
+      type="button"
+    >
+      <span className="ps-2">אפשרויות</span>
+      <IconComponent flipHorizontal icon="options" />
+    </button>
+  );
+}
+
+function MenuClose({ close }: { close: () => void }) {
+  return (
+    <button
+      className="bottom-menu-item bg-secondary text-white rounded border border-none border-0 fs-3 p-3 me-auto"
+      onClick={close}
+      type="button"
+    >
+      <span className="ps-3">סגירת התפריט</span>
+      <IconComponent icon="validateFailure" />
+    </button>
+  );
+}
+
+function EditFamily({ family }: { family: Family }) {
+  return (
     <Link
-      className="link-decoration rounded fs-5 p-2"
-      to={`edit/${item[familyIdProp]}`}
-      state={{ family: item }}
+      className="bottom-menu-item link-decoration rounded fs-3 p-3"
+      to={`edit/${family[familyIdProp]}`}
+      state={{ family }}
     >
       <span className="ps-2">עריכה</span>
       <IconComponent icon="editFamily" />
     </Link>
   );
+}
 
+function RemoveFamily({ onRemove }: { onRemove: () => void }) {
   return (
-    <main className="container text-center mx-auto">
-      <Row>
-        <h1 className="mt-5 mb-4">חיפוש משפחות</h1>
-      </Row>
-      <Row className="mb-3">
-        <Col sm="3">
-          <h2>חפש באמצעות:</h2>
-          <RadioMenu
-            buttons={buttons}
-            menuId="search-by"
-            onSelect={(value: string) => setSearchBy(value)}
-          />
-        </Col>
-        <Col>
-          <Search
-            onChange={(q: string) => setQuery(q)}
-            placeholder={`הכנס ${getButtonTextByValue(searchBy)} של משפחה...`}
-          />
-        </Col>
-        <Col sm="3">
-          <h2>מספר תוצאות</h2>
-          <p className="text-primary" style={{ fontSize: "50px" }}>
-            {families.length}
-          </p>
-        </Col>
-      </Row>
-      <Row>
-        <Table
-          columns={familiesTableHeaders}
-          data={families}
-          dataIdProp={familyIdProp}
-          headerHighlight={getHeaderByButtonValue(searchBy)}
-          LastColumn={LastTableColumn}
-        />
-      </Row>
-    </main>
+    <button
+      className="bottom-menu-item bg-danger text-white rounded border border-none border-0 fs-3 p-3"
+      onClick={onRemove}
+      type="button"
+    >
+      <span className="ps-2">הסרה</span>
+      <IconComponent icon="removeItem" />
+    </button>
   );
+}
+
+function useFamilySelection() {
+  const [selected, setSelected] = useState<Family | undefined>(undefined);
+  const setNoSelectedFamily = () => setSelected(undefined);
+  const isFamilySelected = typeof selected !== "undefined";
+  const selectedFamilyName = isFamilySelected ? selected[familyIdProp] : "";
+
+  return {
+    isFamilySelected,
+    selected,
+    setSelected,
+    setNoSelectedFamily,
+    selectedFamilyName,
+  };
 }
 
 function useFamiliesSearch(query: string, searchBy: string) {
   const [families, setFamilies] = useState<Family[]>([]);
+
+  const [searchKey, setSearchKey] = useState(0);
+  const reloadFamilies = () => setSearchKey((prev) => prev + 1);
 
   useEffect(() => {
     searchFamilies(query, searchBy)
@@ -108,9 +232,9 @@ function useFamiliesSearch(query: string, searchBy: string) {
       .catch((error) =>
         console.error("Error occurred while trying to search families", error)
       );
-  }, [query, searchBy]);
+  }, [query, searchBy, searchKey]);
 
-  return families;
+  return { families, reloadFamilies };
 }
 
 export default Families;

@@ -60,6 +60,16 @@ def update_family():
         return error_response(error)
     return jsonify(), 200
 
+@app.route('/family/remove', methods=["DELETE"])
+def remove_family():
+    family_name = request.args.get('family_name')
+    exit_date = request.args.get('exit_date')
+    reason = request.args.get('reason')
+    error = families.remove_family(g.families_file, family_name, exit_date, reason)
+    if error is not None:
+        return error_response(error)
+    return jsonify(), 200
+
 @app.route('/managers')
 def get_managers():
     app_managers = managers.get_managers(g.managers_file)

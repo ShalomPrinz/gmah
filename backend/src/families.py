@@ -1,6 +1,6 @@
 from enum import Enum
 
-from src.data import key_prop, family_properties, families_filename
+from src.data import key_prop, family_properties, families_filename, families_history_filename, history_properties, exit_date_prop, reason_prop
 from src.excel import Excel
 from src.util import without_hyphen, insert_hyphen
 from src.results import Result, add_results, add_many_error, add_many_results
@@ -33,7 +33,7 @@ class FamiliesSearchBy(Enum):
             case _:
                 return [0]
 
-def load_families_file():
+def load_families_file(filename=families_filename):
     '''
     Connects to the families source file.
 
@@ -43,7 +43,7 @@ def load_families_file():
     '''
     try:
         families_file = Excel(
-            filename=families_filename,
+            filename=filename,
             row_properties=family_properties,
             search_enum=FamiliesSearchBy,
             required_style=families_cell_style,
@@ -57,6 +57,12 @@ def to_excel_row(family):
     Cast family data to excel row format in the right order
     '''
     return [family.get(attr, None) for attr in family_properties]
+
+def to_history_row(family):
+    '''
+    Cast family data to history row format in the right order
+    '''
+    return [family.get(attr, None) for attr in history_properties]
 
 def get_count(families_file: Excel):
     '''
@@ -132,7 +138,7 @@ def validate_phones(family):
         else:
             family[phone_type] = result
 
-def add_family(families_file: Excel, family):
+def add_family(families_file: Excel, family, excel_cast=to_excel_row):
     '''
     Adds the given family to the families file. family should be a dictionary
     with custom family properties, key_prop property required
@@ -146,7 +152,7 @@ def add_family(families_file: Excel, family):
     if validation_error := validate_phones(family):
         return validation_error
 
-    families_file.append_rows([family], to_excel_row)
+    families_file.append_rows([family], excel_cast)
     return add_results["FAMILY_ADDED"]
 
 def add_families(families_file: Excel, families):
@@ -171,3 +177,26 @@ def update_family(families_file: Excel, original_name, family):
     except Exception as e:
         return e
     families_file.replace_row(index, family)
+
+def remove_family(families_file: Excel, family_name, exit_date, reason):
+    '''
+    Moves the given family from families_file to families history file.
+    '''
+    try:
+        index = families_file.get_row_index(family_name)
+    except Exception as e:
+        return e
+    
+    error, history_file = load_families_file(families_history_filename)
+    if error is not None:
+        return error
+    
+    family_data = families_file.search(family_name, 'name')[0]
+    family_data[exit_date_prop] = exit_date
+    family_data[reason_prop] = reason
+    
+    families_file.remove_row(index)
+
+    result = add_family(history_file, family_data, to_history_row)
+    if result.status != 200:
+        return Exception("המשפחה הוסרה בהצלחה מהנתמכים, אך קרתה שגיאה בהוספת המשפחה להסטוריית הנתמכים")

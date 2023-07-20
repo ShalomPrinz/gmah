@@ -1,6 +1,6 @@
 import { toast } from "react-toastify";
 
-import { get, post, put } from "./http";
+import { get, post, put, remove } from "./http";
 
 import type { Family } from "../modules";
 
@@ -46,4 +46,24 @@ async function updateFamily(originalName: string, familyData: Family) {
   });
 }
 
-export { addFamilies, getFamiliesCount, searchFamilies, updateFamily };
+async function removeFamily(
+  familyName: string,
+  exitDate: string,
+  reason: string
+) {
+  return remove("family/remove", {
+    params: {
+      family_name: familyName,
+      exit_date: exitDate,
+      reason,
+    },
+  });
+}
+
+export {
+  addFamilies,
+  getFamiliesCount,
+  searchFamilies,
+  updateFamily,
+  removeFamily,
+};

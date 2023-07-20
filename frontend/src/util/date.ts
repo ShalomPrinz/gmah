@@ -34,4 +34,6 @@ function formatDate(date: string | undefined) {
   return `${day} ${hebrewMonthNames[intMonth]} ${year}`;
 }
 
-export { getTodayDate, formatDate };
+const getFormattedToday = () => formatDate(getTodayDate());
+
+export { getFormattedToday, getTodayDate, formatDate };

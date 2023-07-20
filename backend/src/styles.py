@@ -18,7 +18,9 @@ def get_cell_style(border_size):
             right=border_style),
         alignment=Alignment(
             horizontal="center",
-            vertical="center") )
+            vertical="center",
+            readingOrder=2 # RTL
+        ))
 
 families_border_size = "medium"
 families_cell_style = get_cell_style(families_border_size)

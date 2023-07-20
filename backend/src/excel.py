@@ -110,6 +110,10 @@ class Excel:
 
         self.save()
 
+    def remove_row(self, row_index):
+        self.worksheet.delete_rows(row_index)
+        self.save()
+
     def replace_row(self, row_index, row_data):
         for key, value in row_data.items():
             if key not in self.row_properties:
