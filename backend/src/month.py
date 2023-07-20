@@ -4,11 +4,12 @@ from os import path
 from openpyxl import load_workbook
 from re import match
 
-from src.data import key_prop, report_properties, date_prop, status_prop
+from src.data import key_prop, report_properties, date_prop, status_prop, driver_prop, pdf_properties
 from src.errors import FamilyNotFoundError, FileAlreadyExists
 from src.excel import Excel
 from src.families import load_families_file, search_families
 from src.managers import find_manager, load_managers_file
+from src.pdf import PDFBuilder
 from src.results import receipt_update_results
 from src.styles import report_cell_style, report_received_style, report_not_received_style, report_received_name, report_not_received_name, style_name
 
@@ -145,10 +146,38 @@ def generate_month_report(name, override_name=False):
     if error is not None:
         return error
 
+    families = search_families(families_file)
     def family_to_excel_row(family): return to_excel_row(family, managers_file)
-    report_file.append_rows(
-        search_families(families_file),
-        family_to_excel_row)
+    report_file.append_rows(families, family_to_excel_row)
+
+    # Build monthly pdf document
+    managers = managers_file.load_json()
+    pages = get_all_pages(managers, families)
+    builder = PDFBuilder(name, "כל הנהגים")
+    builder.build_multi(pages, pdf_properties)
+
+def get_all_pages(managers, families):
+    ignore_drivers = [None, "", "בני מנשה", "וענונו"]
+    pages = []
+
+    for manager in managers:
+        manager_name = manager['name']
+        pages.append({ "title": manager_name })
+
+        for driver in manager['drivers']:
+            driver_name = driver['name']
+            if driver_name in ignore_drivers:
+                continue
+
+            driver_families = [f for f in families
+                               if f[driver_prop] == driver_name]
+            if len(driver_families) > 0:
+                pages.append({
+                    "title": driver_name,
+                    "content": driver_families
+                })
+
+    return pages
 
 def get_no_manager_drivers():
     '''

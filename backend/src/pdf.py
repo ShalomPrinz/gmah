@@ -1,8 +1,7 @@
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import cm
 
-from reportlab.platypus import SimpleDocTemplate, Table, PageTemplate
-from reportlab.platypus import Paragraph
+from reportlab.platypus import SimpleDocTemplate, Table, Paragraph, PageTemplate, PageBreak, NextPageTemplate
 from reportlab.platypus.frames import Frame
 
 from reportlab.pdfbase import pdfmetrics
@@ -10,9 +9,16 @@ from reportlab.pdfbase.ttfonts import TTFont
 
 from bidi.algorithm import get_display
 
-from src.styles import header_style, table_style, title_style
+from src.styles import header_style, table_style, title_style, title_page_style
+from src.util import create_folders_path
 
 fonts_dir = "./src/fonts/"
+print_dir = "./הדפסות"
+
+def get_print_path(folder, name):
+    folders = f"{print_dir}/{folder}"
+    create_folders_path(folders)
+    return f"{folders}/{name}"
 
 def to_hebrew(text):
     if text is None or text == "":
@@ -34,11 +40,12 @@ def basad_header(canvas, doc):
 
 class PDFBuilder():
     '''
-    Builds a pdf with the given name.
-    Access it with build_single().
+    Builds a pdf with the given path.
+    Access it with build_single() or build_multi().
     '''
-    def __init__(self, filename):
-        self.filename = filename
+    def __init__(self, folder, filename):
+        self.filename = get_print_path(folder, filename)
+        self.template_id = 'basad_template'
 
         pdfmetrics.registerFont(
             TTFont(
@@ -74,12 +81,51 @@ class PDFBuilder():
             doc.height,
             id='frame')
         template = PageTemplate(
-            id='template',
+            id=self.template_id,
             frames=frame,
             onPage=basad_header)
 
         doc.addPageTemplates([template])
         doc.build(self.elements)
+
+    def append_title_page(self, title):
+        '''
+        Appends page with title only, to be used as a delimiter between
+        differrent parts of the pdf document.
+        '''
+        self.append_title(title, title_page_style)
+
+    def append_page(self, title, headers, content):
+        '''
+        Appends full page to the pdf document, including a title and a table.
+        '''
+        self.append_title(title)
+        self.append_table(headers, content)
+
+    def build_multi(self, pages, headers):
+        '''
+        Builds a multi-page pdf document. Each page dictionary in the pages list should have
+        title and content, which would render to a single-pdf page in the document.
+
+        Page could also be a title page without a content, to be used as a delimiter page
+        between different parts in the document.
+        '''
+        doc = self.start_document()
+
+        inserted_first = False
+        for page in pages:
+            if "content" not in page:
+                if "title" in page:
+                    if inserted_first:
+                        self.append_page_break()
+                    self.append_title_page(page["title"])
+                    inserted_first = True
+                continue
+
+            self.append_page_break()
+            self.append_page(page["title"], headers, page["content"])
+
+        self.finish_document(doc)
 
     def build_single(self, title, headers, content):
         '''
@@ -87,18 +133,24 @@ class PDFBuilder():
         '''
         doc = self.start_document()
 
-        self.append_title(title)
-        self.append_table(headers, content)
+        self.append_page(title, headers, content)
 
         self.finish_document(doc)
 
-    def append_title(self, title):
+    def append_page_break(self):
+        '''
+        Appends a Page Break to the pdf document, in order to start a new page.
+        '''
+        self.elements.append(NextPageTemplate(self.template_id))
+        self.elements.append(PageBreak())
+
+    def append_title(self, title, style=title_style):
         '''
         Appends the given title to the pdf document.
         '''
-        self.elements.append(Paragraph("", title_style))
-        self.elements.append(Paragraph("", title_style))
-        self.elements.append(Paragraph(to_hebrew(title), title_style))
+        self.elements.append(Paragraph("", style))
+        self.elements.append(Paragraph("", style))
+        self.elements.append(Paragraph(to_hebrew(title), style))
 
     def append_table(self, headers, content):
         '''

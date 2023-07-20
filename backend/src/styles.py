@@ -91,4 +91,14 @@ title_style = ParagraphStyle(name='TitleStyle',
     alignment=1
 )
 
+title_page_style = ParagraphStyle(name='TitlePageStyle',
+    fontName="Hebrew-Bold",
+    fontSize=60,
+    leading=60,
+    spaceBefore=15,
+    spaceAfter=15,
+    alias='h1',
+    alignment=1
+)
+
 header_style = ParagraphStyle(name='HeaderStyle', fontName="Hebrew")

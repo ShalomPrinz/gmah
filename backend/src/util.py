@@ -1,4 +1,5 @@
 from uuid import uuid4
+from os import makedirs, path, umask
 
 def without_hyphen(string: str):
     return string.replace('-', '')
@@ -14,3 +15,16 @@ def letter_by_index(index: int):
 
 def generate_random_id():
     return str(uuid4())
+
+def create_folders_path(folders):
+    '''
+    If given folders path doesn't exist, creates all folders in path, full permission granted.
+    '''
+    if path.exists(folders):
+        return
+
+    try:
+        original_umask = umask(0)
+        makedirs(folders, 0o777)
+    finally:
+        umask(original_umask)
