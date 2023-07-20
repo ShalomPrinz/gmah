@@ -21,7 +21,7 @@ export const FormTextInput = ({
 
   return (
     <div className="d-flex flex-column my-3">
-      <label className="fs-4 my-2" htmlFor={path}>
+      <label className="fs-4 fw-bold my-2" htmlFor={path}>
         {label}
       </label>
       <input
