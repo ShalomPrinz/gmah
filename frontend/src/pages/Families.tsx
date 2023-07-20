@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { Link } from "react-router-dom";
@@ -47,9 +47,10 @@ const getHeaderByButtonValue = (value: string) =>
 
 async function removeFamilyWrapper(
   familyName: string,
+  reason: string,
   onRemoveSuccess: () => void
 ) {
-  return removeFamily(familyName, getFormattedToday() ?? "", "")
+  return removeFamily(familyName, getFormattedToday() ?? "", reason)
     .then(() => {
       toast.success(`העברת את משפחת ${familyName} להסטוריית הנתמכים`, {
         toastId: `removeSuccess:${familyName}`,
@@ -90,8 +91,8 @@ function Families() {
     selectedFamilyName,
   } = useFamilySelection();
 
-  const onFamilyRemove = () =>
-    removeFamilyWrapper(selectedFamilyName, () => {
+  const onFamilyRemove = (reason: string) =>
+    removeFamilyWrapper(selectedFamilyName, reason, () => {
       setNoSelectedFamily();
       reloadFamilies();
     });
@@ -192,16 +193,29 @@ function EditFamily({ family }: { family: Family }) {
   );
 }
 
-function RemoveFamily({ onRemove }: { onRemove: () => void }) {
+function RemoveFamily({ onRemove }: { onRemove: (reason: string) => void }) {
+  const reasonRef = useRef<HTMLInputElement>(null);
+
+  const onRemoveClick = () => onRemove(reasonRef?.current?.value ?? "");
+
   return (
-    <button
-      className="bottom-menu-item bg-danger text-white rounded border border-none border-0 fs-3 p-3"
-      onClick={onRemove}
-      type="button"
-    >
-      <span className="ps-2">הסרה</span>
-      <IconComponent icon="removeItem" />
-    </button>
+    <>
+      <button
+        className="bottom-menu-item bg-danger text-white rounded border border-none border-0 fs-3 p-3"
+        onClick={onRemoveClick}
+        type="button"
+      >
+        <span className="ps-2">הסרה</span>
+        <IconComponent icon="removeItem" />
+      </button>
+      <label className="fs-5 mx-0">סיבת ההסרה:</label>
+      <input
+        className="bottom-menu-item rounded p-2"
+        placeholder="דוגמא: לא עונה לטלפון"
+        ref={reasonRef}
+        type="text"
+      />
+    </>
   );
 }
 

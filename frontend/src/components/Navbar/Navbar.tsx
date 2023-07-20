@@ -131,6 +131,11 @@ function NavbarWrapper() {
       name: "מעקב חודשי",
       url: "/month",
     },
+    {
+      id: 5,
+      name: "הסטוריית נתמכים",
+      url: "/families/history",
+    },
   ];
 
   return <AppNavbar pages={pages} />;

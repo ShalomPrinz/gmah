@@ -4,7 +4,9 @@
 family_id_prop="שם מלא"
 family_attributes=([0]=$family_id_prop [1]="רחוב" [2]="בניין" [3]="דירה" [4]="קומה" [5]="מס' בית" [6]="מס' פלאפון" [7]="נהג" [8]="ממליץ" [9]="הערות")
 add_family_exclude="7 9"
-table_headers_exclude=""
+
+history_family_attributes=("${family_attributes[@]:0:7}")
+history_family_attributes+=( "ממליץ" "תאריך יציאה" "סיבה" )
 
 report_date_prop="תאריך"
 report_receive_prop="קיבל/ה"
@@ -38,13 +40,14 @@ function prepare_path {
 function add_families_array {
     local var_name=$1
     local obj_attr=$2
-    local excludes=$3
+    shift 2
+    local attrs=("$@")
     echo "export const $var_name = " >> $output_file
 
     local var_text="["
-    for idx in ${!family_attributes[@]}; do
+    for idx in ${!attrs[@]}; do
         if [[ ! " $excludes " =~ " $idx " ]]; then
-            var_text+='{id: '$idx', '$obj_attr': "'${family_attributes[$idx]}'"},'
+            var_text+='{id: '$idx', '$obj_attr': "'${attrs[$idx]}'"},'
         fi
     done
     var_text+="]"
@@ -83,7 +86,10 @@ add_labeled_families_array "editFamilyInputs" ""
 add_labeled_families_array "addFamilyHeaders" "$add_family_exclude"
 
 # Families Table
-add_families_array "familiesTableHeaders" "path" "$table_headers_exclude"
+add_families_array "familiesTableHeaders" "path" "${family_attributes[@]}"
+
+# Families History Table
+add_families_array "familiesHistoryTableHeaders" "path" "${history_family_attributes[@]}"
 
 function write_family_properties {
     local var_name="familyProperties"

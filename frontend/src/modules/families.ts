@@ -35,6 +35,19 @@ export const familiesTableHeaders = [
   { id: 9, path: "הערות" },
 ];
 
+export const familiesHistoryTableHeaders = [
+  { id: 0, path: "שם מלא" },
+  { id: 1, path: "רחוב" },
+  { id: 2, path: "בניין" },
+  { id: 3, path: "דירה" },
+  { id: 4, path: "קומה" },
+  { id: 5, path: "מס' בית" },
+  { id: 6, path: "מס' פלאפון" },
+  { id: 7, path: "ממליץ" },
+  { id: 8, path: "תאריך יציאה" },
+  { id: 9, path: "סיבה" },
+];
+
 export const familyProperties = [
   "שם מלא",
   "רחוב",

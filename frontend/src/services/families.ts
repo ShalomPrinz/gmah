@@ -12,6 +12,10 @@ async function searchFamilies(query: string, by: string) {
   return get("families", { params: { query, by } });
 }
 
+async function searchFamiliesHistory(query: string, by: string) {
+  return get("families/history", { params: { query, by } });
+}
+
 /**
  * Posts families to database.
  *
@@ -60,10 +64,18 @@ async function removeFamily(
   });
 }
 
+async function restoreFamily(familyName: string) {
+  return post("family/restore", {
+    family_name: familyName,
+  });
+}
+
 export {
   addFamilies,
   getFamiliesCount,
   searchFamilies,
+  searchFamiliesHistory,
   updateFamily,
   removeFamily,
+  restoreFamily,
 };

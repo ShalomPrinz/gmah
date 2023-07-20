@@ -2,6 +2,7 @@ export {
   editFamilyInputs,
   addFamilyHeaders,
   familiesTableHeaders,
+  familiesHistoryTableHeaders,
   familyProperties,
   defaultFamily,
   familyIdProp,

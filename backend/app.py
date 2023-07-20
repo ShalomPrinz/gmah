@@ -28,6 +28,11 @@ def load_files():
     if error is not None:
         return error_response(error)
     g.families_file = families_file
+
+    error, families_history_file = families.load_families_history_file()
+    if error is not None:
+        return error_response(error)
+    g.families_history_file = families_history_file
     
     error, managers_file = managers.load_managers_file()
     if error is not None:
@@ -40,10 +45,17 @@ def families_count():
     return jsonify(familiesCount=count), 200
 
 @app.route('/families')
-def query_family():
+def query_families():
     query = request.args.get('query')
     search_by = request.args.get('by')
     query_result = families.search_families(g.families_file, query, search_by)
+    return jsonify(families=query_result), 200
+
+@app.route('/families/history')
+def query_families_history():
+    query = request.args.get('query')
+    search_by = request.args.get('by')    
+    query_result = families.search_families(g.families_history_file, query, search_by)
     return jsonify(families=query_result), 200
 
 @app.route('/families', methods=["POST"])
@@ -65,7 +77,15 @@ def remove_family():
     family_name = request.args.get('family_name')
     exit_date = request.args.get('exit_date')
     reason = request.args.get('reason')
-    error = families.remove_family(g.families_file, family_name, exit_date, reason)
+    error = families.remove_family(g.families_file, g.families_history_file, family_name, exit_date, reason)
+    if error is not None:
+        return error_response(error)
+    return jsonify(), 200
+
+@app.route('/family/restore', methods=["POST"])
+def restore_family():
+    family_name = request.json['family_name']
+    error = families.restore_family(g.families_file, g.families_history_file, family_name)
     if error is not None:
         return error_response(error)
     return jsonify(), 200

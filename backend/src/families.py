@@ -33,7 +33,22 @@ class FamiliesSearchBy(Enum):
             case _:
                 return [0]
 
-def load_families_file(filename=families_filename):
+def load_families_excel(filename, row_properties):
+    '''
+    Internal wrapper for loading excel files containing families
+    '''
+    try:
+        families_file = Excel(
+            filename=filename,
+            row_properties=row_properties,
+            search_enum=FamiliesSearchBy,
+            required_style=families_cell_style,
+            table_name='נתמכים')
+        return (None, families_file)
+    except Exception as e:
+        return (e, None)
+
+def load_families_file():
     '''
     Connects to the families source file.
 
@@ -41,16 +56,17 @@ def load_families_file(filename=families_filename):
         - If connection has failed, file will be None
         - If connection has succeed, error will be None
     '''
-    try:
-        families_file = Excel(
-            filename=filename,
-            row_properties=family_properties,
-            search_enum=FamiliesSearchBy,
-            required_style=families_cell_style,
-            table_name='נתמכים')
-        return (None, families_file)
-    except Exception as e:
-        return (e, None)
+    return load_families_excel(families_filename, family_properties)
+
+def load_families_history_file():
+    '''
+    Connects to the families history source file.
+
+    Returns a tuple: (error, file)
+        - If connection has failed, file will be None
+        - If connection has succeed, error will be None
+    '''
+    return load_families_excel(families_history_filename, history_properties)
 
 def to_excel_row(family):
     '''
@@ -178,18 +194,14 @@ def update_family(families_file: Excel, original_name, family):
         return e
     families_file.replace_row(index, family)
 
-def remove_family(families_file: Excel, family_name, exit_date, reason):
+def remove_family(families_file: Excel, history_file: Excel, family_name, exit_date, reason):
     '''
-    Moves the given family from families_file to families history file.
+    Moves the given family from families file to families history file.
     '''
     try:
         index = families_file.get_row_index(family_name)
     except Exception as e:
         return e
-    
-    error, history_file = load_families_file(families_history_filename)
-    if error is not None:
-        return error
     
     family_data = families_file.search(family_name, 'name')[0]
     family_data[exit_date_prop] = exit_date
@@ -200,3 +212,20 @@ def remove_family(families_file: Excel, family_name, exit_date, reason):
     result = add_family(history_file, family_data, to_history_row)
     if result.status != 200:
         return Exception("המשפחה הוסרה בהצלחה מהנתמכים, אך קרתה שגיאה בהוספת המשפחה להסטוריית הנתמכים")
+
+def restore_family(families_file: Excel, history_file: Excel, family_name):
+    '''
+    Moves the given family from families history file to families file.
+    '''
+    try:
+        index = history_file.get_row_index(family_name)
+    except Exception as e:
+        return e
+    
+    family_data = history_file.search(family_name, 'name')[0]
+    
+    history_file.remove_row(index)
+
+    result = add_family(families_file, family_data, to_excel_row)
+    if result.status != 200:
+        return Exception("המשפחה הוסרה בהצלחה מהסטוריית הנתמכים, אך קרתה שגיאה בהוספת המשפחה לנתמכים")
