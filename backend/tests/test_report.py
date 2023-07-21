@@ -2,7 +2,8 @@ import unittest
 from os import path
 
 from src.data import date_prop, status_prop, search_column_prop, key_prop, driver_prop_index
-from src.month import generate_month_report, get_no_driver_families, get_no_manager_drivers, get_report_path, get_reports_list, search_report, search_report_column, update_receipt_status, get_receipt_status
+from src.month import generate_month_files, get_report_path, get_reports_list
+from src.report import get_no_driver_families, get_no_manager_drivers, search_report, search_report_column, update_receipt_status, get_receipt_status
 from src.results import receipt_update_results
 
 from tests.families_util import Family, write_families, setUpFamilies, tearDownFamilies
@@ -99,7 +100,7 @@ class TestReportGeneration(unittest.TestCase):
         
     def test_report_generated_in_folder(self):
         name = 'שם כלשהו'
-        error = generate_month_report(name)
+        error = generate_month_files(name)
         self.assertTrue(error is None, "Failed generating month report")
         
         filepath = get_report_path(name)
@@ -405,5 +406,3 @@ class TestMarkReport(unittest.TestCase):
         
         receipt_status = get_receipt_status(report_file, family_name)
         self.assertEqual(receipt_status, expected_receipt_status, "Should return updated receipt status")
-
-        

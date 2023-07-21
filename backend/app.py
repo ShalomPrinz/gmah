@@ -6,6 +6,7 @@ from os import getenv
 import src.managers as managers
 import src.families as families
 import src.month as month
+import src.report as report
 
 from src.results import get_result, Result
 
@@ -121,11 +122,11 @@ def add_manager():
 
 @app.route('/validate/drivers')
 def validate_drivers():
-    error, no_manager_drivers = month.get_no_manager_drivers()
+    error, no_manager_drivers = report.get_no_manager_drivers()
     if error is not None:
         return error_response(error)
 
-    error, no_driver_families = month.get_no_driver_families()
+    error, no_driver_families = report.get_no_driver_families()
     if error is not None:
         return error_response(error)
 
@@ -135,7 +136,7 @@ def validate_drivers():
 def generate_month():
     name = request.json['name']
     override_name = request.json['override_name']
-    error = month.generate_month_report(name, override_name)
+    error = month.generate_month_files(name, override_name)
     if error is not None:
         return error_response(error)
     return jsonify(), 200
@@ -151,11 +152,11 @@ def query_report():
     query = request.args.get('query')
     search_by = request.args.get('by')
 
-    error, report_file = month.load_report_file(report_name)
+    error, report_file = month.load_month_report(report_name)
     if error is not None:
         return error_response(error)
     
-    query_result = month.search_report(report_file, query, search_by)
+    query_result = report.search_report(report_file, query, search_by)
     return jsonify(report=query_result), 200
 
 @app.route('/report/column')
@@ -164,11 +165,11 @@ def query_report_column():
     query = request.args.get('query')
     search_by = request.args.get('by')
 
-    error, report_file = month.load_report_file(report_name)
+    error, report_file = month.load_month_report(report_name)
     if error is not None:
         return error_response(error)
     
-    query_result = month.search_report_column(report_file, query, search_by)
+    query_result = report.search_report_column(report_file, query, search_by)
     return jsonify(report_column=query_result), 200
 
 @app.route('/report/update', methods=["PUT"])
@@ -177,11 +178,11 @@ def update_receipt_status():
     family_name = request.json['family_name']
     receipt = request.json['receipt']
 
-    error, report_file = month.load_report_file(report_name)
+    error, report_file = month.load_month_report(report_name)
     if error is not None:
         return error_response(error)
     
-    result = month.update_receipt_status(report_file, family_name, receipt)
+    result = report.update_receipt_status(report_file, family_name, receipt)
     if result.status != 200:
         return result_error_response(result)
     
@@ -192,9 +193,9 @@ def get_receipt_status():
     report_name = request.args.get('report_name')
     family_name = request.args.get('family_name')
 
-    error, report_file = month.load_report_file(report_name)
+    error, report_file = month.load_month_report(report_name)
     if error is not None:
         return error_response(error)
     
-    receipt_status = month.get_receipt_status(report_file, family_name)
+    receipt_status = report.get_receipt_status(report_file, family_name)
     return jsonify(receipt_status=receipt_status)

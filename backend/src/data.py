@@ -13,6 +13,7 @@ history_properties = [*family_properties[:-3], recommender_prop, exit_date_prop,
 
 driver_prop_index = family_properties.index(driver_prop)
 
+date_pattern = r'^\d{4}-\d{2}-\d{2}$'
 date_prop = "תאריך"
 status_prop = "קיבל/ה"
 report_properties = [key_prop, "אחראי", driver_prop, date_prop, status_prop]
