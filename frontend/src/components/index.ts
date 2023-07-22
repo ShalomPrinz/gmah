@@ -5,10 +5,12 @@ import Form from "./Form/Form";
 import Navbar from "./Navbar/Navbar";
 import RadioMenu from "./RadioMenu";
 import Search from "./Search";
+import SearchRow from "./SearchRow";
 import Table from "./Table/Table";
 
 export { InputTable } from "./InputTable";
 export { InputTableGroup, SingleInputTable } from "./InputTableGroup";
+export { getSearchBy } from "./SearchRow";
 export {
   ColumnList,
   ConditionalList,
@@ -17,6 +19,7 @@ export {
   Navbar,
   RadioMenu,
   Search,
+  SearchRow,
   Table,
 };
 
