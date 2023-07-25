@@ -20,6 +20,4 @@ report_properties = [key_prop, "אחראי", driver_prop, date_prop, status_prop
 
 pdf_properties = family_properties[:-3]
 
-search_column_prop = "title"
-
 managers_filename = "managers.json"

@@ -1,7 +1,7 @@
 import unittest
 from os import path
 
-from src.data import date_prop, status_prop, search_column_prop, key_prop, driver_prop_index
+from src.data import date_prop, status_prop, key_prop, driver_prop_index
 from src.month import generate_month_files, get_report_path, get_reports_list
 from src.report import get_no_driver_families, get_no_manager_drivers, search_report, search_report_column, update_receipt_status, get_receipt_status
 from src.results import receipt_update_results
@@ -297,8 +297,8 @@ class TestSearchReport(unittest.TestCase):
             with self.subTest(families_list):
                 families = list(map(lambda family: Family({ key_prop: family }), families_list))
                 report_file = self.generate_report(families)
-                expected_list = map(lambda family: { search_column_prop: family.excel_row[0] }, families)
-                expected_list = list(filter(lambda family: family[search_column_prop] is not None, expected_list))
+                expected_list = map(lambda family: family.excel_row[0], families)
+                expected_list = list(filter(lambda family: family is not None, expected_list))
 
                 search_result = search_report_column(report_file, '', 'name')
                 self.assertListEqual(search_result, expected_list, message)
@@ -315,8 +315,8 @@ class TestSearchReport(unittest.TestCase):
             with self.subTest(families_list):
                 families = list(map(lambda driver: Family({ key_prop: f"family_{index}", "נהג": driver }), families_list))
                 report_file = self.generate_report(families)
-                expected_list = map(lambda family: { search_column_prop: family.excel_row[driver_prop_index] }, families)
-                expected_list = list(filter(lambda family: family[search_column_prop] is not None, expected_list))
+                expected_list = map(lambda family: family.excel_row[driver_prop_index], families)
+                expected_list = list(filter(lambda family: family is not None, expected_list))
 
                 search_result = search_report_column(report_file, '', 'driver')
                 self.assertListEqual(search_result, expected_list, message)

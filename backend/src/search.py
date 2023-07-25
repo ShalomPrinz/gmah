@@ -3,7 +3,6 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, Generator
 from enum import Enum
 
-from src.data import search_column_prop
 from src.util import without_hyphen
 
 @dataclass
@@ -90,7 +89,7 @@ def search_column(request: ColumnSearchRequest):
             if cell_value is None:
                 continue # Don't insert no value cell into search result
             if request.query in cell_value:
-                matching_rows.append({ search_column_prop: cell_value })
+                matching_rows.append(cell_value)
                 break # Row added to matching_rows, skip to next row
     return matching_rows
 

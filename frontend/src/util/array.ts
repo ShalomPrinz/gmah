@@ -16,4 +16,8 @@ function findDuplicatedProperty(obj: object, property: string) {
   return null;
 }
 
-export { findDuplicatedProperty };
+function getUnique<T>(array: T[]) {
+  return [...new Set(array)];
+}
+
+export { findDuplicatedProperty, getUnique };
