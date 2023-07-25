@@ -1,14 +1,6 @@
-:root {
-  --navbar-hover-color: hsl(49, 100%, 63%);
-  --navbar-color: white;
-}
-
-.nav-links:hover {
-  color: var(--navbar-hover-color) !important;
-}
-
 .navbar-brand {
-  color: var(--navbar-color) !important;
+  color: white !important;
+  margin-left: 1rem;
 }
 
 .navbar {
@@ -22,44 +14,41 @@
 }
 
 .nav-links {
-  color: var(--navbar-color);
   padding: 0.5rem 1rem;
   text-decoration: none;
 }
 
 .nav-item {
   line-height: 40px;
-  margin-right: 1rem;
+  margin-right: 1.6rem;
 }
 
-.nav-item:after {
-  content: "";
-  background: transparent;
-  display: block;
-  height: 3px;
-  transition: width 0.7s ease, background-color 0.5s ease;
-  width: 0;
+.nav-dropdown {
+  background: inherit;
+  font-weight: lighter;
 }
 
-.nav-item:hover:after {
-  background: var(--navbar-hover-color);
-  width: 100%;
+.nav-dropdown:hover:after {
+  background: initial;
 }
 
-.nav-item .active {
-  border: 1px solid var(--navbar-hover-color);
-  color: var(--navbar-hover-color);
+.nav-dropdown-item {
+  border: 0 !important;
+  color: black !important;
+  display: flex;
+  justify-content: center;
+  text-decoration: none;
 }
 
-/* CSS variables are disallowed in media queries declaration */
-@media screen and (max-width: 992px) {
-  .nav-item .active {
-    border: none;
-    color: var(--navbar-hover-color);
-  }
-  .nav-links {
-    display: table;
-    padding: 1.5rem;
-    width: 100%;
-  }
+.nav-dropdown-item:hover {
+  background-color: moccasin !important;
+  font-weight: bold;
+}
+
+.dropdown-toggle {
+  color: white !important;
+}
+
+.dropdown-toggle.nav-link::after {
+  margin-right: .6rem;
 }

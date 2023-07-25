@@ -2,6 +2,8 @@ import { useState } from "react";
 
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
+import NavDropdown from "react-bootstrap/NavDropdown";
+
 import { useMediaQuery } from "react-responsive";
 import { NavLink } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -18,10 +20,24 @@ interface Page {
   url: string;
 }
 
+interface PageCollection {
+  id: number;
+  pages: Page[];
+  title: string;
+}
+
 const pageCallback = ({ name, url }: Page) => (
-  <NavLink className="nav-item nav-links fw-light" to={url}>
-    {name}
-  </NavLink>
+  <NavDropdown.Item as="div" className="nav-dropdown-item">
+    <NavLink className="nav-dropdown-item fs-5 w-100 p-1" to={url}>
+      {name}
+    </NavLink>
+  </NavDropdown.Item>
+);
+
+const collectionCallback = ({ pages, title }: PageCollection) => (
+  <NavDropdown align="end" className="nav-dropdown" title={title}>
+    <ConditionalList itemCallback={pageCallback} list={pages} />
+  </NavDropdown>
 );
 
 // Note: When changing those, also change in css file
@@ -31,7 +47,7 @@ const expandSizeBs = "lg";
 const expandSizePx = "992px";
 
 interface NavbarProps {
-  pages: Page[];
+  pages: PageCollection[];
 }
 
 function AppNavbar({ pages }: NavbarProps) {
@@ -71,7 +87,7 @@ function AppNavbar({ pages }: NavbarProps) {
       )}
       <Navbar.Collapse>
         <Nav onClick={setNotExpanded}>
-          <ConditionalList itemCallback={pageCallback} list={pages} />
+          <ConditionalList itemCallback={collectionCallback} list={pages} />
         </Nav>
       </Navbar.Collapse>
       {displayGoBack && (
@@ -108,33 +124,45 @@ function NavbarWrapper() {
   const pages = [
     {
       id: 0,
-      name: "כל המידע",
-      url: "/families",
+      pages: [
+        {
+          id: 0,
+          name: "נתמכים",
+          url: "/families",
+        },
+        {
+          id: 1,
+          name: "הוספה",
+          url: "/families/add",
+        },
+        {
+          id: 2,
+          name: "הסטוריה",
+          url: "/families/history",
+        },
+      ],
+      title: "נתמכים",
     },
     {
       id: 1,
-      name: "ניהול",
-      url: "/manage",
-    },
-    {
-      id: 2,
-      name: "אחראי נהגים",
-      url: "/managers",
-    },
-    {
-      id: 3,
-      name: "דוחות קבלה",
-      url: "/reports",
-    },
-    {
-      id: 4,
-      name: "מעקב חודשי",
-      url: "/month",
-    },
-    {
-      id: 5,
-      name: "הסטוריית נתמכים",
-      url: "/families/history",
+      pages: [
+        {
+          id: 0,
+          name: "אחראי נהגים",
+          url: "/managers",
+        },
+        {
+          id: 1,
+          name: "דוחות קבלה",
+          url: "/reports",
+        },
+        {
+          id: 2,
+          name: "מעקב חודשי",
+          url: "/month",
+        },
+      ],
+      title: "ניהול חודשי",
     },
   ];
 

@@ -39,11 +39,11 @@ const router = createBrowserRouter(
           <Route path=":name" element={<EditFamily />} />
         </Route>
         <Route path="history" element={<FamiliesHistory />} />
-      </Route>
-      <Route path="manage">
-        <Route index element={<FamilyManager />} />
-        <Route path="add" element={<AddFamily />} />
-        <Route path="add-many" element={<AddManyFamilies />} />
+        <Route path="add">
+          <Route index element={<FamilyManager />} />
+          <Route path="single" element={<AddFamily />} />
+          <Route path="many" element={<AddManyFamilies />} />
+        </Route>
       </Route>
       <Route path="managers">
         <Route index element={<Managers />} />

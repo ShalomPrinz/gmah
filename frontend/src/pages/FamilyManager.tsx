@@ -12,12 +12,12 @@ const operations = [
   {
     id: 0,
     description: "הוסף משפחה",
-    url: "add",
+    url: "single",
   },
   {
     id: 1,
     description: "הוסף מתוך טבלת Word",
-    url: "add-many",
+    url: "many",
   },
 ];
 
