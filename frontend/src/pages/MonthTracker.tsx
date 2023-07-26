@@ -3,7 +3,7 @@ import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import { Link } from "react-router-dom";
 
-import { Dropdown, Option, RadioMenu, Search, Table } from "../components";
+import { Dropdown, Option, SearchRow, Table, getSearchBy } from "../components";
 import IconComponent from "../components/Icon";
 import {
   familyIdProp,
@@ -26,6 +26,7 @@ const NoReportsMessage = () => (
 const buttons = [
   {
     id: "search-by-name",
+    header: "שם מלא",
     text: "שם",
     value: "name",
   },
@@ -41,15 +42,7 @@ const buttons = [
   },
 ];
 
-const getButtonTextByValue = (value: string) =>
-  buttons.find((b) => b.value === value)?.text || buttons[0].text;
-
-const getHeaderByButtonValue = (value: string) =>
-  ({
-    name: "שם מלא",
-    manager: "אחראי",
-    driver: "נהג",
-  }[value] || "NoSuchSearchOption");
+const { getSearchByHeader, getSearchByText } = getSearchBy(buttons);
 
 const defaultSelection = "0";
 
@@ -79,6 +72,10 @@ function MonthTracker() {
       </>
     );
 
+  const ResultDisplay = isDefaultSearch ? (
+    <ReportStats report={report as []} />
+  ) : undefined;
+
   return (
     <>
       <div className="d-flex align-items-center justify-content-center mt-5">
@@ -86,34 +83,14 @@ function MonthTracker() {
         <Dropdown title="בחר דוח קבלה" onSelect={onSelect} options={options} />
       </div>
       <main className="mt-5 text-center mx-auto w-75">
-        <Row className="mb-3">
-          <Col sm="3">
-            <h2>חפש באמצעות:</h2>
-            <RadioMenu
-              buttons={buttons}
-              menuId="search-by"
-              onSelect={(value: string) => setSearchBy(value)}
-            />
-          </Col>
-          <Col>
-            <Search
-              onChange={(q: string) => setQuery(q)}
-              placeholder={`הכנס ${getButtonTextByValue(searchBy)} של משפחה...`}
-            />
-          </Col>
-          <Col sm="3">
-            {isDefaultSearch ? (
-              <ReportStats report={report as []} />
-            ) : (
-              <>
-                <h2>מספר תוצאות</h2>
-                <p className="text-primary" style={{ fontSize: "50px" }}>
-                  {report.length}
-                </p>
-              </>
-            )}
-          </Col>
-        </Row>
+        <SearchRow
+          onQueryChange={(q: string) => setQuery(q)}
+          onSearchByChange={(value: string) => setSearchBy(value)}
+          queryPlaceholder={`הכנס ${getSearchByText(searchBy)} של משפחה...`}
+          resultCount={report.length}
+          ResultDisplay={ResultDisplay}
+          searchBy={buttons}
+        />
         <Row>
           <Table
             columnMapper={{
@@ -133,7 +110,7 @@ function MonthTracker() {
             columns={reportTableHeaders}
             data={report}
             dataIdProp={familyIdProp}
-            headerHighlight={getHeaderByButtonValue(searchBy)}
+            headerHighlight={getSearchByHeader(searchBy)}
           />
         </Row>
       </main>

@@ -32,6 +32,7 @@ interface SearchRowProps {
   onSearchByChange: (searchBy: string) => void;
   queryPlaceholder: string;
   resultCount: number;
+  ResultDisplay?: JSX.Element;
   searchBy: Button[];
 }
 
@@ -40,8 +41,11 @@ function SearchRow({
   onSearchByChange,
   queryPlaceholder,
   resultCount,
+  ResultDisplay,
   searchBy,
 }: SearchRowProps) {
+  const hasCustomResultDisplay = typeof ResultDisplay !== "undefined";
+
   return (
     <Row className="mb-3">
       <Col sm="3">
@@ -56,10 +60,16 @@ function SearchRow({
         <Search onChange={onQueryChange} placeholder={queryPlaceholder} />
       </Col>
       <Col sm="3">
-        <h2>מספר תוצאות</h2>
-        <p className="text-primary" style={{ fontSize: "50px" }}>
-          {resultCount}
-        </p>
+        {hasCustomResultDisplay ? (
+          ResultDisplay
+        ) : (
+          <>
+            <h2>מספר תוצאות</h2>
+            <p className="text-primary" style={{ fontSize: "50px" }}>
+              {resultCount}
+            </p>
+          </>
+        )}
       </Col>
     </Row>
   );
