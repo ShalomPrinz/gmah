@@ -172,8 +172,8 @@ def query_report_column():
     query_result = report.search_report_column(report_file, query, search_by)
     return jsonify(report_column=query_result), 200
 
-@app.route('/report/update', methods=["PUT"])
-def update_receipt_status():
+@app.route('/report/update-family', methods=["PUT"])
+def update_family_receipt_status():
     report_name = request.json['report_name']
     family_name = request.json['family_name']
     receipt = request.json['receipt']
@@ -182,27 +182,47 @@ def update_receipt_status():
     if error is not None:
         return error_response(error)
     
-    result = report.update_receipt_status(report_file, family_name, receipt)
+    result = report.update_family_receipt_status(report_file, family_name, receipt)
     if result.status != 200:
         return result_error_response(result)
     
     return jsonify(), 200
 
-@app.route('/report/get')
-def get_receipt_status():
-    report_name = request.args.get('report_name')
-    name = request.args.get('name')
-    name_type = request.args.get('name_type')
+@app.route('/report/update-driver', methods=["PUT"])
+def update_driver_receipt_status():
+    report_name = request.json['report_name']
+    status = request.json['status']
 
     error, report_file = month.load_month_report(report_name)
     if error is not None:
         return error_response(error)
     
-    if name_type == "family":
-        status = report.get_family_receipt_status(report_file, name)
-    elif name_type == "driver":
-        status = report.get_driver_receipt_status(report_file, name)
-    else:
-        status = None
+    result, _ = report.update_driver_receipt_status(report_file, status)
+    if result.status != 200:
+        return result_error_response(result)
     
+    return jsonify(), 200
+
+@app.route('/report/get-family')
+def get_family_receipt_status():
+    report_name = request.args.get('report_name')
+    name = request.args.get('name')
+
+    error, report_file = month.load_month_report(report_name)
+    if error is not None:
+        return error_response(error)
+    
+    status = report.get_family_receipt_status(report_file, name)    
+    return jsonify(status=status)
+
+@app.route('/report/get-driver')
+def get_driver_receipt_status():
+    report_name = request.args.get('report_name')
+    name = request.args.get('name')
+
+    error, report_file = month.load_month_report(report_name)
+    if error is not None:
+        return error_response(error)
+    
+    status = report.get_driver_receipt_status(report_file, name)    
     return jsonify(status=status)

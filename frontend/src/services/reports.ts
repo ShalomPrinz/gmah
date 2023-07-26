@@ -1,5 +1,5 @@
 import { get, post, put } from "./http";
-import type { Receipt } from "../types";
+import type { DriverReceipt, Receipt } from "../types";
 
 function generateMonthReport(name: string, override: boolean) {
   return post("generate/month", { name, override_name: override });
@@ -33,16 +33,20 @@ function getReportColumn(reportName: string, query: string, by: string) {
   });
 }
 
-function getReceiptStatus(
-  reportName: string,
-  name: string,
-  type: "family" | "driver"
-) {
-  return get("report/get", {
+function getFamilyReceiptStatus(reportName: string, name: string) {
+  return get("report/get-family", {
     params: {
       report_name: reportName,
       name,
-      name_type: type,
+    },
+  });
+}
+
+function getDriverReceiptStatus(reportName: string, name: string) {
+  return get("report/get-driver", {
+    params: {
+      report_name: reportName,
+      name,
     },
   });
 }
@@ -52,19 +56,28 @@ function updateFamilyReceipt(
   familyName: string,
   receipt: Receipt
 ) {
-  return put("/report/update", {
+  return put("/report/update-family", {
     report_name: reportName,
     family_name: familyName,
     receipt,
   });
 }
 
+function updateDriverStatus(reportName: string, status: DriverReceipt[]) {
+  return put("/report/update-driver", {
+    report_name: reportName,
+    status,
+  });
+}
+
 export {
   generateMonthReport,
+  getDriverReceiptStatus,
+  getFamilyReceiptStatus,
   getNoManagerDrivers,
-  getReceiptStatus,
   getReport,
   getReportColumn,
   getReportsList,
+  updateDriverStatus,
   updateFamilyReceipt,
 };

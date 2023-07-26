@@ -4,7 +4,7 @@ import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import { toast } from "react-toastify";
 
-import { getReceiptStatus, updateFamilyReceipt } from "../services";
+import { getFamilyReceiptStatus, updateFamilyReceipt } from "../services";
 import { concatArray, getTodayDate } from "../util";
 import type { Receipt } from "../types";
 
@@ -22,30 +22,29 @@ function MonthFamilyMark({ familyName, reportName }: MonthFamilyMarkProps) {
     receiptStatus.status
   );
 
+  function onSubmit(receipt: Receipt) {
+    updateFamilyReceipt(reportName, familyName, receipt)
+      .then(() =>
+        toast.success(`שינית את סטטוס הקבלה עבור משפחת ${familyName} בהצלחה`)
+      )
+      .catch((err) => {
+        const message = err?.response?.data?.description || "שגיאה לא צפויה";
+        toast.error(
+          `קרתה שגיאה בניסיון לשנות את סטטוס הקבלה עבור משפחת ${familyName}: ${message}`,
+          {
+            toastId: `${familyName}:${message}`,
+          }
+        );
+      });
+  }
+
   return (
     <>
       <h2>{familyName}</h2>
       <ReceiptForm
         initialReceipt={receiptStatus}
         key={receiptFormKey}
-        onSubmit={(receipt) =>
-          updateFamilyReceipt(reportName, familyName, receipt)
-            .then(() =>
-              toast.success(
-                `שינית את סטטוס הקבלה עבור משפחת ${familyName} בהצלחה`
-              )
-            )
-            .catch((err) => {
-              const message =
-                err?.response?.data?.description || "שגיאה לא צפויה";
-              toast.error(
-                `קרתה שגיאה בניסיון לשנות את סטטוס הקבלה עבור משפחת ${familyName}: ${message}`,
-                {
-                  toastId: `${familyName}:${message}`,
-                }
-              );
-            })
-        }
+        onSubmit={onSubmit}
       />
     </>
   );
@@ -148,7 +147,7 @@ function useReceiptStatus(reportName: string, familyName: string) {
   });
 
   useEffect(() => {
-    getReceiptStatus(reportName, familyName, "family")
+    getFamilyReceiptStatus(reportName, familyName)
       .then((res) => setReceiptStatus(res.data.status))
       .catch((error) =>
         console.error(

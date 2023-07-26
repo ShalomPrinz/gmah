@@ -36,6 +36,9 @@ def add_many_error(result: Result, family_key):
 
 receipt_update_results = {
     "RECEIPT_UPDATED":  Result(200, "Receipt Updated", "סטטוס הקבלה עודכן בהצלחה"),
+    "DRIVER_UPDATED":   Result(200, "Driver Updated", "סטטוס הקבלה של כל המשפחות עודכן בהצלחה"),
+    "PARTIAL_UPDATE":   Result(200, "Partial Update", "סטטוס הקבלה של חלק מהמשפחות עודכן בהצלחה"),
+    "UPDATE_FAILED":    Result(500, "Update Failed", "אף סטטוס קבלה לא עודכן"),
     "MISSING_DATE":     Result(400, "Missing Date", "לא ניתן לשנות סטטוס קבלה ללא תאריך"),
     "DATE_MALFORMED":   Result(400, "Date Malformed", "התאריך של סטטוס הקבלה צריך להיות בפורמט ספציפי. דוגמא: 2023-12-30")
 }
