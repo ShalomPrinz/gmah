@@ -19,6 +19,8 @@ import Reports from "./Reports";
 import MonthTracker from "./MonthTracker";
 import MonthReceiptMark from "./MonthReceiptMark";
 import FamiliesHistory from "./FamiliesHistory";
+import CompletionEditor from "./CompletionEditor";
+import MonthPrintView from "./MonthPrintView";
 
 import { HistoryProvider } from "../contexts";
 
@@ -55,6 +57,10 @@ const router = createBrowserRouter(
       <Route path="month">
         <Route index element={<MonthTracker />} />
         <Route path="mark-receive" element={<MonthReceiptMark />} />
+      </Route>
+      <Route path="print">
+        <Route path="month" element={<MonthPrintView />} />
+        <Route path="completion" element={<CompletionEditor />} />
       </Route>
     </Route>
   )

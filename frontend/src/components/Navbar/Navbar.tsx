@@ -164,6 +164,22 @@ function NavbarWrapper() {
       ],
       title: "ניהול חודשי",
     },
+    {
+      id: 2,
+      pages: [
+        {
+          id: 0,
+          name: "חודשי",
+          url: "/print/month",
+        },
+        {
+          id: 1,
+          name: "דף השלמות",
+          url: "/print/completion",
+        },
+      ],
+      title: "הדפסות",
+    },
   ];
 
   return <AppNavbar pages={pages} />;
