@@ -18,7 +18,7 @@ interface MarkMode {
 
 const familyMarkMode: MarkMode = {
   id: "FAMILY",
-  label: "סימון ידני",
+  label: "סימון לפי משפחה",
   property: "שם",
   searchBy: "name",
 };
@@ -41,10 +41,6 @@ function MonthMarkWrapper() {
 
   const reportColumn = useReportColumn(reportName, markMode.searchBy);
 
-  const [resultLength, setResultLength] = useState(reportColumn.length);
-  const onResultLengthChange = (newLength: number) =>
-    setResultLength(newLength);
-
   const [selected, setSelected] = useState("");
   const noSelectedItem = selected === "";
   const noItemMessage = isFamilyMode
@@ -60,8 +56,7 @@ function MonthMarkWrapper() {
       <main className="d-flex">
         <QueryDisplay
           columnList={reportColumn}
-          onResultLengthChange={onResultLengthChange}
-          searchProperty={markMode.property}
+          markMode={markMode}
           setSelected={setSelected}
         />
         <div className="text-center my-3 mx-5" style={{ width: "45%" }}>
@@ -70,13 +65,13 @@ function MonthMarkWrapper() {
           ) : isFamilyMode ? (
             <MonthFamilyMark
               familyName={selected}
-              key={resultLength}
+              key={selected}
               reportName={reportName}
             />
           ) : (
             <MonthDriverMark
               driverName={selected}
-              key={resultLength}
+              key={selected}
               reportName={reportName}
             />
           )}
@@ -88,30 +83,26 @@ function MonthMarkWrapper() {
 
 interface QueryDisplayProps {
   columnList: ListItem[];
-  onResultLengthChange: (length: number) => void;
-  searchProperty: string;
+  markMode: MarkMode;
   setSelected: (selected: string) => void;
 }
 
 function QueryDisplay({
   columnList,
-  onResultLengthChange,
-  searchProperty,
+  markMode,
   setSelected,
 }: QueryDisplayProps) {
   const [query, setQuery] = useState("");
   const searchResult = columnList.filter(({ title }) => title.includes(query));
 
-  useEffect(
-    () => onResultLengthChange(searchResult.length),
-    [searchResult.length]
-  );
+  useEffect(() => setQuery(""), [markMode.id]);
 
   return (
     <div className="mx-5" style={{ width: "40%" }}>
       <Search
+        key={markMode.id}
         onChange={setQuery}
-        placeholder={`הכנס ${searchProperty} של משפחה...`}
+        placeholder={`הכנס ${markMode.property} של משפחה...`}
       />
       <ColumnList
         key={searchResult.length}

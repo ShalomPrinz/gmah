@@ -10,6 +10,7 @@ import Table from "./Table/Table";
 
 export { InputTable } from "./InputTable";
 export { InputTableGroup, SingleInputTable } from "./InputTableGroup";
+export { ReceiptStatusTable } from "./ReceiptStatusTable";
 export { getSearchBy } from "./SearchRow";
 export {
   ColumnList,

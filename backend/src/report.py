@@ -2,7 +2,7 @@ from enum import Enum
 from openpyxl import load_workbook
 from re import match
 
-from src.data import report_properties, key_prop, date_prop, status_prop, date_pattern
+from src.data import report_properties, key_prop, date_prop, status_prop, date_pattern, default_date, default_status
 from src.errors import FamilyNotFoundError
 from src.excel import Excel
 from src.families import load_families_file, search_families
@@ -180,25 +180,53 @@ def search_report_column(report_file: Excel, query='', search_by=''):
 
     return report_file.column_search(query, search_by)
 
-def get_receipt_status(report_file: Excel, family_name):
+def to_receipt_status(family):
+    '''
+    Cast a family to receipt status dictionary.
+    '''
+    return {
+        "date": family.get(date_prop, default_date),
+        "status": family.get(status_prop, default_status)
+    }
+
+def get_driver_receipt_status(report_file: Excel, driver_name):
+    '''
+    Returns receipt statuses of all families in report_file who their
+    driver is driver_name. If driver_name not found, returns empty families list.
+    '''
+    result = report_file.style_search(
+        driver_name,
+        'driver',
+        search_style='receive',
+        style_map=report_style_map)
+    
+    if not result:
+        return []
+    
+    def family_map(family):
+        if (name := family.get(key_prop, None)) is None:
+            return {}
+        
+        return {
+            **to_receipt_status(family),
+            "name": name
+        }
+
+    return list(map(family_map, result))
+
+def get_family_receipt_status(report_file: Excel, family_name):
     '''
     Returns receipt status of family_name in report_file.
     If family_name not found, returns default receipt status.
     '''
-    default_date = ""
-    default_status = False
-
-    report = report_file.style_search(
+    result = report_file.style_search(
         family_name,
         'name',
         search_style='receive',
         style_map=report_style_map)
-    family_report_data = report[0] if report else {}
-
-    return {
-        "date": family_report_data.get(date_prop, default_date),
-        "status": family_report_data.get(status_prop, default_status)
-    }
+    
+    family = result[0] if result else {}
+    return to_receipt_status(family)
 
 def validate_date_format(date):
     return True if date and isinstance(

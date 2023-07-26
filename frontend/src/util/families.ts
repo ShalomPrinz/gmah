@@ -19,6 +19,8 @@ const reverseFamilyPreparation = (family: FormFamily) =>
   );
 
 export {
+  prepareKey,
+  reverseKeyPreparation,
   prepareFamily,
   reverseFamilyPreparation,
   reverseKeyPreparation as formatFamilyKey,

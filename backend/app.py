@@ -191,11 +191,18 @@ def update_receipt_status():
 @app.route('/report/get')
 def get_receipt_status():
     report_name = request.args.get('report_name')
-    family_name = request.args.get('family_name')
+    name = request.args.get('name')
+    name_type = request.args.get('name_type')
 
     error, report_file = month.load_month_report(report_name)
     if error is not None:
         return error_response(error)
     
-    receipt_status = report.get_receipt_status(report_file, family_name)
-    return jsonify(receipt_status=receipt_status)
+    if name_type == "family":
+        status = report.get_family_receipt_status(report_file, name)
+    elif name_type == "driver":
+        status = report.get_driver_receipt_status(report_file, name)
+    else:
+        status = None
+    
+    return jsonify(status=status)

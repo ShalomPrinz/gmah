@@ -33,11 +33,16 @@ function getReportColumn(reportName: string, query: string, by: string) {
   });
 }
 
-function getReceiptStatus(reportName: string, familyName: string) {
+function getReceiptStatus(
+  reportName: string,
+  name: string,
+  type: "family" | "driver"
+) {
   return get("report/get", {
     params: {
       report_name: reportName,
-      family_name: familyName,
+      name,
+      name_type: type,
     },
   });
 }

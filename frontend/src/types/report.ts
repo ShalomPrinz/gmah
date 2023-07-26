@@ -3,4 +3,8 @@ interface Receipt {
   status: boolean;
 }
 
-export type { Receipt };
+interface DriverReceipt extends Receipt {
+  name: string;
+}
+
+export type { DriverReceipt, Receipt };

@@ -17,6 +17,8 @@ date_pattern = r'^\d{4}-\d{2}-\d{2}$'
 date_prop = "תאריך"
 status_prop = "קיבל/ה"
 report_properties = [key_prop, "אחראי", driver_prop, date_prop, status_prop]
+default_date = ""
+default_status = False
 
 pdf_properties = family_properties[:-3]
 

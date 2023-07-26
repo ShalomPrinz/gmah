@@ -24,7 +24,7 @@ function MonthFamilyMark({ familyName, reportName }: MonthFamilyMarkProps) {
 
   return (
     <>
-      <h2 className="mt-4">{familyName}</h2>
+      <h2>{familyName}</h2>
       <ReceiptForm
         initialReceipt={receiptStatus}
         key={receiptFormKey}
@@ -148,11 +148,11 @@ function useReceiptStatus(reportName: string, familyName: string) {
   });
 
   useEffect(() => {
-    getReceiptStatus(reportName, familyName)
-      .then((res) => setReceiptStatus(res.data.receipt_status))
+    getReceiptStatus(reportName, familyName, "family")
+      .then((res) => setReceiptStatus(res.data.status))
       .catch((error) =>
         console.error(
-          "Error occurred while trying to get receipt status",
+          "Error occurred while trying to get family receipt status",
           error
         )
       );

@@ -3,7 +3,7 @@ from os import path
 
 from src.data import date_prop, status_prop, key_prop, driver_prop_index
 from src.month import generate_month_files, get_report_path, get_reports_list
-from src.report import get_no_driver_families, get_no_manager_drivers, search_report, search_report_column, update_receipt_status, get_receipt_status
+from src.report import get_no_driver_families, get_no_manager_drivers, search_report, search_report_column, update_receipt_status, get_family_receipt_status
 from src.results import receipt_update_results
 
 from tests.families_util import Family, write_families, setUpFamilies, tearDownFamilies
@@ -393,7 +393,7 @@ class TestMarkReport(unittest.TestCase):
         for family_name, message in test_cases:
             with self.subTest(f"{family_name}"):
                 _, report_file = self.generate_report(family_name)
-                receipt_status = get_receipt_status(report_file, family_name)
+                receipt_status = get_family_receipt_status(report_file, family_name)
                 self.assertEqual(receipt_status, default_receipt_status, message)
 
     def test_get_receipt_status_found(self):
@@ -404,5 +404,5 @@ class TestMarkReport(unittest.TestCase):
         family_name, report_file = self.generate_report()
         update_receipt_status(report_file, family_name, expected_receipt_status)
         
-        receipt_status = get_receipt_status(report_file, family_name)
+        receipt_status = get_family_receipt_status(report_file, family_name)
         self.assertEqual(receipt_status, expected_receipt_status, "Should return updated receipt status")
