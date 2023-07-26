@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, g
+from flask import Flask, jsonify, request, g, make_response
 from flask_cors import CORS
 from dotenv import load_dotenv
 from os import getenv
@@ -226,3 +226,18 @@ def get_driver_receipt_status():
     
     status = report.get_driver_receipt_status(report_file, name)    
     return jsonify(status=status)
+
+@app.route('/print/month')
+def get_month_printable_report():
+    report_name = request.args.get('report_name')
+
+    printable, error = month.get_printable_report(report_name)
+    if error is not None:
+        print("error here", error)
+        return error_response(error)
+    
+    response = make_response(printable)
+    response.headers['Content-Type'] = 'application/pdf'
+    encoded_filename = month.month_printable_report_name.encode('utf-8')
+    response.headers['Content-Disposition'] = f'inline; filename={encoded_filename}.pdf'
+    return response

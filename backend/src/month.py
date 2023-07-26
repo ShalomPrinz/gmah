@@ -6,7 +6,7 @@ from src.errors import FileAlreadyExists
 from src.families import load_families_file, search_families
 from src.managers import load_managers_file
 from src.report import load_report_file, create_empty_report, append_report
-from src.pdf import PDFBuilder
+from src.pdf import PDFBuilder, get_print_path
 
 month_reports_folder = "דוחות קבלה"
 month_reports_path = f"{month_reports_folder}/"
@@ -15,6 +15,8 @@ month_reports_template = f"{month_reports_path}template.xlsx"
 month_report_prefix = "דוח קבלה "
 month_report_suffix = ".xlsx"
 month_reports_pattern = f"{month_reports_path}{month_report_prefix}*{month_report_suffix}"
+
+month_printable_report_name = "כל הנהגים"
 
 # General monthly information
 
@@ -51,6 +53,14 @@ def get_reports_list():
     return [path.basename(file)[start_index:-end_index]
             for file in glob(month_reports_pattern)]
 
+def get_printable_report(report_name):
+    path = get_print_path(report_name, month_printable_report_name)
+    try:
+        with open(f'{path}.pdf', 'rb') as printable:
+            return printable.read(), None
+    except Exception as e:
+        return None, e
+
 # Monthly files generation
 
 def generate_month_report(name, families, managers_file):
@@ -72,7 +82,7 @@ def generate_month_pdf(name, families, managers_file):
     '''
     managers = managers_file.load_json()
     pages = get_all_pages(managers, families)
-    builder = PDFBuilder(name, "כל הנהגים")
+    builder = PDFBuilder(name, month_printable_report_name)
     builder.build_multi(pages, pdf_properties)
 
 def generate_month_files(name, override_name=False):
