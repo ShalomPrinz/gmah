@@ -1,9 +1,12 @@
 from openpyxl import load_workbook
-from shutil import copy
-from os import remove
 
-from src.data import family_properties, families_filename
-from src.families import load_families_file
+from src.data import family_properties, families_filename, families_history_filename
+from src.families import load_families_file, load_families_history_file
+
+from tests.tests_util import restore_file, store_file
+
+temp_families_filename = 'temp_families.xlsx'
+temp_families_history_filename = 'temp_families_history.xlsx'
 
 default_family_properties = {
     "שם מלא": "פלוני פלוני",
@@ -22,14 +25,20 @@ class Family:
     def __init__(self, family):
         self.excel_row = [family.get(key, default_family_properties.get(key, None)) for key in family_properties]
 
-def write_families(families):
-    workbook = load_workbook(families_filename)
+def write_excel_data(families, filename):
+    workbook = load_workbook(filename)
     worksheet = workbook[workbook.sheetnames[0]]
     worksheet.delete_rows(2, worksheet.max_row - 1)
-
+    
     for family in families:
         worksheet.append(family.excel_row)
-    workbook.save(families_filename)
+    workbook.save(filename)
+
+def write_families(families):
+    write_excel_data(families, families_filename)
+
+def empty_families_history():
+    write_excel_data([], families_history_filename)
 
 def load_families():
     error, families_file = load_families_file()
@@ -38,9 +47,20 @@ def load_families():
     else:
         return families_file
 
+def load_families_history():
+    error, history_file = load_families_history_file()
+    if error is not None:
+        raise Exception("Couldn't load families history file", error)
+    else:
+        return history_file
+
+def load_both_families_files():
+    return load_families(), load_families_history()
+
 def setUpFamilies():
-    copy(families_filename, 'temp_families.xlsx')
+    store_file(families_filename, temp_families_filename)
+    store_file(families_history_filename, temp_families_history_filename)
 
 def tearDownFamilies():
-    copy('temp_families.xlsx', families_filename)
-    remove('temp_families.xlsx')
+    restore_file(families_filename, temp_families_filename)
+    restore_file(families_history_filename, temp_families_history_filename)

@@ -1,8 +1,9 @@
-from shutil import copy
-from os import remove
-
 from src.data import managers_filename
 from src.managers import load_managers_file
+
+from tests.tests_util import restore_file, store_file
+
+temp_managers_filename = 'temp_managers.json'
 
 def write_managers(managers):
     error, managers_file = load_managers_file()
@@ -12,8 +13,7 @@ def write_managers(managers):
     return managers_file
 
 def setUpManagers():
-    copy(managers_filename, 'temp_managers.json')
+    store_file(managers_filename, temp_managers_filename)
 
-def tearDownManagers():
-    copy('temp_managers.json', managers_filename)
-    remove('temp_managers.json')
+def tearDownManagers():    
+    restore_file(managers_filename, temp_managers_filename)
