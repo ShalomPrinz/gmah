@@ -11,17 +11,9 @@ import {
   reportReceiveProp,
   reportTableHeaders,
 } from "../modules";
-import { getReport, getReportsList } from "../services";
+import { getReport } from "../services";
 import { formatDate } from "../util";
-
-const NoReportsMessage = () => (
-  <h3 className="text-center mt-5">
-    אין דוחות קבלה. באפשרותך
-    <Link className="link-decoration rounded fs-5 p-3 me-2 fs-3" to="/reports">
-      לייצר דוח קבלה חדש
-    </Link>
-  </h3>
-);
+import { NoMonthReports, useMonthReports } from "../hooks";
 
 const buttons = [
   {
@@ -53,7 +45,11 @@ function MonthTracker() {
   const [query, setQuery] = useState(defaultQuery);
   const [searchBy, setSearchBy] = useState(defaultSearchBy);
 
-  const options = useMonthReports();
+  const reports = useMonthReports();
+  const options = reports.map((report, index) => ({
+    eventKey: index.toString(),
+    value: report,
+  }));
   const { onSelect, selectedReport } = useReportSelection(options);
 
   const report = useReportSearch(selectedReport, query, searchBy);
@@ -68,7 +64,7 @@ function MonthTracker() {
         <div className="d-flex align-items-center justify-content-center mt-5">
           <h1 className="mx-5">מעקב חלוקה חודשי</h1>
         </div>
-        <NoReportsMessage />
+        <NoMonthReports />
       </>
     );
 
@@ -124,20 +120,6 @@ function MonthTracker() {
       </Link>
     </>
   );
-}
-
-function useMonthReports() {
-  const [reports, setReports] = useState([]);
-  const options = reports.map((report, index) => ({
-    eventKey: index.toString(),
-    value: report,
-  }));
-
-  useEffect(() => {
-    getReportsList().then((res) => setReports(res.data.reports));
-  }, []);
-
-  return options;
 }
 
 function useReportSelection(options: Option[]) {

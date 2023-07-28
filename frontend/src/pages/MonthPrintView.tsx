@@ -1,21 +1,32 @@
 import { useEffect, useState } from "react";
 
 import { ColumnList } from "../components";
-import { getPrintableReport, getReportsList } from "../services";
+import { NoMonthReports, useMonthReports } from "../hooks";
+import { getPrintableReport } from "../services";
 import { createPdfBlob, openNewTab } from "../util";
 
 function MonthPrintView() {
-  const options = useMonthReports();
-  const [selectedReport, setSelectedReport] = useState("");
+  const reports = useMonthReports();
+  const options = reports.map((report) => ({
+    title: report,
+  }));
+  const hasReports = options.length > 0;
 
+  const [selectedReport, setSelectedReport] = useState("");
   const url = usePrintableReport(selectedReport);
+
+  const reportPickerWidth = hasReports ? "30%" : "80%";
 
   return (
     <>
       <main className="mt-5 text-center d-flex justify-content-center">
-        <div className="mx-5" style={{ width: "30%" }}>
-          <h1 className="text-center">הדפסת דוח קבלה לנהגים</h1>
-          <h3 className="my-5">בחר דוח קבלה:</h3>
+        <div className="mx-5" style={{ width: reportPickerWidth }}>
+          <h1>הדפסת דוח קבלה לנהגים</h1>
+          {hasReports ? (
+            <h3 className="my-5">בחר דוח קבלה:</h3>
+          ) : (
+            <NoMonthReports />
+          )}
           <ColumnList
             key={options.length}
             list={options}
@@ -46,23 +57,12 @@ function MonthPrintView() {
   );
 }
 
-function useMonthReports() {
-  const [reports, setReports] = useState([]);
-  const options = reports.map((report) => ({
-    title: report,
-  }));
-
-  useEffect(() => {
-    getReportsList().then((res) => setReports(res.data.reports));
-  }, []);
-
-  return options;
-}
-
 function usePrintableReport(reportName: string) {
   const [url, setUrl] = useState("");
 
   useEffect(() => {
+    if (!reportName) return;
+
     getPrintableReport(reportName)
       .then((res) => setUrl(createPdfBlob(res.data)))
       .catch((err) => {
