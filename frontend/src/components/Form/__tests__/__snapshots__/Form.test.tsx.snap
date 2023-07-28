@@ -18,7 +18,7 @@ exports[`Form > behavior > should display error in the DOM if schema validation 
           class="d-flex flex-column my-3"
         >
           <label
-            class="fs-4 my-2"
+            class="fs-4 fw-bold my-2"
             for="name"
           >
             Full Name
@@ -62,7 +62,7 @@ exports[`Form > behavior > should display error in the DOM if schema validation 
           class="d-flex flex-column my-3"
         >
           <label
-            class="fs-4 my-2"
+            class="fs-4 fw-bold my-2"
             for="name"
           >
             Full Name
@@ -106,7 +106,7 @@ exports[`Form > snapshot > should ignore double size input if inputsInRow not se
           class="d-flex flex-column my-3"
         >
           <label
-            class="fs-4 my-2"
+            class="fs-4 fw-bold my-2"
             for="name"
           >
             Name
@@ -150,7 +150,7 @@ exports[`Form > snapshot > should render double size input if inputsInRow set to
           class="d-flex flex-column my-3"
         >
           <label
-            class="fs-4 my-2"
+            class="fs-4 fw-bold my-2"
             for="name"
           >
             Name
@@ -219,7 +219,7 @@ exports[`Form > snapshot > should render form with one text input 1`] = `
           class="d-flex flex-column my-3"
         >
           <label
-            class="fs-4 my-2"
+            class="fs-4 fw-bold my-2"
             for="name"
           >
             Name
@@ -267,7 +267,7 @@ exports[`Form > snapshot > should render form with three text inputs 1`] = `
           class="d-flex flex-column my-3"
         >
           <label
-            class="fs-4 my-2"
+            class="fs-4 fw-bold my-2"
             for="name"
           >
             Name
@@ -287,7 +287,7 @@ exports[`Form > snapshot > should render form with three text inputs 1`] = `
           class="d-flex flex-column my-3"
         >
           <label
-            class="fs-4 my-2"
+            class="fs-4 fw-bold my-2"
             for="value"
           >
             Value
@@ -307,7 +307,7 @@ exports[`Form > snapshot > should render form with three text inputs 1`] = `
           class="d-flex flex-column my-3"
         >
           <label
-            class="fs-4 my-2"
+            class="fs-4 fw-bold my-2"
             for="content"
           >
             Content
@@ -355,7 +355,7 @@ exports[`Form > snapshot > should render form with unique submit text 1`] = `
           class="d-flex flex-column my-3"
         >
           <label
-            class="fs-4 my-2"
+            class="fs-4 fw-bold my-2"
             for="name"
           >
             Name

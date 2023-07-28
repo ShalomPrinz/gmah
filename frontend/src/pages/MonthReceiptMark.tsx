@@ -105,7 +105,7 @@ function QueryDisplay({
         placeholder={`הכנס ${markMode.property} של משפחה...`}
       />
       <ColumnList
-        key={searchResult.length}
+        key={`list-${columnList[0]?.title}`}
         list={searchResult}
         onItemSelect={setSelected}
       />

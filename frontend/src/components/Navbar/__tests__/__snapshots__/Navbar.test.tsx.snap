@@ -25,36 +25,45 @@ exports[`Navbar > snapshot > should render navbar 1`] = `
       <div
         class="navbar-nav"
       >
-        <a
-          class="nav-item nav-links fw-light"
-          href="/families"
+        <div
+          class="nav-dropdown nav-item dropdown"
         >
-          כל המידע
-        </a>
-        <a
-          class="nav-item nav-links fw-light"
-          href="/manage"
+          <a
+            aria-expanded="false"
+            class="dropdown-toggle nav-link"
+            href="#"
+            role="button"
+            tabindex="0"
+          >
+            נתמכים
+          </a>
+        </div>
+        <div
+          class="nav-dropdown nav-item dropdown"
         >
-          ניהול
-        </a>
-        <a
-          class="nav-item nav-links fw-light"
-          href="/managers"
+          <a
+            aria-expanded="false"
+            class="dropdown-toggle nav-link"
+            href="#"
+            role="button"
+            tabindex="0"
+          >
+            ניהול חודשי
+          </a>
+        </div>
+        <div
+          class="nav-dropdown nav-item dropdown"
         >
-          אחראי נהגים
-        </a>
-        <a
-          class="nav-item nav-links fw-light"
-          href="/reports"
-        >
-          דוחות קבלה
-        </a>
-        <a
-          class="nav-item nav-links fw-light"
-          href="/month"
-        >
-          מעקב חודשי
-        </a>
+          <a
+            aria-expanded="false"
+            class="dropdown-toggle nav-link"
+            href="#"
+            role="button"
+            tabindex="0"
+          >
+            הדפסות
+          </a>
+        </div>
       </div>
     </div>
     <button

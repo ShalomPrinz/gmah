@@ -3,7 +3,7 @@ from os import path
 
 from src.data import date_prop, status_prop, key_prop, driver_prop_index
 from src.month import generate_month_files, get_report_path, get_reports_list
-from src.report import get_no_driver_families, get_no_manager_drivers, search_report, search_report_column, update_receipt_status, get_family_receipt_status
+from src.report import get_no_driver_families, get_no_manager_drivers, search_report, search_report_column, update_family_receipt_status, update_driver_receipt_status, get_family_receipt_status, receipt_update_results, get_driver_receipt_status
 from src.results import receipt_update_results
 
 from tests.families_util import Family, write_families, setUpFamilies, tearDownFamilies
@@ -342,7 +342,7 @@ class TestMarkReport(unittest.TestCase):
         self.assertIsNone(result[0][date_prop], "Date should be None after generating report")
         self.assertIsNone(result[0][status_prop], "Receipt status should be None after generating report")
 
-    def test_update_receipt_status(self):
+    def test_update_family_receipt_status(self):
         test_cases = [
             ({}, None, None, "Empty object should not update family receipt"),
             ({ "some": "2023-12-12" }, None,         None, "Wrong props should not update family receipt"),
@@ -356,13 +356,13 @@ class TestMarkReport(unittest.TestCase):
             with self.subTest(f"{update_obj}"):
                 family_name, report_file = self.generate_report()
 
-                update_receipt_status(report_file, family_name, update_obj)
+                update_family_receipt_status(report_file, family_name, update_obj)
 
                 result = search_report(report_file, family_name, 'name')
                 self.assertEqual(result[0][date_prop], expected_date, message)
                 self.assertEqual(result[0][status_prop], expected_status, message)
     
-    def test_update_receipt_status_result(self):
+    def test_update_family_receipt_status_result(self):
         test_cases = [
             ({}, receipt_update_results["MISSING_DATE"], "Empty object should return missing date result"),
             ({ "some": "2023-12-12" }, receipt_update_results["MISSING_DATE"], "Wrong props should return missing date result"),
@@ -376,8 +376,61 @@ class TestMarkReport(unittest.TestCase):
         for update_obj, expected_result, message in test_cases:
             with self.subTest(f"{update_obj}"):
                 family_name, report_file = self.generate_report()
-                actual_update_result = update_receipt_status(report_file, family_name, update_obj)
+                actual_update_result = update_family_receipt_status(report_file, family_name, update_obj)
                 self.assertEqual(actual_update_result, expected_result, message)
+    
+    def test_update_family_without_name(self):
+        test_cases = [
+            (None,  "Should return family not found result"),
+            ("",    "Should return family not found result"),
+            ("not-a-family-name", "Should return family not found result"),
+        ]
+
+        _, report_file = self.generate_report("some family")
+        for family_name, message in test_cases:
+            with self.subTest(f"family_name: {family_name}"):
+                result = update_family_receipt_status(report_file, family_name, {})
+                self.assertEqual(result.status, 404, message)
+
+    def test_update_driver_status_result(self):
+        families = [
+            Family({ "שם מלא": "פרינץ" }),
+            Family({ "שם מלא": "שלום" }),
+        ]
+        report_file = generate_report(self.assertTrue, families)
+
+        firstSuccess = { "name": "פרינץ", "date": "2023-01-01", "status": False }
+        firstFailure = { "name": "פרינץ", "status": True }
+        secondSuccess = { "name": "שלום", "date": "2023-07-08", "status": True }
+        secondFailure = { "name": "שלום", "date": "17-07-08" }
+        
+        test_cases = [
+            ([firstSuccess], receipt_update_results["DRIVER_UPDATED"], "Should update given receipt status"),
+            ([firstFailure], receipt_update_results["UPDATE_FAILED"], "Should not update and return failed result"),
+            ([firstSuccess, secondSuccess], receipt_update_results["DRIVER_UPDATED"], "Should update given receipt status"),
+            ([firstFailure, secondFailure], receipt_update_results["UPDATE_FAILED"], "Should not update and return failed result"),
+            ([firstFailure, secondSuccess], receipt_update_results["PARTIAL_UPDATE"], "Should update only validated receipts"),
+            ([firstSuccess, secondFailure], receipt_update_results["PARTIAL_UPDATE"], "Should update only validated receipts")
+        ]
+
+        for status, expected_result, message in test_cases:
+            with self.subTest(f"status: {status}"):
+                result = update_driver_receipt_status(report_file, status)
+                self.assertEqual(result, expected_result, message)
+    
+class TestReportStatusInfo(unittest.TestCase):
+    def setUpClass():
+        setUpFamilies()
+        setUpManagers()
+
+    def tearDownClass():
+        tearDownFamilies()
+        tearDownManagers()
+        tearDownMonth()
+
+    def generate_report(self, family_name="פרינץ"):
+        families = [Family({"שם מלא": family_name})]
+        return family_name, generate_report(self.assertTrue, families)
     
     def test_get_receipt_status_not_found(self):
         default_receipt_status = {
@@ -388,11 +441,12 @@ class TestMarkReport(unittest.TestCase):
         test_cases = [
             (None,  "Should return default receipt status if family not found"),
             ("",    "Should return default receipt status if family not found"),
+            ("doesn't-exist", "Should return default receipt status if family not found")
         ]
 
+        _, report_file = self.generate_report("family-name")
         for family_name, message in test_cases:
             with self.subTest(f"{family_name}"):
-                _, report_file = self.generate_report(family_name)
                 receipt_status = get_family_receipt_status(report_file, family_name)
                 self.assertEqual(receipt_status, default_receipt_status, message)
 
@@ -402,7 +456,28 @@ class TestMarkReport(unittest.TestCase):
             "status": True,
         }
         family_name, report_file = self.generate_report()
-        update_receipt_status(report_file, family_name, expected_receipt_status)
+        update_family_receipt_status(report_file, family_name, expected_receipt_status)
         
         receipt_status = get_family_receipt_status(report_file, family_name)
         self.assertEqual(receipt_status, expected_receipt_status, "Should return updated receipt status")
+
+    def test_get_driver_receipt_status(self):
+        families = [
+            Family({ "שם מלא": "פרינץ", "נהג": "פלוני" }),
+            Family({ "שם מלא": "שלום", "נהג": "אלמוני" }),
+            Family({ "שם מלא": "שלום", "נהג": "אלמוני" }),
+        ]
+        report_file = generate_report(self.assertTrue, families)
+
+        test_cases = [
+            (None,  0, "Should return empty list"),
+            ("",    0, "Should return empty list"),
+            ("לוי", 0, "Should return empty list"),
+            ("פלוני",   1, "Should return receipt statuses of all families who their driver is driver_name"),
+            ("אלמוני",  2, "Should return receipt statuses of all families who their driver is driver_name")
+        ]
+
+        for driver_name, expected_result, message in test_cases:
+            with self.subTest(f"driver_name: {driver_name}"):
+                result = get_driver_receipt_status(report_file, driver_name)
+                self.assertEqual(len(result), expected_result, message)

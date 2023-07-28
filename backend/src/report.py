@@ -45,6 +45,10 @@ report_style_map = {
 
 default_driver = ""
 default_manager = ""
+default_receipt = {
+    "date": default_date,
+    "status": default_status
+}
 
 def load_report_file(path):
     '''
@@ -183,6 +187,7 @@ def search_report_column(report_file: Excel, query='', search_by=''):
 def to_receipt_status(family):
     '''
     Cast a family to receipt status dictionary.
+    Should be used for getting data only.
     '''
     return {
         "date": family.get(date_prop, default_date),
@@ -194,6 +199,9 @@ def get_driver_receipt_status(report_file: Excel, driver_name):
     Returns receipt statuses of all families in report_file who their
     driver is driver_name. If driver_name not found, returns empty families list.
     '''
+    if not driver_name:
+        return []
+    
     result = report_file.style_search(
         driver_name,
         'driver',
@@ -219,14 +227,16 @@ def get_family_receipt_status(report_file: Excel, family_name):
     Returns receipt status of family_name in report_file.
     If family_name not found, returns default receipt status.
     '''
+    if not family_name:
+        return default_receipt
+    
     result = report_file.style_search(
         family_name,
         'name',
         search_style='receive',
         style_map=report_style_map)
 
-    family = result[0] if result else {}
-    return to_receipt_status(family)
+    return to_receipt_status(result[0]) if result else default_receipt
 
 def validate_date_format(date):
     return True if date and isinstance(
@@ -239,16 +249,16 @@ def update_driver_receipt_status(report_file: Excel, status):
     only if there is a date property in the family's receipt.
     Returns proper Result object.
     '''
-    errors = []
+    errors = 0
     for family in status:
         name = family.get("name")
         result = update_family_receipt_status(report_file, name, family)
         if result.status != 200:
-            errors.append({ "family": name, "result": result })
+            errors += 1
 
-    result = "UPDATE_FAILED" if len(errors) == len(status) else (
-        "DRIVER_UPDATED" if len(errors) == 0 else "PARTIAL_UPDATE")
-    return receipt_update_results[result], errors
+    result = "UPDATE_FAILED" if errors == len(status) else (
+        "DRIVER_UPDATED" if errors == 0 else "PARTIAL_UPDATE")
+    return receipt_update_results[result]
 
 def update_family_receipt_status(report_file: Excel, family_name, receipt):
     '''
@@ -257,7 +267,7 @@ def update_family_receipt_status(report_file: Excel, family_name, receipt):
     Returns proper Result object.
     '''
     if not family_name:
-        return FamilyNotFoundError("משפחה ללא שם").result
+        return FamilyNotFoundError("אי אפשר לעדכן סטטוס קבלה של משפחה ללא שם").result
 
     try:
         index = report_file.get_row_index(family_name)

@@ -197,7 +197,7 @@ def update_driver_receipt_status():
     if error is not None:
         return error_response(error)
     
-    result, _ = report.update_driver_receipt_status(report_file, status)
+    result = report.update_driver_receipt_status(report_file, status)
     if result.status != 200:
         return result_error_response(result)
     
@@ -233,7 +233,6 @@ def get_month_printable_report():
 
     printable, error = month.get_printable_report(report_name)
     if error is not None:
-        print("error here", error)
         return error_response(error)
     
     response = make_response(printable)

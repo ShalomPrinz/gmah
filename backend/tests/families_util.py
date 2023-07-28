@@ -21,9 +21,20 @@ default_family_properties = {
     "הערות": "",
 }
 
+defauly_history_properties = {k: v for i, (k, v) in enumerate(default_family_properties.items()) if i < len(default_family_properties) - 3}
+defauly_history_properties.update({
+    "ממליץ": "רווחה",
+    "תאריך יציאה": "",
+    "סיבה": ""
+})
+
 class Family:
     def __init__(self, family):
         self.excel_row = [family.get(key, default_family_properties.get(key, None)) for key in family_properties]
+
+class HistoryFamily:
+    def __init__(self, family):
+        self.excel_row = [family.get(key, defauly_history_properties.get(key, None)) for key in defauly_history_properties]
 
 def write_excel_data(families, filename):
     workbook = load_workbook(filename)
@@ -36,6 +47,12 @@ def write_excel_data(families, filename):
 
 def write_families(families):
     write_excel_data(families, families_filename)
+
+def empty_families():
+    write_excel_data([], families_filename)
+
+def write_history_families(families):
+    write_excel_data(families, families_history_filename)
 
 def empty_families_history():
     write_excel_data([], families_history_filename)

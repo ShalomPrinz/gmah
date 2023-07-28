@@ -1,11 +1,11 @@
 import unittest
 
-from src.families import get_count, search_families, add_family, add_families, update_family, FamiliesSearchBy
+from src.families import get_count, search_families, add_family, add_families, update_family, remove_family, restore_family, FamiliesSearchBy
 from src.results import add_results, add_many_results, add_many_error
 from src.errors import FamilyNotFoundError
 from src.search import find, FindRequest
 
-from tests.families_util import Family, load_families, write_families, setUpFamilies, tearDownFamilies
+from tests.families_util import Family, HistoryFamily, load_families, load_families_history, load_both_families_files, write_families, write_history_families, empty_families, empty_families_history, setUpFamilies, tearDownFamilies
 
 class TestSearch(unittest.TestCase):
     def setUpClass():
@@ -136,6 +136,27 @@ class TestSearch(unittest.TestCase):
                 search_result = search_families(families_file, query, search_by)
                 self.assertEqual(expected_len, len(search_result), message)
 
+    def test_search_history_by_r11r(self):
+        families = [HistoryFamily({"שם מלא": "פרינץ", "ממליץ": "רווחה"}),
+            HistoryFamily({"שם מלא": "כהנא", "ממליץ": "ממליץ"}),
+            HistoryFamily({"שם מלא": "נתאי", "ממליץ": "יועצת"})]
+        
+        test_cases = [
+            (None,  3, "Should return all families when query is 'None'"),
+            ("",    3, "Should return all families when query is empty string"),
+            ("י",   2, "Should return families that have recommender (r11r) containing 'י'"),
+            ("לי",  1, "Should return families that have recommender (r11r) containing 'לי'"),
+            ("ח",   1, "Should return families that have recommender (r11r) containing 'ח'"),
+            ("יכל", 0, "Should return empty list when no families found for a query")
+        ]
+
+        for query, expected_len, message in test_cases:
+            with self.subTest(self.get_title(query)):
+                write_history_families(families=families)
+                history_file = load_families_history()
+                search_result = search_families(history_file, query, 'r11r')
+                self.assertEqual(expected_len, len(search_result), message)
+
 class TestFind(unittest.TestCase):
     def setUpClass():
         setUpFamilies()
@@ -261,3 +282,64 @@ class TestDataManagement(unittest.TestCase):
                     self.assertIs(result, None, "Should return None if successful")
                 else:
                     self.assertIsInstance(result, expected_result, "Should raise FamilyNotFound Exception")
+
+class TestFamiliesHistory(unittest.TestCase):
+    def setUpClass():
+        setUpFamilies()
+    
+    def tearDownClass():
+        tearDownFamilies()
+
+    def test_remove_family(self):
+        families = [Family({"שם מלא": "פרינץ"})]
+
+        test_cases = [
+            (None,      1, 0, "Should return error if family name is None"),
+            ("",        1, 0, "Should return error if family name is empty string"),
+            ("שלום",    1, 0, "Should return error if family not found"),
+            ("פרינץ",   0, 1, "Should return None and remove family from families file")
+        ]
+
+        for family, expected_families_count, expected_history_count, message in test_cases:
+            with self.subTest(f"{family}: {expected_families_count}"):
+                write_families(families=families)
+                empty_families_history()
+
+                families_file, history_file = load_both_families_files()
+                error = remove_family(families_file, history_file, family, "", "")
+                if expected_families_count == 1:
+                    self.assertIsInstance(error, Exception, message)
+                elif expected_families_count == 0:
+                    self.assertIsNone(error, message)
+                
+                actual_families_count = get_count(families_file)
+                actual_history_count = get_count(history_file)
+                self.assertEqual(expected_families_count, actual_families_count, message)
+                self.assertEqual(expected_history_count, actual_history_count, message)
+
+    def test_restore_family(self):
+        history_families = [Family({"שם מלא": "פרינץ"})]
+
+        test_cases = [
+            (None,      0, 1, "Should return error if family name is None"),
+            ("",        0, 1, "Should return error if family name is empty string"),
+            ("שלום",    0, 1, "Should return error if family not found"),
+            ("פרינץ",   1, 0, "Should return None and restore family from families history file")
+        ]
+
+        for family, expected_families_count, expected_history_count, message in test_cases:
+            with self.subTest(f"{family}: {expected_history_count}"):
+                write_history_families(history_families)
+                empty_families()
+
+                families_file, history_file = load_both_families_files()
+                error = restore_family(families_file, history_file, family)
+                if expected_history_count == 1:
+                    self.assertIsInstance(error, Exception, message)
+                elif expected_history_count == 0:
+                    self.assertIsNone(error, message)
+                
+                actual_history_count = get_count(history_file)
+                actual_families_count = get_count(families_file)
+                self.assertEqual(expected_history_count, actual_history_count, message)
+                self.assertEqual(expected_families_count, actual_families_count, message)
