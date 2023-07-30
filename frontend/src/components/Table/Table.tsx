@@ -12,6 +12,7 @@ const Table = ({ headerHighlight, ...props }: TableProps) => {
         columns={props.columns}
         hasLastColumn={hasLastColumn}
         headerHighlight={headerHighlight}
+        numberedTable={props.numberedTable}
       />
       <TableBody {...props} />
     </table>

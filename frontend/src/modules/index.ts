@@ -10,11 +10,15 @@ export {
 
 export {
   reportTableHeaders,
+  reportCompletionHeaders,
+  reportCompletionBuilder,
   reportReceiveProp,
   reportDateProp,
 } from "./reports";
 
 export type { Family, FormFamily } from "./families";
+
+export type { CompletionFamily } from "./reports";
 
 export {
   driversArraySchema,

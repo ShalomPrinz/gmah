@@ -11,6 +11,8 @@ history_family_attributes+=( "ממליץ" "תאריך יציאה" "סיבה" )
 report_date_prop="תאריך"
 report_receive_prop="קיבל/ה"
 report_columns=([0]=$family_id_prop [1]="אחראי" [2]="נהג" [3]=$report_date_prop [4]=$report_receive_prop)
+report_completion_columns=([0]=$family_id_prop [1]="נהג" [2]="רחוב")
+build_completion_exclude="1"
 
 # Path Preparation
 
@@ -27,6 +29,7 @@ reports_filename="reports"
 reports_file="${dir_path}${reports_filename}.ts"
 echo "" > $reports_file
 report_exports=""
+report_type_exports=""
 
 # Families File
 
@@ -156,11 +159,16 @@ index_exports+="$fip_name"
 
 function add_report_headers {
     local var_name=$1
+    local excludes=$2
+    shift 2
+    local attrs=("$@")
     echo "export const $var_name = " >> $reports_file
 
     local var_text="["
-    for idx in ${!report_columns[@]}; do
-        var_text+='{id: '$idx', 'path': "'${report_columns[$idx]}'"},'
+    for idx in ${!attrs[@]}; do
+        if [[ ! " $excludes " =~ " $idx " ]]; then
+            var_text+='{id: '$idx', 'path': "'${attrs[$idx]}'"},'
+        fi
     done
     var_text+="]"
 
@@ -168,7 +176,31 @@ function add_report_headers {
     report_exports+="$var_name,"
 }
 
-add_report_headers "reportTableHeaders"
+# Report Table
+add_report_headers "reportTableHeaders" "" "${report_columns[@]}"
+
+# Report Completion Table
+add_report_headers "reportCompletionHeaders" "" "${report_completion_columns[@]}"
+
+# Report Completion Build Table
+add_report_headers "reportCompletionBuilder" "$build_completion_exclude" "${report_completion_columns[@]}"
+
+function write_family_completion_type {
+    var_name="CompletionFamily"
+    echo "export type $var_name = " >> $reports_file
+
+    local var_text="{"
+    for idx in ${!report_completion_columns[@]}; do
+        value="${report_completion_columns[$idx]}"
+        var_text+='"'$value'": string;'
+    done
+    var_text+="}"
+
+    echo -e "$var_text\n" >> $reports_file
+    report_type_exports+="$var_name,"
+}
+
+write_family_completion_type
 
 # Report Receive Prop
 rrp_name="reportReceiveProp"
@@ -185,17 +217,21 @@ report_exports+="$rdp_name"
 # Save schemas exports, which are external to this script
 schemas_exports=$(awk '/export/{rec=""; f=1} f{rec = rec $0 RS} END{printf "%s", rec}' "$index_file")
 
-# Write regular exports to index
+# Write families exports to index
 families_export_declaration='export { '$index_exports' } from "./'$output_filename'"'
 echo -e "$families_export_declaration\n" > $index_file
 
-# Write reports file exports to index
+# Write reports exports to index
 reports_export_declaration='export { '$report_exports' } from "./'$reports_filename'"'
 echo -e "$reports_export_declaration\n" >> $index_file
 
-# Write type exports to index
-type_export='export type { '$index_type_exports' } from "./'$output_filename'"'
-echo -e "$type_export\n" >> $index_file
+# Write families type exports to index
+families_type_export_declaration='export type { '$index_type_exports' } from "./'$output_filename'"'
+echo -e "$families_type_export_declaration\n" >> $index_file
+
+# Write reports type exports to index
+reports_type_export_declaration='export type { '$report_type_exports' } from "./'$reports_filename'"'
+echo -e "$reports_type_export_declaration\n" >> $index_file
 
 # Write schemas exports to index
 echo $schemas_exports >> $index_file

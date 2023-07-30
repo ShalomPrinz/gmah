@@ -6,6 +6,7 @@ import {
   faCheck,
   faCircleMinus,
   faExclamationTriangle,
+  faFileCircleCheck,
   faFilePen,
   faImage,
   faPersonWalkingArrowLoopLeft,
@@ -18,6 +19,7 @@ import {
 
 const icons = {
   addFamily: faUserPlus,
+  createPdf: faFileCircleCheck,
   editFamily: faUserPen,
   forwardItem: faShare,
   markReceive: faPeopleCarryBox,

@@ -33,6 +33,14 @@ function getReportColumn(reportName: string, query: string, by: string) {
   });
 }
 
+function getReportCompletions(reportName: string) {
+  return get("report/completion", {
+    params: {
+      report_name: reportName,
+    },
+  });
+}
+
 function getFamilyReceiptStatus(reportName: string, name: string) {
   return get("report/get-family", {
     params: {
@@ -77,6 +85,7 @@ export {
   getNoManagerDrivers,
   getReport,
   getReportColumn,
+  getReportCompletions,
   getReportsList,
   updateDriverStatus,
   updateFamilyReceipt,

@@ -5,12 +5,14 @@ export interface TableHeaderProps {
   columns: TableColumn[];
   hasLastColumn?: boolean;
   headerHighlight?: string;
+  numberedTable?: boolean;
 }
 
 const TableHeader = ({
   columns,
   hasLastColumn,
   headerHighlight,
+  numberedTable,
 }: TableHeaderProps) => {
   const headerCallback = ({ label, path }: TableColumn) => {
     const className = `fs-5 p-3${
@@ -22,6 +24,7 @@ const TableHeader = ({
   return (
     <thead>
       <tr>
+        {numberedTable && <th />}
         <ConditionalList itemCallback={headerCallback} list={columns} />
         {hasLastColumn && <th />}
       </tr>

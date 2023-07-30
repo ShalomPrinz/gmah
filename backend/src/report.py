@@ -2,7 +2,7 @@ from enum import Enum
 from openpyxl import load_workbook
 from re import match
 
-from src.data import report_properties, key_prop, date_prop, status_prop, date_pattern, default_date, default_status
+from src.data import report_properties, key_prop, street_prop, driver_prop, date_prop, status_prop, date_pattern, default_date, default_status
 from src.errors import FamilyNotFoundError
 from src.excel import Excel
 from src.families import load_families_file, search_families
@@ -184,6 +184,36 @@ def search_report_column(report_file: Excel, query='', search_by=''):
 
     return report_file.column_search(query, search_by)
 
+def get_report_completion_families(report_file: Excel, families_file: Excel):
+    '''
+    Returns families who didn't receive a package in the given report_file,
+    and only families to whom a package was sent and didn't get it.
+    Each completion family has a name, driver and street.
+    '''
+    families = search_families(families_file)
+
+    def status_filter(family):
+        return family[status_prop] == report_style_map[report_not_received_name]
+    report = filter(status_filter, search_report(report_file))
+
+    def to_completion_family(family):
+        if not family[key_prop]:
+            return {}
+
+        family_data = next(
+            (f for f in families if f[key_prop] == family[key_prop]), None)
+        return {} if family_data is None else {
+            key_prop: family[key_prop],
+            street_prop: family_data[street_prop],
+            driver_prop: family[driver_prop]
+        }
+    completion_families = map(to_completion_family, report)
+
+    def not_empty_filter(completion_family):
+        return len(completion_family.keys()) > 0
+
+    return list(filter(not_empty_filter, completion_families))
+
 def to_receipt_status(family):
     '''
     Cast a family to receipt status dictionary.
@@ -201,7 +231,7 @@ def get_driver_receipt_status(report_file: Excel, driver_name):
     '''
     if not driver_name:
         return []
-    
+
     result = report_file.style_search(
         driver_name,
         'driver',
@@ -229,7 +259,7 @@ def get_family_receipt_status(report_file: Excel, family_name):
     '''
     if not family_name:
         return default_receipt
-    
+
     result = report_file.style_search(
         family_name,
         'name',
@@ -267,7 +297,8 @@ def update_family_receipt_status(report_file: Excel, family_name, receipt):
     Returns proper Result object.
     '''
     if not family_name:
-        return FamilyNotFoundError("אי אפשר לעדכן סטטוס קבלה של משפחה ללא שם").result
+        return FamilyNotFoundError(
+            "אי אפשר לעדכן סטטוס קבלה של משפחה ללא שם").result
 
     try:
         index = report_file.get_row_index(family_name)

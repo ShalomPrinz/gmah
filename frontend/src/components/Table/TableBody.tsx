@@ -21,6 +21,7 @@ export interface TableBodyProps {
   data: TableData[];
   dataIdProp: string;
   LastColumn?: ComponentType<{ item: TableData }>;
+  numberedTable?: boolean;
 }
 
 const TableBody = ({
@@ -29,6 +30,7 @@ const TableBody = ({
   data,
   dataIdProp,
   LastColumn,
+  numberedTable,
 }: TableBodyProps) => {
   const columnCallback = (item: TableData, column: TableColumn) => {
     const baseClassName = "align-middle";
@@ -48,8 +50,11 @@ const TableBody = ({
     );
   };
 
-  const rowCallback = (item: TableData) => (
-    <tr>
+  const rowCallback = (item: TableData, rowIndex: number) => (
+    <tr key={item[dataIdProp]}>
+      {numberedTable && (
+        <td className="pe-4 align-middle fw-bold">{rowIndex + 1}</td>
+      )}
       <ConditionalList
         itemCallback={(column: TableColumn) => columnCallback(item, column)}
         list={columns}
@@ -58,15 +63,7 @@ const TableBody = ({
     </tr>
   );
 
-  return (
-    <tbody>
-      <ConditionalList
-        itemCallback={rowCallback}
-        list={data}
-        keyProp={dataIdProp}
-      />
-    </tbody>
-  );
+  return <tbody>{data.map((item, index) => rowCallback(item, index))}</tbody>;
 };
 
 export default TableBody;

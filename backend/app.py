@@ -227,6 +227,17 @@ def get_driver_receipt_status():
     status = report.get_driver_receipt_status(report_file, name)    
     return jsonify(status=status)
 
+@app.route('/report/completion')
+def get_completions():
+    report_name = request.args.get('report_name')
+
+    error, report_file = month.load_month_report(report_name)
+    if error is not None:
+        return error_response(error)
+    
+    families = report.get_report_completion_families(report_file, g.families_file)
+    return jsonify(families=families)
+
 @app.route('/print/month')
 def get_month_printable_report():
     report_name = request.args.get('report_name')

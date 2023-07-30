@@ -31,7 +31,7 @@ interface SearchRowProps {
   onQueryChange: (query: string) => void;
   onSearchByChange: (searchBy: string) => void;
   queryPlaceholder: string;
-  resultCount: number;
+  resultCount?: number;
   ResultDisplay?: JSX.Element;
   searchBy: Button[];
 }
@@ -45,10 +45,14 @@ function SearchRow({
   searchBy,
 }: SearchRowProps) {
   const hasCustomResultDisplay = typeof ResultDisplay !== "undefined";
+  const disableResultDisplay = typeof resultCount === "undefined";
+
+  const searchByMenu = disableResultDisplay ? "4" : "3";
+  const searchBoxWidth = disableResultDisplay ? "8" : "6";
 
   return (
     <Row className="mb-3">
-      <Col sm="3">
+      <Col sm={searchByMenu}>
         <h2>חפש באמצעות:</h2>
         <RadioMenu
           buttons={searchBy}
@@ -56,21 +60,23 @@ function SearchRow({
           onSelect={onSearchByChange}
         />
       </Col>
-      <Col>
+      <Col sm={searchBoxWidth}>
         <Search onChange={onQueryChange} placeholder={queryPlaceholder} />
       </Col>
-      <Col sm="3">
-        {hasCustomResultDisplay ? (
-          ResultDisplay
-        ) : (
-          <>
-            <h2>מספר תוצאות</h2>
-            <p className="text-primary" style={{ fontSize: "50px" }}>
-              {resultCount}
-            </p>
-          </>
-        )}
-      </Col>
+      {!disableResultDisplay && (
+        <Col sm="3">
+          {hasCustomResultDisplay ? (
+            ResultDisplay
+          ) : (
+            <>
+              <h2>מספר תוצאות</h2>
+              <p className="text-primary" style={{ fontSize: "50px" }}>
+                {resultCount ?? "שגיאה"}
+              </p>
+            </>
+          )}
+        </Col>
+      )}
     </Row>
   );
 }
