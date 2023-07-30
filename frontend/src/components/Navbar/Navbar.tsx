@@ -6,11 +6,9 @@ import NavDropdown from "react-bootstrap/NavDropdown";
 
 import { useMediaQuery } from "react-responsive";
 import { NavLink, useLocation } from "react-router-dom";
-import { toast } from "react-toastify";
 
 import { useHistoryContext, useReportContext } from "../../contexts";
 import ConditionalList from "../ConditionalList";
-import Dropdown from "../Dropdown";
 import IconComponent from "../Icon";
 
 import "./Navbar.css";
@@ -62,8 +60,6 @@ function AppNavbar({ pages }: NavbarProps) {
   const { SelectReportDropdown } = useReportContext();
 
   const { goBack } = useHistoryContext();
-  const goBackFailureCallback = () =>
-    toast.error("הגעת לדף הבית", { toastId: "endOfHistory" });
 
   const displayGoBack = !hasCollapseOption;
   const toggleNavbarIcon = expanded ? "navbarExpanded" : "navbarClosed";
@@ -103,7 +99,7 @@ function AppNavbar({ pages }: NavbarProps) {
           {usingReport && <SelectReportDropdown />}
           <NavbarButton
             Icon={<IconComponent flipHorizontal icon="forwardItem" />}
-            onClick={() => goBack(goBackFailureCallback)}
+            onClick={goBack}
             title="חזור אחורה"
           />
         </>

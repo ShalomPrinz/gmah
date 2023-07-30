@@ -1,14 +1,11 @@
-import { createContext, useContext, useEffect } from "react";
-import type { ReactNode } from "react";
+import { createContext, useContext, type ReactNode } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const routerLocationInitialKey = "default";
 
-type FailureCallback = () => void;
-
 interface HistoryContextValue {
-  goBack: (failureCallback: FailureCallback) => void;
+  goBack: () => void;
 }
 
 const HistoryContext = createContext<HistoryContextValue | undefined>(
@@ -30,12 +27,9 @@ function HistoryProvider({ children }: HistoryProviderProps) {
   const navigate = useNavigate();
   const { key } = useLocation();
 
-  // Dismiss all toasts on a route change
-  useEffect(() => toast.dismiss(), [key]);
-
-  function goBack(failureCallback: FailureCallback) {
+  function goBack() {
     if (key === routerLocationInitialKey) {
-      failureCallback();
+      toast.error("הגעת לדף הבית", { toastId: "endOfHistory" });
     } else {
       navigate(-1);
     }
