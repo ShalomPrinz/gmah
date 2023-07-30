@@ -16,7 +16,7 @@ import { driversArraySchema } from "../modules";
 import { updateManagers } from "../services";
 import type { Driver, Manager } from "../types";
 import { useLocationState } from "../hooks";
-import { findDuplicatedProperty } from "../util";
+import { findDuplicatedProperty, trimObject } from "../util";
 
 const defaultDriver: Driver = {
   name: "",
@@ -55,7 +55,8 @@ function EditManagers() {
 
     const updated = managers.map((m) => {
       const { title, values } = submitResult[m.name];
-      return { id: m.id, drivers: values, name: title };
+      const trimmedValues = values.map((driver) => trimObject(driver));
+      return { id: m.id, drivers: trimmedValues, name: title.trim() };
     });
 
     updateManagers(updated).then(() => navigate("/managers"));

@@ -7,6 +7,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { ConditionalList } from "../";
 import type { TextInput } from "./FormTextInput";
 import { FormTextInput } from "./FormTextInput";
+import { trimObject } from "../../util";
 
 import "./Form.css";
 
@@ -52,7 +53,9 @@ const AppForm = ({
     e.preventDefault();
     handleSubmit(
       (data) => {
-        onSubmit(data).then((submitSucceed) => {
+        const trimmedData = trimObject(data);
+        console.log("trimmed", trimmedData);
+        onSubmit(trimmedData).then((submitSucceed) => {
           if (submitSucceed) reset(emptyValues);
         });
       },

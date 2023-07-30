@@ -12,7 +12,7 @@ import TableBody from "./TableBody";
 import TableHeader from "./TableHeader";
 import type { FormItem, FormValues, TableColumn } from "./types";
 
-import { formatFamilyKey } from "../../util";
+import { formatFamilyKey, trimObject } from "../../util";
 import type { NonEmptyString } from "../../types";
 
 interface InputTableProps {
@@ -63,7 +63,10 @@ function InputTable({
   function onSubmitInit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     handleSubmit(
-      (data) => onSubmit(data[name]),
+      (data) => {
+        const trimmedData = data[name].map((obj) => trimObject(obj));
+        onSubmit(trimmedData);
+      },
       (errors) => handleErrorSubmission(errors)
     )();
   }
