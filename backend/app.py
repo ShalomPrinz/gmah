@@ -136,7 +136,7 @@ def validate_drivers():
 def generate_month():
     name = request.json['name']
     override_name = request.json['override_name']
-    error = month.generate_month_files(name, override_name)
+    error = month.generate_month_files(g.families_file, name, override_name)
     if error is not None:
         return error_response(error)
     return jsonify(), 200
@@ -237,6 +237,16 @@ def get_completions():
     
     families = report.get_report_completion_families(report_file, g.families_file)
     return jsonify(families=families)
+
+@app.route('/report/completion/build', methods=["POST"])
+def build_completion_page():
+    month_name = request.json['month_name']
+    title = request.json['title']
+    families = request.json['families']
+
+    month.generate_completion_pdf(month_name, title, g.families_file, families)
+    
+    return jsonify(), 200
 
 @app.route('/print/month')
 def get_month_printable_report():

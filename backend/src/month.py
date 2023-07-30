@@ -1,9 +1,9 @@
 from glob import glob
 from os import path
 
-from src.data import driver_prop, pdf_properties
+from src.data import key_prop, driver_prop, pdf_properties
 from src.errors import FileAlreadyExists
-from src.families import load_families_file, search_families
+from src.families import search_families
 from src.managers import load_managers_file
 from src.report import load_report_file, create_empty_report, append_report
 from src.pdf import PDFBuilder, get_print_path
@@ -63,50 +63,47 @@ def get_printable_report(report_name):
 
 # Monthly files generation
 
-def generate_month_report(name, families, managers_file):
+def generate_month_report(month_name, families, managers_file):
     '''
     Generates new monthly report tracker based on given families and managers.
     '''
-    sheet_title = f'{month_report_prefix}{name}'
-    filepath = get_report_path(name)
+    sheet_title = f'{month_report_prefix}{month_name}'
+    filepath = get_report_path(month_name)
     create_empty_report(month_reports_template, sheet_title, filepath)
 
-    error, report_file = load_month_report(name)
+    error, report_file = load_month_report(month_name)
     if error is not None:
         return error
     append_report(report_file, families, managers_file)
 
-def generate_month_pdf(name, families, managers_file):
+def generate_month_pdf(month_name, families, managers_file):
     '''
     Generates new monthly report in print format based on given families and managers.
     '''
     managers = managers_file.load_json()
     pages = get_all_pages(managers, families)
-    builder = PDFBuilder(name, month_printable_report_name)
+    builder = PDFBuilder(month_name, month_printable_report_name)
     builder.build_multi(pages, pdf_properties)
 
-def generate_month_files(name, override_name=False):
+def generate_month_files(families_file, month_name, override_name=False):
     '''
-    Generates new month report with the given name, based on current families and managers files.
+    Generates new month report with the given month_name, based on current families and managers files.
     Allows override of exist report by setting override_name to True.
 
     In addition to monthly report tracker file, this function generates a pdf file which contains
     all managers, drivers and families for this month.
     '''
-    if not override_name and not is_report_name_exists(name):
-        return FileAlreadyExists(f"דוח קבלה בשם {name} קיים כבר")
-
-    error, families_file = load_families_file()
-    if error is not None:
-        return error
-    families = search_families(families_file)
+    if not override_name and not is_report_name_exists(month_name):
+        return FileAlreadyExists(f"דוח קבלה בשם {month_name} קיים כבר")
 
     error, managers_file = load_managers_file()
     if error is not None:
         return error
 
-    generate_month_report(name, families, managers_file)
-    generate_month_pdf(name, families, managers_file)
+    families = search_families(families_file)
+
+    generate_month_report(month_name, families, managers_file)
+    generate_month_pdf(month_name, families, managers_file)
 
 def get_all_pages(managers, families):
     ignore_drivers = [None, "", "בני מנשה", "וענונו"]
@@ -130,3 +127,22 @@ def get_all_pages(managers, families):
                 })
 
     return pages
+
+def generate_completion_pdf(month_name, title, families_file, families):
+    '''
+    Generates new completion file in print format.
+    '''
+    pdf_content = get_families_content(families_file, families)
+    builder = PDFBuilder(month_name, title)
+    builder.build_single(title, pdf_properties, pdf_content)
+
+def get_families_content(families_file, completion_families):
+    families_content = []
+    families = search_families(families_file)
+
+    for cf in completion_families:
+        family = next((f for f in families if f[key_prop] == cf[key_prop]), None)
+        if family is not None:
+            families_content.append(family)
+    
+    return families_content

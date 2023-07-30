@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import { toast } from "react-toastify";
 
 import { Dropdown, getSearchBy, Option, SearchRow, Table } from "../components";
+import IconComponent from "../components/Icon";
 import { NoMonthReports, useMonthReports } from "../hooks";
 import {
   familyIdProp,
@@ -11,8 +12,7 @@ import {
   reportCompletionBuilder,
 } from "../modules";
 import type { CompletionFamily } from "../modules";
-import { getReportCompletions } from "../services";
-import IconComponent from "../components/Icon";
+import { createCompletionPage, getReportCompletions } from "../services";
 
 const buttons = [
   {
@@ -38,19 +38,29 @@ const { getSearchByHeader, getSearchByText } = getSearchBy(buttons);
 function CompletionEditor() {
   const [query, setQuery] = useState("");
   const [searchBy, setSearchBy] = useState("name");
+  const titleRef = useRef<HTMLInputElement>(null);
 
   const reports = useMonthReports();
-  const options = reports.map((report, index) => ({
+  const options = reports.map((reportName, index) => ({
     eventKey: index.toString(),
-    value: report,
+    value: reportName,
   }));
   const hasOptions = options.length > 0;
 
   const { onSelect, selectedReport } = useReportSelection(options);
-  const report = useReportCompletions(selectedReport, query, searchBy);
+  const { reportHasCompletion, searchResult } = useReportCompletions(
+    selectedReport,
+    query,
+    searchBy
+  );
+  const hasCompletionResult = searchResult.length > 0;
 
-  const { addToCompletion, completionList, removeFromCompletion } =
-    useCompletionBuilder();
+  const {
+    addToCompletion,
+    completionList,
+    removeFromCompletion,
+    resetCompletionList,
+  } = useCompletionBuilder();
   const hasCompletionFamilies = completionList.length > 0;
 
   if (!hasOptions)
@@ -62,6 +72,18 @@ function CompletionEditor() {
         <NoMonthReports />
       </>
     );
+
+  function generateCompletionReport() {
+    const title = titleRef.current?.value || "השלמות";
+    createCompletionPage(selectedReport || "", title, completionList)
+      .then(() => {
+        toast.success(
+          `יצרת דף השלמות בשם ${title} עם ${completionList.length} משפחות בהצלחה`
+        );
+        resetCompletionList();
+      })
+      .catch(() => toast.error("קרתה שגיאה בלתי צפויה"));
+  }
 
   return (
     <>
@@ -83,38 +105,63 @@ function CompletionEditor() {
               searchBy={buttons}
             />
             <Row className="mx-5">
-              <Table
-                columns={reportCompletionHeaders}
-                data={report}
-                dataIdProp={familyIdProp}
-                headerHighlight={getSearchByHeader(searchBy)}
-                LastColumn={CompletionAddButton(addToCompletion)}
-              />
+              {reportHasCompletion ? (
+                hasCompletionResult ? (
+                  <Table
+                    columns={reportCompletionHeaders}
+                    data={searchResult}
+                    dataIdProp={familyIdProp}
+                    headerHighlight={getSearchByHeader(searchBy)}
+                    LastColumn={CompletionAddButton(addToCompletion)}
+                  />
+                ) : (
+                  <h2 className="fw-light my-5">
+                    לא נמצאו משפחות שצריכות השלמה
+                  </h2>
+                )
+              ) : (
+                <h2 className="fw-light my-5">
+                  בדוח קבלה זה אין משפחות שצריכות השלמה
+                </h2>
+              )}
             </Row>
           </Col>
           <Col sm="4" style={{ marginBottom: "150px" }}>
             {hasCompletionFamilies ? (
-              <Table
-                columns={reportCompletionBuilder}
-                data={completionList}
-                dataIdProp={familyIdProp}
-                LastColumn={CompletionRemoveButton(removeFromCompletion)}
-                numberedTable
-              />
-            ) : (
+              <>
+                <label className="fs-3 ps-4">כותרת:</label>
+                <input
+                  className="fs-4 mb-4 p-2 rounded form-text-input"
+                  placeholder="הכנס כותרת..."
+                  ref={titleRef}
+                  type="text"
+                />
+                <Table
+                  columns={reportCompletionBuilder}
+                  data={completionList}
+                  dataIdProp={familyIdProp}
+                  LastColumn={CompletionRemoveButton(removeFromCompletion)}
+                  numberedTable
+                />
+              </>
+            ) : reportHasCompletion ? (
               <h5 className="fw-light my-5">- אין משפחות בדף ההשלמה -</h5>
+            ) : (
+              <></>
             )}
           </Col>
         </Row>
       </main>
-      <button
-        className="fs-3 bg-default rounded p-4 mt-5 ms-5 mb-5 position-fixed bottom-0 start-0 button-hover"
-        onClick={() => console.log("created", completionList)}
-        type="button"
-      >
-        <span className="ps-3">יצירת הדף</span>
-        <IconComponent icon="createPdf" />
-      </button>
+      {reportHasCompletion && (
+        <button
+          className="fs-3 bg-default rounded p-4 mt-5 ms-5 mb-5 position-fixed bottom-0 start-0 button-hover"
+          onClick={generateCompletionReport}
+          type="button"
+        >
+          <span className="ps-3">יצירת הדף</span>
+          <IconComponent icon="createPdf" />
+        </button>
+      )}
     </>
   );
 }
@@ -182,7 +229,7 @@ function useReportCompletions(
       );
   }, [reportName]);
 
-  return filtered;
+  return { reportHasCompletion: families.length > 0, searchResult: filtered };
 }
 
 function useCompletionBuilder() {
@@ -206,7 +253,16 @@ function useCompletionBuilder() {
     setCompletionList((prev) => prev.filter((f) => !isSameFamily(f, item)));
   }
 
-  return { addToCompletion, completionList, removeFromCompletion };
+  function resetCompletionList() {
+    setCompletionList([]);
+  }
+
+  return {
+    addToCompletion,
+    completionList,
+    removeFromCompletion,
+    resetCompletionList,
+  };
 }
 
 export default CompletionEditor;

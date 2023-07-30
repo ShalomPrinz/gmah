@@ -6,7 +6,7 @@ from src.month import generate_month_files, get_report_path, get_reports_list
 from src.report import get_no_driver_families, get_no_manager_drivers, search_report, search_report_column, update_family_receipt_status, update_driver_receipt_status, get_family_receipt_status, receipt_update_results, get_driver_receipt_status
 from src.results import receipt_update_results
 
-from tests.families_util import Family, write_families, setUpFamilies, tearDownFamilies
+from tests.families_util import Family, load_families, write_families, setUpFamilies, tearDownFamilies
 from tests.managers_util import write_managers, setUpManagers, tearDownManagers
 from tests.report_util import generate_report, tearDownMonth, remove_all_reports
 
@@ -100,7 +100,8 @@ class TestReportGeneration(unittest.TestCase):
         
     def test_report_generated_in_folder(self):
         name = 'שם כלשהו'
-        error = generate_month_files(name)
+        families_file = load_families()
+        error = generate_month_files(families_file, name)
         self.assertTrue(error is None, "Failed generating month report")
         
         filepath = get_report_path(name)
