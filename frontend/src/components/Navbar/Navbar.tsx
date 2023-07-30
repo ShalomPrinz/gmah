@@ -5,11 +5,12 @@ import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
 
 import { useMediaQuery } from "react-responsive";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 
-import { useHistoryContext } from "../../contexts";
+import { useHistoryContext, useReportContext } from "../../contexts";
 import ConditionalList from "../ConditionalList";
+import Dropdown from "../Dropdown";
 import IconComponent from "../Icon";
 
 import "./Navbar.css";
@@ -18,6 +19,7 @@ interface Page {
   id: number;
   name: string;
   url: string;
+  usesReport?: boolean;
 }
 
 interface PageCollection {
@@ -53,6 +55,12 @@ interface NavbarProps {
 function AppNavbar({ pages }: NavbarProps) {
   const [expanded, setExpanded] = useState(false);
   const hasCollapseOption = useMediaQuery({ maxWidth: expandSizePx });
+
+  const { pathname } = useLocation();
+  const usingReport = isCurrentPageUsesReport(pages, pathname);
+
+  const { SelectReportDropdown } = useReportContext();
+
   const { goBack } = useHistoryContext();
   const goBackFailureCallback = () =>
     toast.error("הגעת לדף הבית", { toastId: "endOfHistory" });
@@ -91,11 +99,14 @@ function AppNavbar({ pages }: NavbarProps) {
         </Nav>
       </Navbar.Collapse>
       {displayGoBack && (
-        <NavbarButton
-          Icon={<IconComponent flipHorizontal icon="forwardItem" />}
-          onClick={() => goBack(goBackFailureCallback)}
-          title="חזור אחורה"
-        />
+        <>
+          {usingReport && <SelectReportDropdown />}
+          <NavbarButton
+            Icon={<IconComponent flipHorizontal icon="forwardItem" />}
+            onClick={() => goBack(goBackFailureCallback)}
+            title="חזור אחורה"
+          />
+        </>
       )}
     </Navbar>
   );
@@ -160,6 +171,7 @@ function NavbarWrapper() {
           id: 2,
           name: "מעקב חודשי",
           url: "/month",
+          usesReport: true,
         },
       ],
       title: "ניהול חודשי",
@@ -171,11 +183,13 @@ function NavbarWrapper() {
           id: 0,
           name: "חודשי",
           url: "/print/month",
+          usesReport: true,
         },
         {
           id: 1,
           name: "דף השלמות",
           url: "/print/completion",
+          usesReport: true,
         },
       ],
       title: "הדפסות",
@@ -183,6 +197,15 @@ function NavbarWrapper() {
   ];
 
   return <AppNavbar pages={pages} />;
+}
+
+function isCurrentPageUsesReport(
+  collection: PageCollection[],
+  currentUrl: string
+) {
+  return collection.some(({ pages }) =>
+    pages.some((page) => page.url === currentUrl && page.usesReport)
+  );
 }
 
 export default NavbarWrapper;

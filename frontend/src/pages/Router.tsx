@@ -22,12 +22,14 @@ import FamiliesHistory from "./FamiliesHistory";
 import CompletionEditor from "./CompletionEditor";
 import MonthPrintView from "./MonthPrintView";
 
-import { HistoryProvider } from "../contexts";
+import { HistoryProvider, ReportProvider } from "../contexts";
 
 const Header = () => (
   <HistoryProvider>
-    <Navbar />
-    <Outlet />
+    <ReportProvider>
+      <Navbar />
+      <Outlet />
+    </ReportProvider>
   </HistoryProvider>
 );
 

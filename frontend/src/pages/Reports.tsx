@@ -5,9 +5,10 @@ import Form from "react-bootstrap/Form";
 import { toast } from "react-toastify";
 
 import { ConditionalList } from "../components";
+import IconComponent from "../components/Icon";
+import { useReportContext } from "../contexts";
 import { generateMonthReport, getNoManagerDrivers } from "../services";
 import type { NoManagerDriver } from "../types";
-import IconComponent from "../components/Icon";
 
 const defaultReportName = "חדש";
 
@@ -190,6 +191,7 @@ function useDriversValidation() {
 function useGenerateReport() {
   const [isGeneratingReport, setIsGenerating] = useState(false);
   const [hadNameExistsError, setHadNameExistsError] = useState(false);
+  const { reportsCountChanged } = useReportContext();
 
   function generateReport(
     value: string | undefined,
@@ -205,6 +207,7 @@ function useGenerateReport() {
           toastId: `reportSuccess:${reportName}`,
         });
         setHadNameExistsError(false);
+        reportsCountChanged();
       })
       .catch((err) => {
         if (err?.response?.data?.error === "File Already Exists") {

@@ -3,7 +3,7 @@ import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import { Link } from "react-router-dom";
 
-import { Dropdown, Option, SearchRow, Table, getSearchBy } from "../components";
+import { NoMonthReports, SearchRow, Table, getSearchBy } from "../components";
 import IconComponent from "../components/Icon";
 import {
   familyIdProp,
@@ -13,7 +13,7 @@ import {
 } from "../modules";
 import { getReport } from "../services";
 import { formatDate } from "../util";
-import { NoMonthReports, useMonthReports } from "../hooks";
+import { useReportContext } from "../contexts";
 
 const buttons = [
   {
@@ -36,37 +36,21 @@ const buttons = [
 
 const { getSearchByHeader, getSearchByText } = getSearchBy(buttons);
 
-const defaultSelection = "0";
-
 const defaultQuery = "";
 const defaultSearchBy = "name";
 
+const pageTitle = "מעקב חלוקה";
 function MonthTracker() {
   const [query, setQuery] = useState(defaultQuery);
   const [searchBy, setSearchBy] = useState(defaultSearchBy);
 
-  const reports = useMonthReports();
-  const options = reports.map((report, index) => ({
-    eventKey: index.toString(),
-    value: report,
-  }));
-  const { onSelect, selectedReport } = useReportSelection(options);
-
+  const { reportsAvailable, selectedReport } = useReportContext();
   const report = useReportSearch(selectedReport, query, searchBy);
+
+  if (!reportsAvailable) return <NoMonthReports pageTitle={pageTitle} />;
 
   const isDefaultSearch =
     query === defaultQuery && searchBy === defaultSearchBy;
-  const hasOptions = options.length > 0;
-
-  if (!hasOptions)
-    return (
-      <>
-        <div className="d-flex align-items-center justify-content-center mt-5">
-          <h1 className="mx-5">מעקב חלוקה חודשי</h1>
-        </div>
-        <NoMonthReports />
-      </>
-    );
 
   const ResultDisplay = isDefaultSearch ? (
     <ReportStats report={report as []} />
@@ -74,10 +58,7 @@ function MonthTracker() {
 
   return (
     <>
-      <div className="d-flex align-items-center justify-content-center mt-5">
-        <h1 className="mx-5">מעקב חלוקה: {selectedReport}</h1>
-        <Dropdown title="בחר דוח קבלה" onSelect={onSelect} options={options} />
-      </div>
+      <h1 className="text-center mt-5">{pageTitle}</h1>
       <main className="mt-5 text-center mx-auto w-75">
         <SearchRow
           onQueryChange={(q: string) => setQuery(q)}
@@ -122,18 +103,6 @@ function MonthTracker() {
   );
 }
 
-function useReportSelection(options: Option[]) {
-  const [selected, setSelected] = useState(defaultSelection);
-  const selectedReport = options.find(
-    ({ eventKey }) => selected === eventKey
-  )?.value;
-
-  const onSelect = (eventKey: string | null) =>
-    eventKey && setSelected(eventKey);
-
-  return { onSelect, selectedReport };
-}
-
 function useReportSearch(
   reportName: string | undefined,
   query: string,
@@ -142,7 +111,7 @@ function useReportSearch(
   const [report, setReport] = useState([]);
 
   useEffect(() => {
-    if (typeof reportName === "undefined") return;
+    if (!reportName) return;
 
     getReport(reportName, query, searchBy)
       .then((res) => setReport(res.data.report))

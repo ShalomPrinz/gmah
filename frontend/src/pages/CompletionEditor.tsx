@@ -3,9 +3,8 @@ import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import { toast } from "react-toastify";
 
-import { Dropdown, getSearchBy, Option, SearchRow, Table } from "../components";
+import { getSearchBy, NoMonthReports, SearchRow, Table } from "../components";
 import IconComponent from "../components/Icon";
-import { NoMonthReports, useMonthReports } from "../hooks";
 import {
   familyIdProp,
   reportCompletionHeaders,
@@ -13,6 +12,7 @@ import {
 } from "../modules";
 import type { CompletionFamily } from "../modules";
 import { createCompletionPage, getReportCompletions } from "../services";
+import { useReportContext } from "../contexts";
 
 const buttons = [
   {
@@ -35,25 +35,13 @@ const buttons = [
 
 const { getSearchByHeader, getSearchByText } = getSearchBy(buttons);
 
+const pageTitle = "הכנת דף השלמות";
 function CompletionEditor() {
   const [query, setQuery] = useState("");
   const [searchBy, setSearchBy] = useState("name");
   const titleRef = useRef<HTMLInputElement>(null);
 
-  const reports = useMonthReports();
-  const options = reports.map((reportName, index) => ({
-    eventKey: index.toString(),
-    value: reportName,
-  }));
-  const hasOptions = options.length > 0;
-
-  const { onSelect, selectedReport } = useReportSelection(options);
-  const { reportHasCompletion, searchResult } = useReportCompletions(
-    selectedReport,
-    query,
-    searchBy
-  );
-  const hasCompletionResult = searchResult.length > 0;
+  const { reportsAvailable, selectedReport } = useReportContext();
 
   const {
     addToCompletion,
@@ -63,17 +51,24 @@ function CompletionEditor() {
   } = useCompletionBuilder();
   const hasCompletionFamilies = completionList.length > 0;
 
-  if (!hasOptions)
-    return (
-      <>
-        <div className="d-flex align-items-center justify-content-center mt-5">
-          <h1 className="mx-5">הכנת דף השלמות</h1>
-        </div>
-        <NoMonthReports />
-      </>
-    );
+  const { reportHasCompletion, searchResult } = useReportCompletions(
+    selectedReport,
+    query,
+    searchBy,
+    resetCompletionList
+  );
+  const hasCompletionResult = searchResult.length > 0;
+
+  if (!reportsAvailable) return <NoMonthReports pageTitle={pageTitle} />;
 
   function generateCompletionReport() {
+    if (!hasCompletionFamilies) {
+      toast.warn("לא ניתן ליצור דף השלמות ללא משפחות", {
+        toastId: "no-selected-families",
+      });
+      return;
+    }
+
     const title = titleRef.current?.value || "השלמות";
     createCompletionPage(selectedReport || "", title, completionList)
       .then(() => {
@@ -87,15 +82,8 @@ function CompletionEditor() {
 
   return (
     <>
-      <main className="mt-5 text-center">
-        <div className="d-flex align-items-center justify-content-center my-4">
-          <h1 className="mx-5">הכנת דף השלמות</h1>
-          <Dropdown
-            title="בחר דוח קבלה"
-            onSelect={onSelect}
-            options={options}
-          />
-        </div>
+      <main className="text-center">
+        <h1 className="mt-5 mb-4">{pageTitle}</h1>
         <Row className="mx-5">
           <Col className="text-center ps-5" sm="8">
             <SearchRow
@@ -121,31 +109,34 @@ function CompletionEditor() {
                 )
               ) : (
                 <h2 className="fw-light my-5">
-                  בדוח קבלה זה אין משפחות שצריכות השלמה
+                  בדוח קבלה <span className="fw-bold">{selectedReport}</span>{" "}
+                  אין משפחות שצריכות השלמה
                 </h2>
               )}
             </Row>
           </Col>
           <Col sm="4" style={{ marginBottom: "150px" }}>
-            {hasCompletionFamilies ? (
-              <>
-                <label className="fs-3 ps-4">כותרת:</label>
-                <input
-                  className="fs-4 mb-4 p-2 rounded form-text-input"
-                  placeholder="הכנס כותרת..."
-                  ref={titleRef}
-                  type="text"
-                />
-                <Table
-                  columns={reportCompletionBuilder}
-                  data={completionList}
-                  dataIdProp={familyIdProp}
-                  LastColumn={CompletionRemoveButton(removeFromCompletion)}
-                  numberedTable
-                />
-              </>
-            ) : reportHasCompletion ? (
-              <h5 className="fw-light my-5">- אין משפחות בדף ההשלמה -</h5>
+            {reportHasCompletion ? (
+              hasCompletionFamilies ? (
+                <>
+                  <label className="fs-3 ps-4">כותרת:</label>
+                  <input
+                    className="fs-4 mb-4 p-2 rounded form-text-input"
+                    placeholder="הכנס כותרת..."
+                    ref={titleRef}
+                    type="text"
+                  />
+                  <Table
+                    columns={reportCompletionBuilder}
+                    data={completionList}
+                    dataIdProp={familyIdProp}
+                    LastColumn={CompletionRemoveButton(removeFromCompletion)}
+                    numberedTable
+                  />
+                </>
+              ) : (
+                <h5 className="fw-light my-5">- אין משפחות בדף ההשלמה -</h5>
+              )
             ) : (
               <></>
             )}
@@ -192,22 +183,11 @@ function CompletionRemoveButton(remove: (item: any) => void) {
   );
 }
 
-function useReportSelection(options: Option[]) {
-  const [selected, setSelected] = useState("0");
-  const selectedReport = options.find(
-    ({ eventKey }) => selected === eventKey
-  )?.value;
-
-  const onSelect = (eventKey: string | null) =>
-    eventKey && setSelected(eventKey);
-
-  return { onSelect, selectedReport };
-}
-
 function useReportCompletions(
   reportName: string | undefined,
   query: string,
-  searchBy: string
+  searchBy: string,
+  resetCompletionList: () => void
 ) {
   const [families, setFamilies] = useState([]);
   const filtered = families.filter((family) => {
@@ -217,7 +197,8 @@ function useReportCompletions(
   });
 
   useEffect(() => {
-    if (typeof reportName === "undefined") return;
+    resetCompletionList();
+    if (!reportName) return;
 
     getReportCompletions(reportName)
       .then((res) => setFamilies(res.data.families))
