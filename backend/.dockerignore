@@ -6,4 +6,6 @@ __pycache__
 .coverage
 htmlcov/
 
-static
+tests
+test.sh
+format.sh
