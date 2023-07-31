@@ -52,3 +52,8 @@
 .dropdown-toggle.nav-link::after {
   margin-right: .6rem;
 }
+
+.offcanvas {
+  background-color: var(--default-soft-bg-color) !important;
+  color: var(--default-color) !important;
+}

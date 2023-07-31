@@ -3,6 +3,7 @@ import { useState } from "react";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
+import Offcanvas from "react-bootstrap/Offcanvas";
 
 import { useMediaQuery } from "react-responsive";
 import { NavLink, useLocation } from "react-router-dom";
@@ -11,6 +12,7 @@ import { useHistoryContext, useReportContext } from "../../contexts";
 import ConditionalList from "../ConditionalList";
 import IconComponent from "../Icon";
 
+import AppLogo from "../../res/logo.png";
 import "./Navbar.css";
 
 interface Page {
@@ -26,20 +28,6 @@ interface PageCollection {
   title: string;
 }
 
-const pageCallback = ({ name, url }: Page) => (
-  <NavDropdown.Item as="div" className="nav-dropdown-item">
-    <NavLink className="nav-dropdown-item fs-5 w-100 p-1" to={url}>
-      {name}
-    </NavLink>
-  </NavDropdown.Item>
-);
-
-const collectionCallback = ({ pages, title }: PageCollection) => (
-  <NavDropdown align="end" className="nav-dropdown" title={title}>
-    <ConditionalList itemCallback={pageCallback} list={pages} />
-  </NavDropdown>
-);
-
 // Note: When changing those, also change in css file
 /** Navbar expand size in bootstrap breakpoints */
 const expandSizeBs = "lg";
@@ -49,6 +37,8 @@ const expandSizePx = "992px";
 interface NavbarProps {
   pages: PageCollection[];
 }
+
+const appTitle = 'גמ"ח אבישי';
 
 function AppNavbar({ pages }: NavbarProps) {
   const [expanded, setExpanded] = useState(false);
@@ -62,9 +52,32 @@ function AppNavbar({ pages }: NavbarProps) {
   const { goBack } = useHistoryContext();
 
   const displayGoBack = !hasCollapseOption;
-  const toggleNavbarIcon = expanded ? "navbarExpanded" : "navbarClosed";
   const switchExpanded = () => setExpanded(!expanded);
   const setNotExpanded = () => expanded && switchExpanded();
+
+  const navTitleStyle = expanded ? " fs-4 my-3 w-50" : "";
+
+  const pageCallback = ({ name, url }: Page) => (
+    <NavDropdown.Item as="div" className="nav-dropdown-item">
+      <NavLink
+        className="nav-dropdown-item p-1 fs-5"
+        onClick={setNotExpanded}
+        to={url}
+      >
+        {name}
+      </NavLink>
+    </NavDropdown.Item>
+  );
+
+  const collectionCallback = ({ pages, title }: PageCollection) => (
+    <NavDropdown
+      align="end"
+      className={`nav-dropdown${navTitleStyle}`}
+      title={title}
+    >
+      <ConditionalList itemCallback={pageCallback} list={pages} />
+    </NavDropdown>
+  );
 
   return (
     <Navbar
@@ -74,24 +87,41 @@ function AppNavbar({ pages }: NavbarProps) {
       style={{ direction: "rtl" }}
     >
       <NavLink onClick={setNotExpanded} className="navbar-brand fs-1" to="/">
-        <img
-          height="90px"
-          className="p-2 m-3"
-          src="/src/res/logo.png"
-          title={'גמ"ח אבישי'}
-        />
-        {'גמ"ח אבישי'}
+        <img height="90px" className="p-2 m-3" src={AppLogo} title={appTitle} />
+        {appTitle}
       </NavLink>
-      {hasCollapseOption && (
+      {hasCollapseOption && !expanded && (
         <NavbarButton
-          Icon={<IconComponent icon={toggleNavbarIcon} />}
+          Icon={<IconComponent icon="navbarClosed" />}
           onClick={switchExpanded}
           title="הראה תפריט"
         />
       )}
       <Navbar.Collapse>
-        <Nav onClick={setNotExpanded}>
-          <ConditionalList itemCallback={collectionCallback} list={pages} />
+        <Nav>
+          <Navbar.Offcanvas placement="end">
+            {expanded && (
+              <Offcanvas.Header className="d-flex mx-4">
+                <Offcanvas.Title className="fs-2">{appTitle}</Offcanvas.Title>
+                <button
+                  className="fs-1 btn btn-transparent"
+                  onClick={switchExpanded}
+                  title="סגור תפריט"
+                  type="button"
+                >
+                  <IconComponent icon="navbarExpanded" />
+                </button>
+              </Offcanvas.Header>
+            )}
+            <Offcanvas.Body>
+              <Nav className="justify-content-end flex-grow-1 pe-3">
+                <ConditionalList
+                  itemCallback={collectionCallback}
+                  list={pages}
+                />
+              </Nav>
+            </Offcanvas.Body>
+          </Navbar.Offcanvas>
         </Nav>
       </Navbar.Collapse>
       {displayGoBack && (
