@@ -9,6 +9,9 @@ export default defineConfig({
       "~bootstrap": resolve(__dirname, "node_modules/bootstrap"),
     },
   },
+  build: {
+    outDir: "./static",
+  },
   server: {
     host: true,
     port: 3000,

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --config vite.config.ts",
-    "build": "tsc && vite build",
+    "build": "tsc && vite build --base=./",
     "preview": "vite preview",
     "lint": "npx eslint --ext ts,tsx src --fix",
     "test": "vitest --config vitest.config.ts --silent",
