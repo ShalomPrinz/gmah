@@ -12,6 +12,7 @@ import src.report as report
 from src.results import get_result, Result
 
 index_filename = "index.html"
+assets_foldername = "assets"
 
 load_dotenv()
 DEVELOPMENT = getenv('DEVELOPMENT')
@@ -32,13 +33,18 @@ app = Flask(__name__)
 cors = CORS(app, resources={r"/*": {"origins": client_address}})
 
 if not is_development_mode:
+    def to_assets_path(path):
+        if assets_foldername in path:
+            index = path.find(assets_foldername)
+            return path[index:]
+        else:
+            return index_filename
+        
     def serve_file(path):
         if exists(f'./static/{path}'):
             return app.send_static_file(path)
-        elif path == index_filename:
-            return "Server Error: app contents cannot be served correctly"
         else:
-            return serve_file(index_filename)
+            return None
 
     @app.route('/')
     def serve_app():
@@ -46,7 +52,12 @@ if not is_development_mode:
         
     @app.route('/<path:path>')
     def serve_static_file(path):
-        return serve_file(path)
+        file = serve_file(path)
+        if file is None:
+            file = serve_file(to_assets_path(path))
+            if file is None:
+                return "Server Error: app contents cannot be served correctly"
+        return file
 
 def result_error_response(result: Result):
     return jsonify(error=result.title, description=result.description), result.status

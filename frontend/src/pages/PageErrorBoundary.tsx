@@ -15,7 +15,7 @@ function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
           onClick={resetErrorBoundary}
           type="button"
         >
-          טען מחדש
+          טען עמוד מחדש
         </button>
         <Link
           className="mx-3 mt-4 p-2 rounded bg-white text-dark fs-4 text-decoration-none border-0 border-none"
@@ -24,6 +24,14 @@ function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
           type="button"
         >
           לדף הבית
+        </Link>
+        <Link
+          className="mx-3 mt-4 p-2 rounded bg-white text-dark fs-4 text-decoration-none border-0 border-none"
+          onClick={window.location.reload}
+          to="/"
+          type="button"
+        >
+          טען את האפליקציה מחדש
         </Link>
       </div>
     </main>
