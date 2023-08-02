@@ -1,5 +1,6 @@
-families_filename = "נתמכים.xlsx"
-families_history_filename = "הסטוריית נתמכים.xlsx"
+system_files_folder = "system_files"
+families_filename = f"{system_files_folder}/נתמכים.xlsx"
+families_history_filename = f"{system_files_folder}/הסטוריית נתמכים.xlsx"
 
 key_prop = "שם מלא"
 street_prop = "רחוב"
@@ -23,4 +24,4 @@ default_status = False
 
 pdf_properties = family_properties[:-3]
 
-managers_filename = "managers.json"
+managers_filename = f"{system_files_folder}/managers.json"

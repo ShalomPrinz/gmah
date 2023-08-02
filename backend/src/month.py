@@ -1,14 +1,14 @@
 from glob import glob
 from os import path
 
-from src.data import key_prop, driver_prop, pdf_properties
+from src.data import key_prop, driver_prop, pdf_properties, system_files_folder
 from src.errors import FileAlreadyExists
 from src.families import search_families
 from src.managers import load_managers_file
 from src.report import load_report_file, create_empty_report, append_report
 from src.pdf import PDFBuilder, get_print_path
 
-month_reports_folder = "דוחות קבלה"
+month_reports_folder = f"{system_files_folder}/דוחות קבלה"
 month_reports_path = f"{month_reports_folder}/"
 month_reports_template = f"{month_reports_path}template.xlsx"
 

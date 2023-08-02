@@ -9,11 +9,13 @@ from reportlab.pdfbase.ttfonts import TTFont
 
 from bidi.algorithm import get_display
 
+from src.data import system_files_folder
 from src.styles import header_style, table_style, title_style, title_page_style
 from src.util import create_folders_path
 
 fonts_dir = "./src/fonts/"
-print_dir = "./הדפסות"
+print_dir_name = f"{system_files_folder}/הדפסות"
+print_dir = f"./{print_dir_name}"
 
 def get_print_path(folder, name):
     folders = f"{print_dir}/{folder}"
