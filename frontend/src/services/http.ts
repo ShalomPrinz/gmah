@@ -1,6 +1,7 @@
 import axios from "axios";
+import config from "../config";
 
-axios.defaults.baseURL = "http://localhost:5000/api";
+axios.defaults.baseURL = `${config.serverAddress}api`;
 
 const get = axios.get;
 const post = axios.post;

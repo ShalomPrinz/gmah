@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request, g, make_response, Blueprint
 from flask_cors import CORS
 from dotenv import load_dotenv
-from os import getenv
+from os import getenv, _exit
 from os.path import exists
 
 import src.managers as managers
@@ -13,14 +13,21 @@ from src.results import get_result, Result
 
 load_dotenv()
 DEVELOPMENT = getenv('DEVELOPMENT')
-is_development_mode = DEVELOPMENT == "True"
+is_development_mode = True if DEVELOPMENT else False
 
-app_port = "3000" if is_development_mode else "5000"
-app_domain = f"http://localhost:{app_port}"
+CLIENT_ADDRESS = getenv('CLIENT_ADDRESS')
+
+if not is_development_mode:
+    if CLIENT_ADDRESS is None:
+        print("CLIENT_ADDRESS is necessary in order to run this app")
+        print("CLIENT_ADDRESS should be in this format: \"x.x.x.x:port\"")
+        _exit(1)
+
+client_address = "http://localhost:3000" if is_development_mode else f"http://{CLIENT_ADDRESS}"
 
 api_blueprint = Blueprint('api', __name__, url_prefix="/api")
 app = Flask(__name__)
-cors = CORS(app, resources={r"/*": {"origins": app_domain}})
+cors = CORS(app, resources={r"/*": {"origins": client_address}})
 
 if not is_development_mode:
     def serve_file(path):
