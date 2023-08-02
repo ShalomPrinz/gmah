@@ -1,27 +1,22 @@
-import { useEffect, type ReactNode } from "react";
-import { useLocation } from "react-router-dom";
+import type { ReactNode } from "react";
 import { toast } from "react-toastify";
 
 import { HistoryProvider } from "./history";
 import { ReportProvider } from "./ReportContext";
+import { useRouteChange } from "../hooks";
 
 interface AppContextsProviderProps {
   children: ReactNode;
 }
 
 function AppContextsProvider({ children }: AppContextsProviderProps) {
-  dismissToastsOnRouteChange();
+  useRouteChange(toast.dismiss);
 
   return (
     <HistoryProvider>
       <ReportProvider>{children}</ReportProvider>
     </HistoryProvider>
   );
-}
-
-function dismissToastsOnRouteChange() {
-  const { key } = useLocation();
-  useEffect(() => toast.dismiss(), [key]);
 }
 
 export { AppContextsProvider };

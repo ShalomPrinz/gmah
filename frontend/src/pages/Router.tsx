@@ -9,13 +9,17 @@ import {
 import { Navbar } from "../components";
 import { AppContextsProvider } from "../contexts";
 
-import { Pages } from ".";
+import { AppErrorBoundary, PageErrorBoundary, Pages } from ".";
 
 const Header = () => (
-  <AppContextsProvider>
-    <Navbar />
-    <Outlet />
-  </AppContextsProvider>
+  <AppErrorBoundary>
+    <AppContextsProvider>
+      <Navbar />
+      <PageErrorBoundary>
+        <Outlet />
+      </PageErrorBoundary>
+    </AppContextsProvider>
+  </AppErrorBoundary>
 );
 
 const router = createBrowserRouter(

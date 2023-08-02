@@ -13,6 +13,9 @@ import MonthReceiptMark from "./MonthReceiptMark";
 import MonthTracker from "./MonthTracker";
 import Reports from "./Reports";
 
+import AppErrorBoundary from "./AppErrorBoundary";
+import PageErrorBoundary from "./PageErrorBoundary";
+
 const Pages = {
   AddFamily,
   AddManyFamilies,
@@ -30,4 +33,4 @@ const Pages = {
   Reports,
 };
 
-export { Pages };
+export { AppErrorBoundary, PageErrorBoundary, Pages };

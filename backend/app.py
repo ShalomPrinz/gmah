@@ -11,6 +11,8 @@ import src.report as report
 
 from src.results import get_result, Result
 
+index_filename = "index.html"
+
 load_dotenv()
 DEVELOPMENT = getenv('DEVELOPMENT')
 is_development_mode = True if DEVELOPMENT else False
@@ -33,12 +35,14 @@ if not is_development_mode:
     def serve_file(path):
         if exists(f'./static/{path}'):
             return app.send_static_file(path)
+        elif path == index_filename:
+            return "Server Error: app contents cannot be served correctly"
         else:
-            return "Serve Error: File path not found"
+            return serve_file(index_filename)
 
     @app.route('/')
     def serve_app():
-        return serve_file('index.html')
+        return serve_file(index_filename)
         
     @app.route('/<path:path>')
     def serve_static_file(path):
