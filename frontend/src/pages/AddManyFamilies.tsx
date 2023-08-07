@@ -44,39 +44,18 @@ function AddManyFamilies() {
   return (
     <>
       <div className="container text-center">
-        <Row>
-          <h2 className="mt-5 mb-3">
-            הדבק או גרור את טבלת המצטרפים החדשים לגמח
-          </h2>
-        </Row>
-        <Row>
-          <Col>
-            <p>
-              על מנת להדביק את הטבלה, הקש{" "}
-              <span className="fw-bold mx-2 fs-5">Ctrl + V</span> או{" "}
-              <button
-                className="bg-default rounded px-3 py-1 me-2"
-                onClick={parseFromClipboard}
-              >
-                לחץ כאן
-              </button>
-            </p>
-            <p>
-              <span className="fw-bold fs-5">שים לב: </span>
-              אתה צריך להעתיק את כל הטבלה, כולל את שורת הכותרות
-            </p>
-          </Col>
-          <Col>
-            <p>
-              על מנת לגרור את הטבלה, בחר אותה בוורד וגרור אותה לעמוד. בנוסף,
-              באפשרותך לגרור את הקובץ עצמו במקום לפתוח אותו ולבחור את הטבלה
-            </p>
-            <p>
-              <span className="fw-bold fs-5">שים לב: </span>
-              תוודא שהכותרות בקובץ לא השתנו והם תואמות את הכותרות הקבועות
-            </p>
-          </Col>
-        </Row>
+        <h2 className="mt-5 mb-3">הדבק או גרור את טבלת המצטרפים החדשים לגמח</h2>
+        <p>
+          על מנת להדביק את הטבלה, הקש
+          <span className="fw-bold mx-2 fs-5">Ctrl + V</span> או
+          <button
+            className="bg-default rounded px-3 py-1 me-3"
+            onClick={parseFromClipboard}
+          >
+            לחץ כאן
+          </button>
+        </p>
+        <p>בנוסף, באפשרותך לגרור את הטבלה או את הקובץ</p>
       </div>
       <main className="text-center w-100">
         <InputTable

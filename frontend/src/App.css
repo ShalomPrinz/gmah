@@ -19,20 +19,6 @@ button:disabled {
   border-color: #49d54b !important;
 }
 
-.button-style {
-  background-color: rgb(35, 141, 173);
-  border: none;
-  color: var(--default-color);
-  text-decoration: none;
-  transition: transform 0.5s;
-}
-
-.button-style:hover {
-  box-shadow: inset 0 0 0 5px black;
-  color: var(--default-color);
-  transform: scale(1.1);
-}
-
 .button-border-focus {
   border: none;
   outline: none;
@@ -103,4 +89,8 @@ button:disabled {
   text-align: center;
   vertical-align: middle;
   margin: 0 30px;
+}
+
+.transform-bigger {
+  transform: scale(1.3);
 }

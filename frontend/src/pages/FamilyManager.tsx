@@ -1,42 +1,62 @@
 import Row from "react-bootstrap/Row";
 import { Link } from "react-router-dom";
-import { ConditionalList } from "../components";
 
-interface Operation {
-  id: number;
-  description: string;
-  url: string;
-}
+import { Table } from "../components";
+import IconComponent from "../components/Icon";
 
-const operations = [
+const columns = [
   {
     id: 0,
-    description: "הוסף משפחה",
-    url: "single",
+    path: "title",
+    label: "פעולה",
   },
   {
     id: 1,
-    description: "הוסף מתוך טבלת Word",
+    path: "description",
+    label: "תיאור",
+  },
+];
+
+const operations = [
+  {
+    id: "0",
+    buttonText: "מעבר לעמוד",
+    description: "הוסף משפחה",
+    title: "הוספת משפחה אחת",
+    url: "single",
+  },
+  {
+    id: "1",
+    buttonText: "מעבר לעמוד",
+    description: "הוספת משפחות באמצעות Word או ידנית",
+    title: "הוסף מספר משפחות",
     url: "many",
   },
 ];
 
-function operationCallback({ description, url }: Operation) {
-  return (
-    <Link className="fs-1 mx-auto p-4 button-style rounded w-25" to={url}>
-      {description}
+function FamilyManager() {
+  const LastColumn = ({ item }: any) => (
+    <Link
+      className="link-decoration p-2 rounded bg-default border border-none border-0"
+      to={item.url}
+    >
+      <span className="ps-2">{item.buttonText}</span>
+      <IconComponent flipHorizontal icon="options" />
     </Link>
   );
-}
 
-function FamilyManager() {
   return (
     <main className="container text-center mx-auto">
       <Row>
-        <h1 className="my-5">ניהול וארגון משפחות</h1>
+        <h1 className="my-5">הוספת משפחות</h1>
       </Row>
-      <Row>
-        <ConditionalList itemCallback={operationCallback} list={operations} />
+      <Row className="mx-auto transform-bigger" style={{ width: "60%" }}>
+        <Table
+          columns={columns}
+          data={operations}
+          dataIdProp="id"
+          LastColumn={LastColumn}
+        />
       </Row>
     </main>
   );
