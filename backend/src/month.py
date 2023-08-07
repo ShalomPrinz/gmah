@@ -1,12 +1,12 @@
 from glob import glob
-from os import path
+from os import path, listdir
 
 from src.data import key_prop, driver_prop, pdf_properties, system_files_folder
 from src.errors import FileAlreadyExists
 from src.families import search_families
 from src.managers import load_managers_file
 from src.report import load_report_file, create_empty_report, append_report
-from src.pdf import PDFBuilder, get_print_path
+from src.pdf import PDFBuilder, get_print_path, get_print_folder_path
 
 month_reports_folder = f"{system_files_folder}/דוחות קבלה"
 month_reports_path = f"{month_reports_folder}/"
@@ -17,6 +17,7 @@ month_report_suffix = ".xlsx"
 month_reports_pattern = f"{month_reports_path}{month_report_prefix}*{month_report_suffix}"
 
 month_printable_report_name = "כל הנהגים"
+month_printable_suffix = '.pdf'
 
 # General monthly information
 
@@ -53,13 +54,26 @@ def get_reports_list():
     return [path.basename(file)[start_index:-end_index]
             for file in glob(month_reports_pattern)]
 
-def get_printable_report(report_name):
-    path = get_print_path(report_name, month_printable_report_name)
+def get_printable_report(report_name, printable_name):
+    '''
+    Returns a single printable file.
+    '''
+    filename = printable_name or month_printable_report_name
+    path = get_print_path(report_name, filename)
     try:
-        with open(f'{path}.pdf', 'rb') as printable:
+        with open(f'{path}{month_printable_suffix}', 'rb') as printable:
             return printable.read(), None
     except Exception as e:
         return None, e
+
+def get_printable_files(report_name):
+    '''
+    Returns a list of all printable files of report_name.
+    '''
+    folder_path = get_print_folder_path(report_name)
+    def without_ending(filename):
+        return filename[:-len(month_printable_suffix)]
+    return list(map(without_ending, listdir(folder_path)))
 
 # Monthly files generation
 

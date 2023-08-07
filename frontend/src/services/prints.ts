@@ -1,10 +1,19 @@
 import { get, post } from "./http";
 import { CompletionFamily } from "../modules";
 
-function getPrintableReport(reportName: string) {
+function getPrintableFiles(reportName: string) {
+  return get("/print/month/all", {
+    params: {
+      report_name: reportName,
+    },
+  });
+}
+
+function getPrintableReport(reportName: string, printable: string) {
   return get("/print/month", {
     params: {
       report_name: reportName,
+      printable,
     },
     responseType: "blob",
   });
@@ -22,4 +31,4 @@ function createCompletionPage(
   });
 }
 
-export { createCompletionPage, getPrintableReport };
+export { createCompletionPage, getPrintableFiles, getPrintableReport };

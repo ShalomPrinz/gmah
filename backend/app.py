@@ -294,15 +294,22 @@ def build_completion_page():
 @api_blueprint.route('/print/month')
 def get_month_printable_report():
     report_name = request.args.get('report_name')
+    printable = request.args.get('printable')
 
-    printable, error = month.get_printable_report(report_name)
+    printable, error = month.get_printable_report(report_name, printable)
     if error is not None:
         return error_response(error)
-    
+
     response = make_response(printable)
     response.headers['Content-Type'] = 'application/pdf'
     encoded_filename = month.month_printable_report_name.encode('utf-8')
-    response.headers['Content-Disposition'] = f'inline; filename={encoded_filename}.pdf'
+    response.headers['Content-Disposition'] = f'inline; filename={encoded_filename}{month.month_printable_suffix}'
     return response
+
+@api_blueprint.route('/print/month/all')
+def get_month_printable_files():
+    report_name = request.args.get('report_name')
+    files = month.get_printable_files(report_name)    
+    return jsonify(files=files), 200
 
 app.register_blueprint(api_blueprint)

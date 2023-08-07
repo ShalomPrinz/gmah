@@ -7,7 +7,6 @@ import { ColumnList, ConditionalList, Search } from "../components";
 import type { ListItem } from "../components";
 import { useLocationState } from "../hooks";
 import { getReportColumn } from "../services";
-import { getUnique } from "../util";
 
 interface MarkMode {
   id: string;
@@ -93,7 +92,7 @@ function QueryDisplay({
   setSelected,
 }: QueryDisplayProps) {
   const [query, setQuery] = useState("");
-  const searchResult = columnList.filter(({ title }) => title.includes(query));
+  const searchResult = columnList.filter((item) => item.includes(query));
 
   useEffect(() => setQuery(""), [markMode.id]);
 
@@ -104,18 +103,13 @@ function QueryDisplay({
         onChange={setQuery}
         placeholder={`הכנס ${markMode.property} של משפחה...`}
       />
-      <ColumnList
-        key={`list-${searchResult[0]?.title}`}
-        list={searchResult}
-        onItemSelect={setSelected}
-      />
+      <ColumnList list={searchResult} onItemSelect={setSelected} />
     </div>
   );
 }
 
 function useReportColumn(reportName: string, searchBy: string) {
   const [searchResult, setSearchResult] = useState([]);
-  const uniqueList = getUnique(searchResult).map((value) => ({ title: value }));
 
   useEffect(() => {
     getReportColumn(reportName, "", searchBy)
@@ -125,7 +119,7 @@ function useReportColumn(reportName: string, searchBy: string) {
       );
   }, [reportName, searchBy]);
 
-  return uniqueList;
+  return searchResult;
 }
 
 function useMarkMode() {

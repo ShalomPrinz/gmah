@@ -17,10 +17,14 @@ fonts_dir = "./src/fonts/"
 print_dir_name = f"{system_files_folder}/הדפסות"
 print_dir = f"./{print_dir_name}"
 
+def get_print_folder_path(folder):
+    folder_path = f"{print_dir}/{folder}"
+    create_folders_path(folder_path)
+    return folder_path
+
 def get_print_path(folder, name):
-    folders = f"{print_dir}/{folder}"
-    create_folders_path(folders)
-    return f"{folders}/{name}"
+    folder_path = get_print_folder_path(folder)
+    return f"{folder_path}/{name}"
 
 def to_hebrew(text):
     if text is None or text == "":
@@ -46,7 +50,8 @@ class PDFBuilder():
     Access it with build_single() or build_multi().
     '''
     def __init__(self, folder, filename):
-        self.filename = get_print_path(folder, filename)
+        self.filename = filename
+        self.filepath = get_print_path(folder, filename)
         self.template_id = 'basad_template'
 
         pdfmetrics.registerFont(
@@ -65,12 +70,14 @@ class PDFBuilder():
         '''
         self.elements = []
         return SimpleDocTemplate(
-            f"{self.filename}.pdf",
+            f"{self.filepath}.pdf",
             pagesize=A4,
             leftMargin=2.2 * cm,
             rightMargin=2.2 * cm,
             topMargin=1.5 * cm,
-            bottomMargin=2.5 * cm)
+            bottomMargin=2.5 * cm,
+            title=self.filename,
+            author='גמ"ח אבישי - ישיבת קרית שמונה')
 
     def finish_document(self, doc):
         '''

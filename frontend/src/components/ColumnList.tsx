@@ -1,43 +1,50 @@
-import ListGroup from "react-bootstrap/ListGroup";
-import ConditionalList from "./ConditionalList";
 import { useEffect, useState } from "react";
+import ListGroup from "react-bootstrap/ListGroup";
 
-export interface ListItem {
-  title: string;
-}
+import ConditionalList from "./ConditionalList";
+import { getUnique } from "../util";
+
+export type ListItem = string;
 
 interface ColumnListProps {
   list: ListItem[];
-  onItemSelect: (title: string) => void;
+  onItemSelect: (item: string) => void;
 }
 
 function ColumnList({ list, onItemSelect }: ColumnListProps) {
-  const [active, setActive] = useState(list[0]?.title ?? "");
+  const [active, setActive] = useState(list[0] ?? "");
 
   useEffect(() => onItemSelect(active), [active]);
 
-  const itemCallback = ({ title }: ListItem) => {
-    const activeStyle = active === title ? " active" : "";
+  const itemCallback = (item: ListItem) => {
+    const activeStyle = active === item ? " active" : "";
     return (
       <ListGroup.Item
         className={`fs-4 text-center${activeStyle}`}
         action
-        eventKey={title}
+        eventKey={item}
       >
-        {title}
+        {item}
       </ListGroup.Item>
     );
   };
 
   return (
-    <ListGroup onSelect={(title) => setActive(title ?? "")}>
-      <ConditionalList
-        list={list}
-        itemCallback={itemCallback}
-        keyProp="title"
-      />
+    <ListGroup onSelect={(item) => setActive(item ?? "")}>
+      <ConditionalList itemAsKey itemCallback={itemCallback} list={list} />
     </ListGroup>
   );
 }
 
-export default ColumnList;
+function ColumnListWrapper({ list, onItemSelect }: ColumnListProps) {
+  const uniqueList = getUnique(list);
+  return (
+    <ColumnList
+      key={`list-${uniqueList[0]}`}
+      list={uniqueList}
+      onItemSelect={onItemSelect}
+    />
+  );
+}
+
+export default ColumnListWrapper;
