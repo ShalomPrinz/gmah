@@ -24,11 +24,10 @@ def generate_report(assertTrue, families, name="שם דוח", override_name=True
 
     return load_report(name)
 
-def remove_all_files(folder_path, retain=[]):
+def remove_all_files(folder_path):
     for item in os.listdir(folder_path):
         file_path = os.path.join(folder_path, item)
-        if item not in retain:
-            os.remove(file_path)
+        os.remove(file_path)
 
 def remove_empty_folders(folder_path):
     for folder in os.listdir(folder_path):
@@ -41,8 +40,7 @@ def remove_all_reports():
     Removes all testing-purposes generated monthly reports.
     '''
     folder_path = f"{os.getcwd()}/{month_reports_folder}"
-    retain = ['template.xlsx']
-    remove_all_files(folder_path, retain)
+    remove_all_files(folder_path)
 
 def remove_all_pdfs():
     '''

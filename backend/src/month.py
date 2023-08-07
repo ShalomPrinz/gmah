@@ -10,7 +10,7 @@ from src.pdf import PDFBuilder, get_print_path, get_print_folder_path
 
 month_reports_folder = f"{system_files_folder}/דוחות קבלה"
 month_reports_path = f"{month_reports_folder}/"
-month_reports_template = f"{month_reports_path}template.xlsx"
+month_reports_template = f"{system_files_folder}/template.xlsx"
 
 month_report_prefix = "דוח קבלה "
 month_report_suffix = ".xlsx"

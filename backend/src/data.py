@@ -24,4 +24,4 @@ default_status = False
 
 pdf_properties = family_properties[:-3]
 
-managers_filename = f"{system_files_folder}/managers.json"
+managers_filename = f"{system_files_folder}/אחראי נהגים.json"
