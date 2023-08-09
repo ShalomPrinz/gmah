@@ -177,6 +177,11 @@ function NavbarWrapper() {
           name: "הסטוריה",
           url: "/families/history",
         },
+        {
+          id: 3,
+          name: "נהגים",
+          url: "/drivers",
+        },
       ],
       title: "נתמכים",
     },

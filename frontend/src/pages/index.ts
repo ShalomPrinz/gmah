@@ -1,6 +1,7 @@
 import AddFamily from "./AddFamily";
 import AddManyFamilies from "./AddManyFamilies";
 import CompletionEditor from "./CompletionEditor";
+import Drivers from "./Drivers";
 import EditFamily from "./EditFamily";
 import EditManagers from "./EditManagers";
 import Families from "./Families";
@@ -20,6 +21,7 @@ const Pages = {
   AddFamily,
   AddManyFamilies,
   CompletionEditor,
+  Drivers,
   EditFamily,
   EditManagers,
   Families,

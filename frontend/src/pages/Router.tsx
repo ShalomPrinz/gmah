@@ -38,6 +38,9 @@ const router = createBrowserRouter(
           <Route path="many" element={<Pages.AddManyFamilies />} />
         </Route>
       </Route>
+      <Route path="drivers">
+        <Route index element={<Pages.Drivers />} />
+      </Route>
       <Route path="managers">
         <Route index element={<Pages.Managers />} />
         <Route path="edit" element={<Pages.EditManagers />} />

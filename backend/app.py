@@ -8,6 +8,7 @@ import src.managers as managers
 import src.families as families
 import src.month as month
 import src.report as report
+import src.drivers as drivers
 
 from src.results import get_result, Result
 
@@ -311,5 +312,16 @@ def get_month_printable_files():
     report_name = request.args.get('report_name')
     files = month.get_printable_files(report_name)    
     return jsonify(files=files), 200
+
+@api_blueprint.route('/drivers')
+def get_drivers():
+    app_drivers = drivers.get_drivers(g.families_file)
+    return jsonify(drivers=app_drivers), 200
+
+@api_blueprint.route('/drivers/families')
+def get_driver_families():
+    driver_name = request.args.get('driver_name')
+    families = drivers.get_driver_families(g.families_file, driver_name)
+    return jsonify(families=families), 200
 
 app.register_blueprint(api_blueprint)
