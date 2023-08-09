@@ -157,6 +157,22 @@ class TestSearch(unittest.TestCase):
                 search_result = search_families(history_file, query, 'r11r')
                 self.assertEqual(expected_len, len(search_result), message)
 
+    def test_search_exact(self):
+        families = [Family({"שם מלא": "פרינץ"}), Family({"שם מלא": "פרינ"}), Family({"שם מלא": "רינ"})]
+        
+        test_cases = [
+            ("רינ",     False,  3, "Should return families that have names containing 'רינ'"),
+            ("רינ",     True,   1, "Should return families who their name is 'רינ'"),
+            ("פרינץ",   True,   1, "Should return families who their name is 'פרינץ'"),
+        ]
+
+        for query, exact, expected_len, message in test_cases:
+            with self.subTest(self.get_title(query)):
+                write_families(families=families)
+                families_file = load_families()
+                search_result = search_families(families_file, query, exact=exact)
+                self.assertEqual(expected_len, len(search_result), message)
+
 class TestFind(unittest.TestCase):
     def setUpClass():
         setUpFamilies()

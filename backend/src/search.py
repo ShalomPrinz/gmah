@@ -26,11 +26,17 @@ class ColumnSearchRequest(BaseRequest):
 class SearchRequest(BaseRequest):
     headers: List[str]
     search_by: str
+    exact: bool = False
 
 @dataclass
-class StyleSearchRequest(SearchRequest):
+class StyleSearchRequest(BaseRequest):
+    headers: List[str]
+    search_by: str
     search_style: str
     style_map: Dict[str, Any]
+
+def is_match(request, value):
+    return request.query == value if request.exact else request.query in value
 
 def search(request: SearchRequest):
     searching_by_phone = bool('PHONE' in request.search_enum.__members__ and
@@ -48,7 +54,7 @@ def search(request: SearchRequest):
                 continue # Don't insert no value cell into search result
             if searching_by_phone:
                 cell_value = without_hyphen(cell_value)
-            if request.query in cell_value:
+            if is_match(request, cell_value):
                 matching_rows.append({
                     request.headers[index]: cell.value for index, cell in enumerate(row)
                 })

@@ -54,7 +54,6 @@ const AppForm = ({
     handleSubmit(
       (data) => {
         const trimmedData = trimObject(data);
-        console.log("trimmed", trimmedData);
         onSubmit(trimmedData).then((submitSucceed) => {
           if (submitSucceed) reset(emptyValues);
         });

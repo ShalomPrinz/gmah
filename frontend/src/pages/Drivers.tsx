@@ -17,7 +17,7 @@ function Drivers() {
   const families = useDriverFamilies(selectedDriver);
 
   function familyCallback(family: Family) {
-    return <>{family[familyIdProp]}</>;
+    return <h5>{family[familyIdProp]}</h5>;
   }
 
   return (
@@ -32,7 +32,7 @@ function Drivers() {
             />
           </Col>
           <Col>
-            <h2 className="fw-bold">{selectedDriver}</h2>
+            <h2 className="fw-bold mb-4">{selectedDriver}</h2>
             <ConditionalList
               itemCallback={familyCallback}
               list={families}
@@ -88,7 +88,7 @@ function useDriverFamilies(driverName: string) {
           error
         )
       );
-  }, []);
+  }, [driverName]);
 
   return families;
 }

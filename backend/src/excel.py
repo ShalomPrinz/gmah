@@ -55,13 +55,14 @@ class Excel:
         else:
             raise FamilyNotFoundError(f"המשפחה {row_key} לא נמצאת")
 
-    def search(self, query, search_by=''):
+    def search(self, query, search_by='', exact=False):
         request = SearchRequest(
             rows_iter=self.get_rows_iter(),
             headers=self.get_headers(),
             query=query,
             search_by=search_by,
             search_enum=self.search_enum,
+            exact=exact
         )
 
         return search(request)

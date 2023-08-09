@@ -114,15 +114,16 @@ def get_count(families_file: Excel):
     '''
     return families_file.get_rows_num() - 1
 
-def search_families(families_file: Excel, query='', search_by=''):
+def search_families(families_file: Excel, query='', search_by='', exact=False):
     '''
     Returns list of families who their value of the search_by cell
     matches the given query
     '''
     query = '' if query is None else query
     search_by = '' if search_by is None else search_by
+    exact = False if exact is None else exact
 
-    return families_file.search(query, search_by)
+    return families_file.search(query, search_by, exact)
 
 def format_phone(family, attr_name):
     '''
