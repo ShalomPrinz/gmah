@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
+import { toast } from "react-toastify";
 
 import {
   ColumnList,
@@ -9,12 +10,20 @@ import {
   Search,
 } from "../components";
 import { type Family, familyIdProp } from "../modules";
-import { getDriverFamilies, getDrivers } from "../services";
+import { getDriverFamilies, getDrivers, updateDriverName } from "../services";
 
 function Drivers() {
   const drivers = useDrivers();
   const [selectedDriver, setSelectedDriver] = useState("");
   const families = useDriverFamilies(selectedDriver);
+
+  function onDriverSubmit(originalName: string, newName: string) {
+    updateDriverName(originalName, newName)
+      .then(() =>
+        toast.success(`שינית את שם הנהג ${originalName} ל${newName} בהצלחה`)
+      )
+      .catch(() => toast.error("קרתה שגיאה לא צפויה"));
+  }
 
   function familyCallback(family: Family) {
     return <h5>{family[familyIdProp]}</h5>;
@@ -32,7 +41,11 @@ function Drivers() {
             />
           </Col>
           <Col>
-            <h2 className="fw-bold mb-4">{selectedDriver}</h2>
+            <DriverInput
+              defaultName={selectedDriver}
+              key={selectedDriver}
+              onSubmit={onDriverSubmit}
+            />
             <ConditionalList
               itemCallback={familyCallback}
               list={families}
@@ -59,6 +72,34 @@ function QueryDisplay({ columnList, setSelected }: QueryDisplayProps) {
       <Search onChange={setQuery} placeholder="הכנס נהג של משפחה..." />
       <ColumnList list={searchResult} onItemSelect={setSelected} />
     </div>
+  );
+}
+
+interface DriverInputProps {
+  defaultName: string;
+  onSubmit: (originalName: string, newName: string) => void;
+}
+
+function DriverInput({ defaultName, onSubmit }: DriverInputProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  return (
+    <>
+      <input
+        className="fs-2 w-50 ms-5 mb-4 text-center form-text-input border border-3 border-primary"
+        defaultValue={defaultName}
+        ref={inputRef}
+        title="שם הנהג"
+        type="text"
+      />
+      <button
+        className="bg-default rounded p-3 fs-4"
+        onClick={() => onSubmit(defaultName, inputRef.current?.value ?? "")}
+        type="button"
+      >
+        עדכון
+      </button>
+    </>
   );
 }
 

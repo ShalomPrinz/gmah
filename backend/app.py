@@ -324,4 +324,14 @@ def get_driver_families():
     families = drivers.get_driver_families(g.families_file, driver_name)
     return jsonify(families=families), 200
 
+@api_blueprint.route('/drivers/update', methods=["PUT"])
+def update_driver_name():
+    original = request.json['original']
+    updated = request.json['updated']
+    result = drivers.update_driver_name(g.families_file, original, updated)
+
+    if result.status != 200:
+        return result_error_response(result)
+    return jsonify(), 200
+
 app.register_blueprint(api_blueprint)

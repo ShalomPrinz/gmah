@@ -42,3 +42,10 @@ receipt_update_results = {
     "MISSING_DATE":     Result(400, "Missing Date", "לא ניתן לשנות סטטוס קבלה ללא תאריך"),
     "DATE_MALFORMED":   Result(400, "Date Malformed", "התאריך של סטטוס הקבלה צריך להיות בפורמט ספציפי. דוגמא: 2023-12-30")
 }
+
+driver_update_results = {
+    "DRIVER_UPDATED":   Result(200, "Driver Updated", "שם הנהג עודכן בהצלחה"),
+    "MISSING_DRIVER":   Result(400, "Missing Driver", "לא ניתן לשנות שם נהג ללא שם"),
+    "NO_SUCH_DRIVER":   Result(404, "Driver not found", "הנהג לא נמצא"),
+    "TOO_SHORT_DRIVER": Result(400, "Too Short Driver", "שם הנהג חייב להיות בעל שתי אותיות לפחות") 
+}

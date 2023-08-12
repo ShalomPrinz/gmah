@@ -1,4 +1,4 @@
-import { get } from "./http";
+import { get, put } from "./http";
 
 async function getDrivers() {
   return get("drivers");
@@ -12,4 +12,11 @@ async function getDriverFamilies(driverName: string) {
   });
 }
 
-export { getDriverFamilies, getDrivers };
+async function updateDriverName(originalName: string, newName: string) {
+  return put("drivers/update", {
+    original: originalName,
+    updated: newName,
+  });
+}
+
+export { getDriverFamilies, getDrivers, updateDriverName };
