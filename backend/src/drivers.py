@@ -1,14 +1,16 @@
 from src.data import driver_prop, key_prop
 from src.excel import Excel
 from src.results import driver_update_results
+from src.util import unique_list
 
 DRIVER_NAME_MIN_LENGTH = 2
 
 def get_drivers(families_file: Excel):
     '''
-    Returns all drivers in the families file.
+    Returns all unique drivers in the families file.
     '''
-    return families_file.column_search("", 'driver')
+    all_drivers = families_file.column_search("", 'driver')
+    return unique_list(all_drivers)
 
 def get_driver_families(families_file: Excel, driver_name):
     '''

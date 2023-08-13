@@ -28,3 +28,6 @@ def create_folders_path(folders):
         makedirs(folders, 0o777)
     finally:
         umask(original_umask)
+
+def unique_list(lst):
+    return list(dict.fromkeys(lst))
