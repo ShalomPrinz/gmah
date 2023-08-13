@@ -328,7 +328,7 @@ def get_driver_families():
 def update_driver_name():
     original = request.json['original']
     updated = request.json['updated']
-    result = drivers.update_driver_name(g.families_file, original, updated)
+    result = drivers.update_driver_name(g.families_file, g.managers_file, original, updated)
 
     if result.status != 200:
         return result_error_response(result)

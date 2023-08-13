@@ -1,9 +1,11 @@
 import unittest
 
 from src.drivers import get_drivers, get_driver_families, update_driver_name, unique_list
+from src.managers import get_managers
 from src.results import driver_update_results
 
 from tests.families_util import setUpFamilies, tearDownFamilies, write_families, Family, load_families
+from tests.managers_util import setUpManagers, tearDownManagers, write_managers
 from tests.tests_util import generate_random_name
 
 class TestDriverInfo(unittest.TestCase):
@@ -54,14 +56,17 @@ class TestDriverInfo(unittest.TestCase):
 class TestUpdateDriver(unittest.TestCase):
     def setUpClass():
         setUpFamilies()
+        setUpManagers()
 
     def tearDownClass():
         tearDownFamilies()
+        tearDownManagers()
 
     def test_update_driver_name_not_exists(self):
         write_families([Family({"שם מלא": "שלום", "נהג": "פלוני"})])
         families_file = load_families()
-        result = update_driver_name(families_file, "not-exists-driver", "שם חדש")
+        managers_file = write_managers([])
+        result = update_driver_name(families_file, managers_file, "not-exists-driver", "שם חדש")
         self.assertEqual(result, driver_update_results["NO_SUCH_DRIVER"], "Should not update driver if given name is not a driver name")
 
     def test_update_driver_name(self):
@@ -82,10 +87,40 @@ class TestUpdateDriver(unittest.TestCase):
             with self.subTest(f"Driver name: {driver_name}"):
                 write_families(families)
                 families_file = load_families()
-                result = update_driver_name(families_file, original_name, driver_name)
+                managers_file = write_managers([])
+                result = update_driver_name(families_file, managers_file, original_name, driver_name)
                 self.assertEqual(result, expected_result, message)
 
                 new_name_families = len(get_driver_families(families_file, driver_name))
                 self.assertEqual(new_name_families, expected_new_count, message)
                 original_families = len(get_driver_families(families_file, original_name))
                 self.assertEqual(original_families, expected_original_count, message)
+    
+    def test_update_driver_name_managers_file(self):
+        original_name = "נחום"
+        families = [Family({"שם מלא": "שלום", "נהג": original_name}),
+                    Family({"שם מלא": "פרינץ", "נהג": original_name})]
+        managers = [{ "id": "0", "name": "manager", "drivers": [
+            { "name": original_name, "phone": "052-5381648" },
+        ]}]
+
+        test_cases = [
+            (None,          False, "Should not update driver if given name is None"),
+            ("",            False, "Should not update driver if given name is empty string"),
+            ("א",           False, "Should not update driver if given name is too short"),
+            ("חיה",         True, "Should update driver if given name is a valid string"),
+            (original_name, False, "Should keep same driver if given name is the original"),
+        ]
+
+        for driver_name, should_update_name, message in test_cases:
+            with self.subTest(f"Driver name: {driver_name}"):
+                write_families(families)
+                families_file = load_families()
+                managers_file = write_managers(managers)
+                update_driver_name(families_file, managers_file, original_name, driver_name)
+                new_managers = get_managers(managers_file)
+                
+                if should_update_name:
+                    self.assertNotEqual(managers, new_managers, message)
+                else:
+                    self.assertEqual(managers, new_managers, message)

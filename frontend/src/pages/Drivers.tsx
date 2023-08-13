@@ -13,15 +13,23 @@ import { type Family, familyIdProp } from "../modules";
 import { getDriverFamilies, getDrivers, updateDriverName } from "../services";
 
 function Drivers() {
-  const drivers = useDrivers();
+  const { drivers, driversChanged } = useDrivers();
   const [selectedDriver, setSelectedDriver] = useState("");
   const families = useDriverFamilies(selectedDriver);
 
   function onDriverSubmit(originalName: string, newName: string) {
     updateDriverName(originalName, newName)
-      .then(() =>
-        toast.success(`שינית את שם הנהג ${originalName} ל${newName} בהצלחה`)
-      )
+      .then(() => {
+        const toastId = `${originalName}${newName}`;
+        toast.success(`שינית את שם הנהג ${originalName} ל${newName} בהצלחה`, {
+          toastId: `${toastId}-success`,
+        });
+        toast.info(
+          "שים לב שמספר הטלפון של הנהג לא השתנה, באפשרותך לשנות אותו בעמוד של אחראי הנהגים",
+          { toastId: `${toastId}-info` }
+        );
+        driversChanged();
+      })
       .catch(() => toast.error("קרתה שגיאה לא צפויה"));
   }
 
@@ -104,6 +112,7 @@ function DriverInput({ defaultName, onSubmit }: DriverInputProps) {
 }
 
 function useDrivers() {
+  const [reloadKey, setReloadKey] = useState(0);
   const [drivers, setDrivers] = useState([]);
 
   useEffect(() => {
@@ -112,9 +121,13 @@ function useDrivers() {
       .catch((error) =>
         console.error("Error occurred while trying to get all drivers", error)
       );
-  }, []);
+  }, [reloadKey]);
 
-  return drivers;
+  function driversChanged() {
+    setReloadKey((prev) => prev + 1);
+  }
+
+  return { drivers, driversChanged };
 }
 
 function useDriverFamilies(driverName: string) {
