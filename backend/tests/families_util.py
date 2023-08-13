@@ -47,15 +47,19 @@ def write_excel_data(families, filename):
 
 def write_families(families):
     write_excel_data(families, families_filename)
+    return load_families()
 
 def empty_families():
     write_excel_data([], families_filename)
+    return load_families()
 
 def write_history_families(families):
     write_excel_data(families, families_history_filename)
+    return load_families_history()
 
 def empty_families_history():
     write_excel_data([], families_history_filename)
+    return load_families_history()
 
 def load_families():
     error, families_file = load_families_file()
@@ -70,9 +74,6 @@ def load_families_history():
         raise Exception("Couldn't load families history file", error)
     else:
         return history_file
-
-def load_both_families_files():
-    return load_families(), load_families_history()
 
 def setUpFamilies():
     store_file(families_filename, temp_families_filename)

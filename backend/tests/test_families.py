@@ -5,7 +5,7 @@ from src.results import add_results, add_many_results, add_many_error
 from src.errors import FamilyNotFoundError
 from src.search import find, FindRequest
 
-from tests.families_util import Family, HistoryFamily, load_families, load_families_history, load_both_families_files, write_families, write_history_families, empty_families, empty_families_history, setUpFamilies, tearDownFamilies
+from tests.families_util import Family, HistoryFamily, write_families, write_history_families, empty_families, empty_families_history, setUpFamilies, tearDownFamilies
 
 class TestSearch(unittest.TestCase):
     def setUpClass():
@@ -31,8 +31,7 @@ class TestSearch(unittest.TestCase):
 
         for query, expected_len, message in test_cases:
             with self.subTest(self.get_title(query)):
-                write_families(families=families)
-                families_file = load_families()
+                families_file = write_families(families=families)
                 search_result = search_families(families_file, query)
                 self.assertEqual(expected_len, len(search_result), message)
     
@@ -52,8 +51,7 @@ class TestSearch(unittest.TestCase):
 
         for query, expected_len, message in test_cases:
             with self.subTest(self.get_title(query)):
-                write_families(families=families)
-                families_file = load_families()
+                families_file = write_families(families=families)
                 search_result = search_families(families_file, query, 'street')
                 self.assertEqual(expected_len, len(search_result), message)
 
@@ -75,8 +73,7 @@ class TestSearch(unittest.TestCase):
 
         for query, expected_len, message in test_cases:
             with self.subTest(self.get_title(query)):
-                write_families(families=families)
-                families_file = load_families()
+                families_file = write_families(families=families)
                 search_result = search_families(families_file, query, 'phone')
                 self.assertEqual(expected_len, len(search_result), message)
 
@@ -96,8 +93,7 @@ class TestSearch(unittest.TestCase):
 
         for query, expected_len, message in test_cases:
             with self.subTest(self.get_title(query)):
-                write_families(families=families)
-                families_file = load_families()
+                families_file = write_families(families=families)
                 search_result = search_families(families_file, query, 'driver')
                 self.assertEqual(expected_len, len(search_result), message)
 
@@ -112,8 +108,7 @@ class TestSearch(unittest.TestCase):
 
         for query, expected_len, message in test_cases:
             with self.subTest(self.get_title(query)):
-                write_families(families=families)
-                families_file = load_families()
+                families_file = write_families(families=families)
                 search_result = search_families(families_file, query, 'street')
                 self.assertEqual(expected_len, len(search_result), message)
 
@@ -131,8 +126,7 @@ class TestSearch(unittest.TestCase):
 
         for query, search_by, expected_len, message in test_cases:
             with self.subTest(self.get_title(query)):
-                write_families(families=families)
-                families_file = load_families()
+                families_file = write_families(families=families)
                 search_result = search_families(families_file, query, search_by)
                 self.assertEqual(expected_len, len(search_result), message)
 
@@ -152,8 +146,7 @@ class TestSearch(unittest.TestCase):
 
         for query, expected_len, message in test_cases:
             with self.subTest(self.get_title(query)):
-                write_history_families(families=families)
-                history_file = load_families_history()
+                history_file = write_history_families(families=families)
                 search_result = search_families(history_file, query, 'r11r')
                 self.assertEqual(expected_len, len(search_result), message)
 
@@ -168,8 +161,7 @@ class TestSearch(unittest.TestCase):
 
         for query, exact, expected_len, message in test_cases:
             with self.subTest(self.get_title(query)):
-                write_families(families=families)
-                families_file = load_families()
+                families_file = write_families(families=families)
                 search_result = search_families(families_file, query, exact=exact)
                 self.assertEqual(expected_len, len(search_result), message)
 
@@ -193,8 +185,7 @@ class TestFind(unittest.TestCase):
 
         for query, expected_index, message in test_cases:
             with self.subTest(f"query: {query}"):
-                write_families(families=families)
-                families_file = load_families()
+                families_file = write_families(families=families)
 
                 request = FindRequest(
                     rows_iter=families_file.get_rows_iter(),
@@ -215,8 +206,7 @@ class TestDataManagement(unittest.TestCase):
     def test_get_families_num(self):
         expected_count = 10
         families = [Family({"שם מלא": f"משפחה מס' {i}"}) for i in range(expected_count)]
-        write_families(families)
-        families_file = load_families()
+        families_file = write_families(families)
         self.assertEqual(expected_count, get_count(families_file), "Should return correct number of families")
 
     def test_add_family(self):
@@ -237,8 +227,7 @@ class TestDataManagement(unittest.TestCase):
 
         for family, expected_result, message in test_cases:
             with self.subTest(expected_result.title):
-                write_families(families=exist_families)
-                families_file = load_families()
+                families_file = write_families(families=exist_families)
                 result = add_family(families_file, family)
                 self.assertEqual(expected_result, result, message)
 
@@ -256,17 +245,15 @@ class TestDataManagement(unittest.TestCase):
 
         for families, expected_result, message in test_cases:
             with self.subTest(expected_result.title):
-                write_families(families=exist_families)
-                families_file = load_families()
+                families_file = write_families(families=exist_families)
                 result = add_families(families_file, families)
                 self.assertEqual(expected_result, result, message)
 
     def test_add_families_before_error(self):
         family = {"שם מלא": "שלום פרינץ"}
         exist_families = [Family(family)]
-        write_families(families=exist_families)
+        families_file = write_families(families=exist_families)
         
-        families_file = load_families()
         families = [{"שם מלא": "דוד חיים"}, {"שם מלא": "משפוחה"}, {"שם מלא": "שלום פרינץ"}]
         result = add_families(families_file, families)
         
@@ -291,8 +278,7 @@ class TestDataManagement(unittest.TestCase):
 
         for title, original_name, family_data, expected_result in test_cases:
             with self.subTest(title=title):
-                write_families(families=exist_families)
-                families_file = load_families()
+                families_file = write_families(families=exist_families)
                 result = update_family(families_file, original_name, family_data)
                 if expected_result is None:
                     self.assertIs(result, None, "Should return None if successful")
@@ -318,16 +304,15 @@ class TestFamiliesHistory(unittest.TestCase):
 
         for family, expected_families_count, expected_history_count, message in test_cases:
             with self.subTest(f"{family}: {expected_families_count}"):
-                write_families(families=families)
-                empty_families_history()
+                families_file = write_families(families=families)
+                history_file = empty_families_history()
 
-                families_file, history_file = load_both_families_files()
                 error = remove_family(families_file, history_file, family, "", "")
                 if expected_families_count == 1:
                     self.assertIsInstance(error, Exception, message)
                 elif expected_families_count == 0:
                     self.assertIsNone(error, message)
-                
+
                 actual_families_count = get_count(families_file)
                 actual_history_count = get_count(history_file)
                 self.assertEqual(expected_families_count, actual_families_count, message)
@@ -345,10 +330,9 @@ class TestFamiliesHistory(unittest.TestCase):
 
         for family, expected_families_count, expected_history_count, message in test_cases:
             with self.subTest(f"{family}: {expected_history_count}"):
-                write_history_families(history_families)
-                empty_families()
+                history_file = write_history_families(history_families)
+                families_file = empty_families()
 
-                families_file, history_file = load_both_families_files()
                 error = restore_family(families_file, history_file, family)
                 if expected_history_count == 1:
                     self.assertIsInstance(error, Exception, message)

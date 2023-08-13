@@ -2,7 +2,7 @@ import os
 
 from src.month import generate_month_files, load_month_report, month_reports_folder
 from src.pdf import print_dir_name
-from tests.families_util import load_families, write_families
+from tests.families_util import write_families
 
 def load_report(name):
     error, report_file = load_month_report(name)
@@ -16,9 +16,8 @@ def generate_report(assertTrue, families, name="שם דוח", override_name=True
     Generates monthly report out of given families.
     Returns report path.
     '''
-    write_families(families)
+    families_file = write_families(families)
 
-    families_file = load_families()
     error = generate_month_files(families_file, name, override_name)
     assertTrue(error is None, "Failed generating month report")
 
