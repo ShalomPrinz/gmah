@@ -5,8 +5,9 @@ from re import match
 from src.data import report_properties, key_prop, street_prop, driver_prop, date_prop, status_prop, date_pattern, default_date, default_status
 from src.errors import FamilyNotFoundError
 from src.excel import Excel
-from src.families import load_families_file, search_families
-from src.managers import find_manager, load_managers_file
+from src.families import search_families
+from src.json import Json
+from src.managers import find_manager
 from src.results import receipt_update_results
 from src.styles import report_cell_style, report_received_style, report_not_received_style, report_received_name, report_not_received_name, style_name
 
@@ -73,18 +74,10 @@ def load_report_file(path):
 
 # Report preparation and validation
 
-def get_no_manager_drivers():
+def get_no_manager_drivers(families_file: Excel, managers_file: Json):
     '''
     Returns all the drivers from families file that have no corresponding manager in managers file.
     '''
-    error, families_file = load_families_file()
-    if error is not None:
-        return error, None
-
-    error, managers_file = load_managers_file()
-    if error is not None:
-        return error, None
-
     no_manager_drivers = []
 
     for family in search_families(families_file):
@@ -104,14 +97,10 @@ def get_no_manager_drivers():
 
     return None, no_manager_drivers
 
-def get_no_driver_families():
+def get_no_driver_families(families_file: Excel):
     '''
     Returns all the families from families file that doesn't have a driver.
     '''
-    error, families_file = load_families_file()
-    if error is not None:
-        return error, None
-
     no_driver_families = 0
 
     for family in search_families(families_file):

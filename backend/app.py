@@ -166,11 +166,11 @@ def add_manager():
 
 @api_blueprint.route('/validate/drivers')
 def validate_drivers():
-    error, no_manager_drivers = report.get_no_manager_drivers()
+    error, no_manager_drivers = report.get_no_manager_drivers(g.families_file, g.managers_file)
     if error is not None:
         return error_response(error)
 
-    error, no_driver_families = report.get_no_driver_families()
+    error, no_driver_families = report.get_no_driver_families(g.families_file)
     if error is not None:
         return error_response(error)
 

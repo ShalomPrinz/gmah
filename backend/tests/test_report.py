@@ -31,8 +31,8 @@ class TestReportValidation(unittest.TestCase):
         for drivers, expected_count, message in test_cases:
             with self.subTest(f"drivers: {drivers}"):
                 families = [Family({"שם מלא": "פרינץ", "נהג": driver_name}) for driver_name in drivers]
-                write_families(families=families)
-                error, no_driver_families = get_no_driver_families()
+                families_file = write_families(families=families)
+                error, no_driver_families = get_no_driver_families(families_file)
                 self.assertTrue(error is None, "Failed getting no driver families")
                 self.assertEqual(expected_count, no_driver_families, message)
     
@@ -41,9 +41,9 @@ class TestReportValidation(unittest.TestCase):
 
         for name in special_names:
             families = [Family({"שם מלא": name})]
-            write_families(families=families)
+            families_file = write_families(families=families)
 
-            error, no_driver_families = get_no_driver_families()
+            error, no_driver_families = get_no_driver_families(families_file)
             self.assertTrue(error is None, "Failed getting no driver families")
             self.assertEqual(0, no_driver_families, "Should not count any of 'special_names' (family names) as a non-driver family")
 
@@ -52,7 +52,7 @@ class TestReportValidation(unittest.TestCase):
             { "name": "פלוני", "phone": "000-0000000"},
             {"name": "אלמוני", "phone": "111-1111111"}
         ]}]
-        write_managers(managers)
+        managers_file = write_managers(managers)
 
         test_cases = [
             ([None],     0, "Should not count 'None' as a non-manager driver"),
@@ -65,8 +65,8 @@ class TestReportValidation(unittest.TestCase):
         for drivers, expected_count, message in test_cases:
             with self.subTest(f"drivers: {drivers}"):
                 families = [Family({"שם מלא": "פרינץ", "נהג": driver_name}) for driver_name in drivers]
-                write_families(families=families)
-                error, no_manager_drivers = get_no_manager_drivers()
+                families_file = write_families(families=families)
+                error, no_manager_drivers = get_no_manager_drivers(families_file, managers_file)
                 self.assertTrue(error is None, "Failed getting no manager drivers")
                 self.assertEqual(expected_count, len(no_manager_drivers), message)
 
@@ -74,13 +74,13 @@ class TestReportValidation(unittest.TestCase):
         managers = [{ "id": 0, "name": "אחראי", "drivers": [
             { "name": "אלמוני", "phone": "000-0000000"},
         ]}]
-        write_managers(managers)
+        managers_file = write_managers(managers)
 
         drivers = ["פלוני", "פלוני", "נהג אחר", "פלוני", "אלמוני"]
         families = [Family({"שם מלא": "פרינץ", "נהג": driver_name}) for driver_name in drivers]
-        write_families(families=families)
+        families_file = write_families(families=families)
 
-        error, no_manager_drivers = get_no_manager_drivers()
+        error, no_manager_drivers = get_no_manager_drivers(families_file, managers_file)
         self.assertTrue(error is None, "Failed getting no manager drivers")
         self.assertIn({ "name": "פלוני", "count": 3}, no_manager_drivers, "Should return a driver occurrences count")
         self.assertIn({ "name": "נהג אחר", "count": 1}, no_manager_drivers, "Should return a driver occurrences count")
