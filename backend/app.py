@@ -334,4 +334,9 @@ def update_driver_name():
         return result_error_response(result)
     return jsonify(), 200
 
+@api_blueprint.route('/drivers/driverless')
+def get_driverless_families():
+    families = drivers.get_driverless_families(g.families_file)
+    return jsonify(families=families), 200
+
 app.register_blueprint(api_blueprint)

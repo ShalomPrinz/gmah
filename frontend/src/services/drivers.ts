@@ -12,6 +12,10 @@ async function getDriverFamilies(driverName: string) {
   });
 }
 
+async function getDriverlessFamilies() {
+  return get("drivers/driverless");
+}
+
 async function updateDriverName(originalName: string, newName: string) {
   return put("drivers/update", {
     original: originalName,
@@ -19,4 +23,9 @@ async function updateDriverName(originalName: string, newName: string) {
   });
 }
 
-export { getDriverFamilies, getDrivers, updateDriverName };
+export {
+  getDriverFamilies,
+  getDriverlessFamilies,
+  getDrivers,
+  updateDriverName,
+};

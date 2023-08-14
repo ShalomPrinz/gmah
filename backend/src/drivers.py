@@ -20,6 +20,12 @@ def get_driver_families(families_file: Excel, driver_name):
     '''
     return families_file.search(driver_name, 'driver', exact=True)
 
+def get_driverless_families(families_file: Excel):
+    '''
+    Returns all families without driver in the given families_file.
+    '''
+    return families_file.search('', 'driver', empty=True)
+
 def update_manager_driver(managers_file: Json, original, updated):
     '''
     Updates a driver name from 'original' to 'updated' in the given managers_file.

@@ -10,12 +10,18 @@ import {
   Search,
 } from "../components";
 import { type Family, familyIdProp } from "../modules";
-import { getDriverFamilies, getDrivers, updateDriverName } from "../services";
+import {
+  getDriverFamilies,
+  getDriverlessFamilies,
+  getDrivers,
+  updateDriverName,
+} from "../services";
 
 function Drivers() {
   const { drivers, driversChanged } = useDrivers();
   const [selectedDriver, setSelectedDriver] = useState("");
   const families = useDriverFamilies(selectedDriver);
+  const driverlessFamilies = useDriverlessFamilies();
 
   function onDriverSubmit(originalName: string, newName: string) {
     updateDriverName(originalName, newName)
@@ -42,13 +48,13 @@ function Drivers() {
       <h1 className="my-5 text-center">נהגים</h1>
       <main className="container">
         <Row>
-          <Col>
+          <Col sm="4">
             <QueryDisplay
               columnList={drivers}
               setSelected={setSelectedDriver}
             />
           </Col>
-          <Col>
+          <Col sm="5">
             <DriverInput
               defaultName={selectedDriver}
               key={selectedDriver}
@@ -59,6 +65,17 @@ function Drivers() {
               list={families}
               keyProp={familyIdProp}
             />
+          </Col>
+          <Col sm="3">
+            {driverlessFamilies.length > 0 ? (
+              <ConditionalList
+                itemCallback={familyCallback}
+                list={driverlessFamilies}
+                keyProp={familyIdProp}
+              />
+            ) : (
+              <h3 className="fw-light mt-4">- אין משפחות ללא נהג -</h3>
+            )}
           </Col>
         </Row>
       </main>
@@ -77,7 +94,7 @@ function QueryDisplay({ columnList, setSelected }: QueryDisplayProps) {
 
   return (
     <div className="mx-5">
-      <Search onChange={setQuery} placeholder="הכנס נהג של משפחה..." />
+      <Search onChange={setQuery} placeholder="הכנס נהג..." />
       <ColumnList list={searchResult} onItemSelect={setSelected} />
     </div>
   );
@@ -143,6 +160,23 @@ function useDriverFamilies(driverName: string) {
         )
       );
   }, [driverName]);
+
+  return families;
+}
+
+function useDriverlessFamilies() {
+  const [families, setFamilies] = useState([]);
+
+  useEffect(() => {
+    getDriverlessFamilies()
+      .then((res) => setFamilies(res.data.families))
+      .catch((error) =>
+        console.error(
+          "Error occurred while trying to get driverless families",
+          error
+        )
+      );
+  });
 
   return families;
 }

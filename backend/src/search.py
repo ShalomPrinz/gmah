@@ -26,6 +26,7 @@ class ColumnSearchRequest(BaseRequest):
 class SearchRequest(BaseRequest):
     headers: List[str]
     search_by: str
+    empty_search: bool = False
     exact: bool = False
 
 @dataclass
@@ -47,17 +48,25 @@ def search(request: SearchRequest):
     search_columns = request.search_enum.get_search_columns(request.search_by)
 
     matching_rows = []
+    def append_matching_row(row):
+        matching_rows.append({
+            request.headers[index]: cell.value for index, cell in enumerate(row)
+        })
+
     for row in request.rows_iter:
         for column in search_columns:
             cell_value = row[column].value
+            if request.empty_search:
+                if not cell_value:
+                    append_matching_row(row)
+                continue
+
             if cell_value is None:
                 continue # Don't insert no value cell into search result
             if searching_by_phone:
                 cell_value = without_hyphen(cell_value)
             if is_match(request, cell_value):
-                matching_rows.append({
-                    request.headers[index]: cell.value for index, cell in enumerate(row)
-                })
+                append_matching_row(row)
                 break # Row added to matching_rows, skip to next row
     return matching_rows
 

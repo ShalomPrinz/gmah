@@ -1,6 +1,6 @@
 import unittest
 
-from src.drivers import get_drivers, get_driver_families, update_driver_name, unique_list
+from src.drivers import get_drivers, get_driver_families, get_driverless_families, update_driver_name, unique_list
 from src.managers import get_managers
 from src.results import driver_update_results
 
@@ -51,6 +51,19 @@ class TestDriverInfo(unittest.TestCase):
             with self.subTest(f"Driver name: {driver}"):
                 families = get_driver_families(families_file, driver)
                 self.assertEqual(len(families), expected_families_count, message)
+
+    def test_get_driverless_families(self):
+        test_cases = [
+            (None,      1, "Should count family who has None driver"),
+            ("",        1, "Should count family who has empty string driver"),
+            ("חיים",    0, "Should not count family who has driver set"),
+        ]
+
+        for driver_name, expected_driverless, message in test_cases:
+            with self.subTest(f"Driver name: {driver_name}"):
+                families_file = write_families([Family({"שם מלא": "שלום", "נהג": driver_name}, defaultValues=False)])
+                driverless_families = get_driverless_families(families_file)
+                self.assertEqual(len(driverless_families), expected_driverless, message)
 
 class TestUpdateDriver(unittest.TestCase):
     def setUpClass():

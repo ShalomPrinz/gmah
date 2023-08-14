@@ -29,8 +29,10 @@ defauly_history_properties.update({
 })
 
 class Family:
-    def __init__(self, family):
-        self.excel_row = [family.get(key, default_family_properties.get(key, None)) for key in family_properties]
+    def __init__(self, family, defaultValues=True):
+        self.excel_row = [family.get(key,
+            default_family_properties.get(key, None) if defaultValues else None)
+            for key in family_properties]
 
 class HistoryFamily:
     def __init__(self, family):

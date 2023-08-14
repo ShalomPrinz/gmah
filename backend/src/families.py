@@ -123,7 +123,7 @@ def search_families(families_file: Excel, query='', search_by='', exact=False):
     search_by = '' if search_by is None else search_by
     exact = False if exact is None else exact
 
-    return families_file.search(query, search_by, exact)
+    return families_file.search(query, search_by, exact=exact)
 
 def format_phone(family, attr_name):
     '''
