@@ -50,7 +50,7 @@ def search(request: SearchRequest):
     matching_rows = []
     def append_matching_row(row):
         matching_rows.append({
-            request.headers[index]: cell.value for index, cell in enumerate(row)
+            request.headers[index]: cell.value for index, cell in enumerate(row) if index < len(request.headers)
         })
 
     for row in request.rows_iter:

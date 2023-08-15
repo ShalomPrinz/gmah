@@ -37,7 +37,8 @@ class Excel:
         return self.worksheet.max_row
 
     def get_headers(self):
-        return [cell.value for cell in next(self.worksheet.rows)]
+        headers = [cell.value for cell in next(self.worksheet.rows)]
+        return list(filter(lambda s: s, headers)) # filter None values
 
     def get_rows_iter(self):
         return self.worksheet.iter_rows(min_row=self.first_content_row)

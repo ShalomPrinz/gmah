@@ -9,3 +9,4 @@ htmlcov/
 tests
 test.sh
 format.sh
+system_files/
