@@ -27,7 +27,8 @@ class TestDriverInfo(unittest.TestCase):
             with self.subTest(f"Drivers: {drivers}"):
                 families = [Family({"שם מלא": generate_random_name(), "נהג": d}) for d in drivers]
                 families_file = write_families(families)
-                result = get_drivers(families_file)
+                managers_file = write_managers([])
+                result = get_drivers(families_file, managers_file)
                 unique_drivers = unique_list(drivers)
                 self.assertEqual(result, unique_drivers, message)
 

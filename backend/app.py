@@ -330,7 +330,7 @@ def get_month_printable_files():
 
 @api_blueprint.route('/drivers')
 def get_drivers():
-    app_drivers = drivers.get_drivers(g.families_file)
+    app_drivers = drivers.get_drivers(g.families_file, g.managers_file)
     return jsonify(drivers=app_drivers), 200
 
 @api_blueprint.route('/drivers/families')

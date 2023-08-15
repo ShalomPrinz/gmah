@@ -2,16 +2,17 @@ from src.data import driver_prop, key_prop
 from src.excel import Excel
 from src.families import update_driver
 from src.json import Json
-from src.managers import get_managers, update_managers
+from src.managers import get_managers, get_managers_drivers, update_managers
 from src.results import driver_update_results
 from src.util import unique_list, validate_driver_name
 
-def get_drivers(families_file: Excel):
+def get_drivers(families_file: Excel, managers_file: Json):
     '''
     Returns all unique drivers in the families file.
     '''
-    all_drivers = families_file.column_search("", 'driver')
-    return unique_list(all_drivers)
+    families_drivers = families_file.column_search("", 'driver')
+    managers_drivers = get_managers_drivers(managers_file)
+    return unique_list(families_drivers + managers_drivers)
 
 def get_driver_families(families_file: Excel, driver_name):
     '''

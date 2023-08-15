@@ -1,6 +1,6 @@
 import unittest
 
-from src.managers import get_managers, load_managers_file, find_manager, remove_manager, add_manager
+from src.managers import get_managers, load_managers_file, find_manager, remove_manager, add_manager, get_managers_drivers
 
 from tests.managers_util import setUpManagers, tearDownManagers, write_managers
 
@@ -43,6 +43,17 @@ class TestManagersInfo(unittest.TestCase):
             with self.subTest(f"{expected_manager}, {driver}"):
                 found_manager = find_manager(managers_file, driver)
                 self.assertEqual(found_manager, expected_manager, message)
+
+    def test_get_drivers(self):
+        managers_file = write_managers([{ "id": "0", "name": "manager", "drivers": [
+            { "name": "driver", "phone": "052-5381648" },
+            { "name": None },
+            { "name": "" },
+            { "name": "other" }
+        ]}])
+
+        drivers = get_managers_drivers(managers_file)
+        self.assertEqual(["driver", "other"], drivers, "Should return all drivers")
 
 class TestManagersEdit(unittest.TestCase):
     def setUpClass():

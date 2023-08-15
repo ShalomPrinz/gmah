@@ -63,13 +63,17 @@ function Drivers() {
               onSubmit={onDriverSubmit}
             />
             <div className="text-center">
-              <Table
-                columns={reportCompletionBuilder}
-                data={driverFamilies}
-                dataIdProp={familyIdProp}
-                LastColumn={RemoveButton(removeFamilyDriverFunc)}
-                numberedTable
-              />
+              {driverFamilies.length > 0 ? (
+                <Table
+                  columns={reportCompletionBuilder}
+                  data={driverFamilies}
+                  dataIdProp={familyIdProp}
+                  LastColumn={RemoveButton(removeFamilyDriverFunc)}
+                  numberedTable
+                />
+              ) : (
+                <h4 className="fw-light mt-4">- לנהג זה אין משפחות -</h4>
+              )}
             </div>
           </Col>
           <Col sm="4">

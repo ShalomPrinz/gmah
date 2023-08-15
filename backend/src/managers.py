@@ -22,6 +22,17 @@ def get_managers(managers_file: Json):
     '''
     return managers_file.load_json()
 
+def get_managers_drivers(managers_file: Json):
+    '''
+    Returns all drivers from the given managers_file.
+    '''
+    drivers = []
+    for manager in get_managers(managers_file):
+        manager_drivers = map(lambda d: d["name"], manager["drivers"])
+        manager_drivers = filter(lambda d: d, manager_drivers)
+        drivers.extend(list(manager_drivers))
+    return drivers
+
 def update_managers(managers_file: Json, managers):
     '''
     Updates managers to match the given managers json.
