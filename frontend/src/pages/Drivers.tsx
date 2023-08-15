@@ -3,25 +3,22 @@ import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import { toast } from "react-toastify";
 
-import {
-  ColumnList,
-  ConditionalList,
-  type ListItem,
-  Search,
-} from "../components";
-import { type Family, familyIdProp } from "../modules";
+import { ColumnList, type ListItem, Search, Table } from "../components";
+import IconComponent from "../components/Icon";
+import { type Family, familyIdProp, reportCompletionBuilder } from "../modules";
 import {
   getDriverFamilies,
   getDriverlessFamilies,
   getDrivers,
+  removeFamilyDriver,
   updateDriverName,
 } from "../services";
 
 function Drivers() {
   const { drivers, driversChanged } = useDrivers();
   const [selectedDriver, setSelectedDriver] = useState("");
-  const families = useDriverFamilies(selectedDriver);
-  const driverlessFamilies = useDriverlessFamilies();
+  const { driverFamilies, driverlessFamilies, familiesChanged } =
+    useFamilies(selectedDriver);
 
   function onDriverSubmit(originalName: string, newName: string) {
     updateDriverName(originalName, newName)
@@ -39,8 +36,8 @@ function Drivers() {
       .catch(() => toast.error("קרתה שגיאה לא צפויה"));
   }
 
-  function familyCallback(family: Family) {
-    return <h5>{family[familyIdProp]}</h5>;
+  function removeFamilyDriverFunc(family: Family) {
+    removeFamilyDriver(family[familyIdProp]).then(familiesChanged);
   }
 
   return (
@@ -60,22 +57,28 @@ function Drivers() {
               key={selectedDriver}
               onSubmit={onDriverSubmit}
             />
-            <ConditionalList
-              itemCallback={familyCallback}
-              list={families}
-              keyProp={familyIdProp}
-            />
+            <div className="text-center">
+              <Table
+                columns={reportCompletionBuilder}
+                data={driverFamilies}
+                dataIdProp={familyIdProp}
+                LastColumn={RemoveButton(removeFamilyDriverFunc)}
+                numberedTable
+              />
+            </div>
           </Col>
           <Col sm="3">
-            {driverlessFamilies.length > 0 ? (
-              <ConditionalList
-                itemCallback={familyCallback}
-                list={driverlessFamilies}
-                keyProp={familyIdProp}
-              />
-            ) : (
-              <h3 className="fw-light mt-4">- אין משפחות ללא נהג -</h3>
-            )}
+            <div className="text-center">
+              {driverlessFamilies.length > 0 ? (
+                <Table
+                  columns={reportCompletionBuilder}
+                  data={driverlessFamilies}
+                  dataIdProp={familyIdProp}
+                />
+              ) : (
+                <h3 className="fw-light mt-4">- אין משפחות ללא נהג -</h3>
+              )}
+            </div>
           </Col>
         </Row>
       </main>
@@ -128,6 +131,19 @@ function DriverInput({ defaultName, onSubmit }: DriverInputProps) {
   );
 }
 
+function RemoveButton(remove: (item: any) => void) {
+  return ({ item }: { item: any }) => (
+    <button
+      className="bg-white text-danger rounded border border-3 border-danger button-hover"
+      onClick={() => remove(item)}
+      type="button"
+    >
+      <span className="ps-2">הסר</span>
+      <IconComponent color="red" icon="removeItem" />
+    </button>
+  );
+}
+
 function useDrivers() {
   const [reloadKey, setReloadKey] = useState(0);
   const [drivers, setDrivers] = useState([]);
@@ -147,10 +163,12 @@ function useDrivers() {
   return { drivers, driversChanged };
 }
 
-function useDriverFamilies(driverName: string) {
+function useDriverFamilies(driverName: string, reloadKey: number) {
   const [families, setFamilies] = useState([]);
 
   useEffect(() => {
+    if (!driverName) return;
+
     getDriverFamilies(driverName)
       .then((res) => setFamilies(res.data.families))
       .catch((error) =>
@@ -159,12 +177,12 @@ function useDriverFamilies(driverName: string) {
           error
         )
       );
-  }, [driverName]);
+  }, [driverName, reloadKey]);
 
   return families;
 }
 
-function useDriverlessFamilies() {
+function useDriverlessFamilies(reloadKey: number) {
   const [families, setFamilies] = useState([]);
 
   useEffect(() => {
@@ -176,9 +194,25 @@ function useDriverlessFamilies() {
           error
         )
       );
-  });
+  }, [reloadKey]);
 
   return families;
+}
+
+function useFamilies(driverName: string) {
+  const [reloadKey, setReloadKey] = useState(0);
+  const driverFamilies = useDriverFamilies(driverName, reloadKey);
+  const driverlessFamilies = useDriverlessFamilies(reloadKey);
+
+  function familiesChanged() {
+    setReloadKey((prev) => prev + 1);
+  }
+
+  return {
+    driverFamilies,
+    driverlessFamilies,
+    familiesChanged,
+  };
 }
 
 export default Drivers;

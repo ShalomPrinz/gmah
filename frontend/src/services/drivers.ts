@@ -1,4 +1,4 @@
-import { get, put } from "./http";
+import { get, put, remove } from "./http";
 
 async function getDrivers() {
   return get("drivers");
@@ -23,9 +23,18 @@ async function updateDriverName(originalName: string, newName: string) {
   });
 }
 
+async function removeFamilyDriver(familyName: string) {
+  await remove("family/driver/remove", {
+    params: {
+      family_name: familyName,
+    },
+  });
+}
+
 export {
   getDriverFamilies,
   getDriverlessFamilies,
   getDrivers,
+  removeFamilyDriver,
   updateDriverName,
 };

@@ -1,6 +1,7 @@
 import unittest
 
-from src.families import get_count, search_families, add_family, add_families, update_family, remove_family, restore_family, FamiliesSearchBy
+from src.data import driver_prop
+from src.families import get_count, search_families, add_family, add_families, update_family, remove_family, restore_family, FamiliesSearchBy, remove_driver
 from src.results import add_results, add_many_results, add_many_error
 from src.errors import FamilyNotFoundError
 from src.search import find, FindRequest
@@ -284,6 +285,21 @@ class TestDataManagement(unittest.TestCase):
                     self.assertIs(result, None, "Should return None if successful")
                 else:
                     self.assertIsInstance(result, expected_result, "Should raise FamilyNotFound Exception")
+
+    def test_remove_driver(self):
+        test_cases = [
+            (None,      "Should change None driver to empty string"),
+            ("",        "Should keep empty string driver"),
+            ("חיים",    "Should remove driver from given family")
+        ]
+
+        for driver_name, message in test_cases:
+            with self.subTest(f"Driver: {driver_name}"):
+                family_name = "שם משפחה"
+                families_file = write_families([Family({"שם מלא": family_name, driver_prop: driver_name})])
+                remove_driver(families_file, family_name)
+                family = search_families(families_file, family_name)[0]
+                self.assertEqual(family[driver_prop], "", message)
 
 class TestFamiliesHistory(unittest.TestCase):
     def setUpClass():

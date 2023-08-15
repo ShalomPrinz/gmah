@@ -135,6 +135,12 @@ def restore_family():
         return error_response(error)
     return jsonify(), 200
 
+@api_blueprint.route('/family/driver/remove', methods=["DELETE"])
+def remove_family_driver():
+    family_name = request.args.get('family_name')
+    families.remove_driver(g.families_file, family_name)
+    return jsonify(), 200
+
 @api_blueprint.route('/managers')
 def get_managers():
     api_blueprint_managers = managers.get_managers(g.managers_file)

@@ -1,6 +1,6 @@
 from enum import Enum
 
-from src.data import key_prop, family_properties, families_filename, families_history_filename, history_properties, exit_date_prop, reason_prop
+from src.data import driver_prop, key_prop, family_properties, families_filename, families_history_filename, history_properties, exit_date_prop, reason_prop
 from src.excel import Excel
 from src.util import without_hyphen, insert_hyphen
 from src.results import Result, add_results, add_many_error, add_many_results
@@ -264,3 +264,13 @@ def restore_family(families_file: Excel, history_file: Excel, family_name):
     if result.status != 200:
         return Exception(
             "המשפחה הוסרה בהצלחה מהסטוריית הנתמכים, אך קרתה שגיאה בהוספת המשפחה לנתמכים")
+
+def remove_driver(families_file: Excel, family_name):
+    '''
+    Removes driver name from given family.
+    '''
+    row_index = families_file.get_row_index(family_name)
+    families_file.replace_cell(row_index, {
+        "key": driver_prop,
+        "value": ""
+    })
