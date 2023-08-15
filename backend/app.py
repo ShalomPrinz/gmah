@@ -141,6 +141,15 @@ def remove_family_driver():
     families.remove_driver(g.families_file, family_name)
     return jsonify(), 200
 
+@api_blueprint.route('/family/driver/add', methods=["POST"])
+def add_family_driver():
+    family_name = request.json['family_name']
+    driver_name = request.json['driver_name']
+    result = families.add_driver(g.families_file, family_name, driver_name)
+    if result.status != 200:
+        return result_error_response(result)
+    return jsonify(title=result.title, description=result.description), result.status
+
 @api_blueprint.route('/managers')
 def get_managers():
     api_blueprint_managers = managers.get_managers(g.managers_file)

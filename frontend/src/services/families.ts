@@ -70,12 +70,29 @@ async function restoreFamily(familyName: string) {
   });
 }
 
+async function removeFamilyDriver(familyName: string) {
+  await remove("family/driver/remove", {
+    params: {
+      family_name: familyName,
+    },
+  });
+}
+
+async function addFamilyDriver(familyName: string, driverName: string) {
+  await post("family/driver/add", {
+    family_name: familyName,
+    driver_name: driverName,
+  });
+}
+
 export {
   addFamilies,
+  addFamilyDriver,
   getFamiliesCount,
   searchFamilies,
   searchFamiliesHistory,
   updateFamily,
   removeFamily,
+  removeFamilyDriver,
   restoreFamily,
 };

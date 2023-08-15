@@ -7,6 +7,7 @@ import { ColumnList, type ListItem, Search, Table } from "../components";
 import IconComponent from "../components/Icon";
 import { type Family, familyIdProp, reportCompletionBuilder } from "../modules";
 import {
+  addFamilyDriver,
   getDriverFamilies,
   getDriverlessFamilies,
   getDrivers,
@@ -40,9 +41,13 @@ function Drivers() {
     removeFamilyDriver(family[familyIdProp]).then(familiesChanged);
   }
 
+  function addFamilyDriverFunc(family: Family) {
+    addFamilyDriver(family[familyIdProp], selectedDriver).then(familiesChanged);
+  }
+
   return (
     <>
-      <h1 className="my-5 text-center">נהגים</h1>
+      <h1 className="mt-5 mb-4 text-center">נהגים</h1>
       <main className="container">
         <Row>
           <Col sm="4">
@@ -51,7 +56,7 @@ function Drivers() {
               setSelected={setSelectedDriver}
             />
           </Col>
-          <Col sm="5">
+          <Col sm="4">
             <DriverInput
               defaultName={selectedDriver}
               key={selectedDriver}
@@ -67,14 +72,19 @@ function Drivers() {
               />
             </div>
           </Col>
-          <Col sm="3">
+          <Col sm="4">
             <div className="text-center">
               {driverlessFamilies.length > 0 ? (
-                <Table
-                  columns={reportCompletionBuilder}
-                  data={driverlessFamilies}
-                  dataIdProp={familyIdProp}
-                />
+                <>
+                  <h3 className="mt-4 mb-3">משפחות ללא נהג</h3>
+                  <Table
+                    columns={reportCompletionBuilder}
+                    data={driverlessFamilies}
+                    dataIdProp={familyIdProp}
+                    LastColumn={AddButton(addFamilyDriverFunc)}
+                    numberedTable
+                  />
+                </>
               ) : (
                 <h3 className="fw-light mt-4">- אין משפחות ללא נהג -</h3>
               )}
@@ -114,9 +124,10 @@ function DriverInput({ defaultName, onSubmit }: DriverInputProps) {
   return (
     <>
       <input
-        className="fs-2 w-50 ms-5 mb-4 text-center form-text-input border border-3 border-primary"
+        className="fs-2 ms-5 mt-3 mb-4 text-center form-text-input border border-3 border-primary"
         defaultValue={defaultName}
         ref={inputRef}
+        style={{ width: "60%" }}
         title="שם הנהג"
         type="text"
       />
@@ -128,6 +139,19 @@ function DriverInput({ defaultName, onSubmit }: DriverInputProps) {
         עדכון
       </button>
     </>
+  );
+}
+
+function AddButton(add: (item: any) => void) {
+  return ({ item }: { item: any }) => (
+    <button
+      className="bg-white text-primary rounded border border-3 border-primary button-hover"
+      onClick={() => add(item)}
+      type="button"
+    >
+      <span className="ps-2">הוסף</span>
+      <IconComponent color="blue" icon="addFamily" />
+    </button>
   );
 }
 

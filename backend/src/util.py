@@ -1,6 +1,8 @@
 from uuid import uuid4
 from os import makedirs, path, umask
 
+from src.results import driver_update_results
+
 def without_hyphen(string: str):
     return string.replace('-', '')
 
@@ -31,3 +33,18 @@ def create_folders_path(folders):
 
 def unique_list(lst):
     return list(dict.fromkeys(lst))
+
+DRIVER_NAME_MIN_LENGTH = 2
+
+def validate_driver_name(driver_name):
+    '''
+    Validates driver_name is valid and not too short.
+    If result is None, validation succeed.
+    '''
+    if not driver_name or not isinstance(driver_name, str):
+        return driver_update_results["MISSING_DRIVER"]
+
+    if len(driver_name) < DRIVER_NAME_MIN_LENGTH:
+        return driver_update_results["TOO_SHORT_DRIVER"]
+    
+    return None

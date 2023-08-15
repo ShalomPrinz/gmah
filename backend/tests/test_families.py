@@ -1,7 +1,7 @@
 import unittest
 
 from src.data import driver_prop
-from src.families import get_count, search_families, add_family, add_families, update_family, remove_family, restore_family, FamiliesSearchBy, remove_driver
+from src.families import get_count, search_families, add_family, add_families, update_family, remove_family, restore_family, FamiliesSearchBy, remove_driver, add_driver
 from src.results import add_results, add_many_results, add_many_error
 from src.errors import FamilyNotFoundError
 from src.search import find, FindRequest
@@ -293,13 +293,33 @@ class TestDataManagement(unittest.TestCase):
             ("חיים",    "Should remove driver from given family")
         ]
 
-        for driver_name, message in test_cases:
-            with self.subTest(f"Driver: {driver_name}"):
+        for original_driver, message in test_cases:
+            with self.subTest(f"Original driver: {original_driver}"):
                 family_name = "שם משפחה"
-                families_file = write_families([Family({"שם מלא": family_name, driver_prop: driver_name})])
+                families_file = write_families([Family({"שם מלא": family_name, driver_prop: original_driver})])
                 remove_driver(families_file, family_name)
                 family = search_families(families_file, family_name)[0]
                 self.assertEqual(family[driver_prop], "", message)
+
+    def test_add_driver(self):
+        original_driver = "נהג כלשהו"
+        test_cases = [
+            (None,  False, "Should not set given driver if its None"),
+            ("",    False, "Should not set given driver if its empty string"),
+            ("א",   False, "Should not set given driver if its too short"),
+            ("משה", True, "Should set given driver as family's driver")
+        ]
+
+        for driver_name, should_change, message in test_cases:
+            with self.subTest(f"Driver: {driver_name}"):
+                family_name = "שם משפחה"
+                families_file = write_families([Family({"שם מלא": family_name, driver_prop: original_driver})])
+                add_driver(families_file, family_name, driver_name)
+                family = search_families(families_file, family_name)[0]
+                if should_change:
+                    self.assertEqual(family[driver_prop], driver_name, message)
+                else:
+                    self.assertEqual(family[driver_prop], original_driver, message)
 
 class TestFamiliesHistory(unittest.TestCase):
     def setUpClass():

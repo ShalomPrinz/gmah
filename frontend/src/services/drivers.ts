@@ -23,18 +23,9 @@ async function updateDriverName(originalName: string, newName: string) {
   });
 }
 
-async function removeFamilyDriver(familyName: string) {
-  await remove("family/driver/remove", {
-    params: {
-      family_name: familyName,
-    },
-  });
-}
-
 export {
   getDriverFamilies,
   getDriverlessFamilies,
   getDrivers,
-  removeFamilyDriver,
   updateDriverName,
 };

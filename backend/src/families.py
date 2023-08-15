@@ -2,8 +2,8 @@ from enum import Enum
 
 from src.data import driver_prop, key_prop, family_properties, families_filename, families_history_filename, history_properties, exit_date_prop, reason_prop
 from src.excel import Excel
-from src.util import without_hyphen, insert_hyphen
-from src.results import Result, add_results, add_many_error, add_many_results
+from src.util import without_hyphen, insert_hyphen, validate_driver_name
+from src.results import Result, add_results, add_many_error, add_many_results, driver_update_results
 from src.styles import families_cell_style
 
 class FamiliesSearchBy(Enum):
@@ -265,12 +265,28 @@ def restore_family(families_file: Excel, history_file: Excel, family_name):
         return Exception(
             "המשפחה הוסרה בהצלחה מהסטוריית הנתמכים, אך קרתה שגיאה בהוספת המשפחה לנתמכים")
 
-def remove_driver(families_file: Excel, family_name):
+def update_driver(families_file: Excel, family_name, driver_name):
     '''
-    Removes driver name from given family.
+    Updates the given family driver to driver_name.
     '''
     row_index = families_file.get_row_index(family_name)
     families_file.replace_cell(row_index, {
         "key": driver_prop,
-        "value": ""
+        "value": driver_name
     })
+
+def remove_driver(families_file: Excel, family_name):
+    '''
+    Removes driver name from given family.
+    '''
+    update_driver(families_file, family_name, "")
+
+def add_driver(families_file: Excel, family_name, driver_name):
+    '''
+    Adds driver to given family.
+    '''
+    if (result := validate_driver_name(driver_name)) is not None:
+        return result
+
+    update_driver(families_file, family_name, driver_name)
+    return driver_update_results["DRIVER_UPDATED"]

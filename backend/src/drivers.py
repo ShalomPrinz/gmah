@@ -1,11 +1,10 @@
 from src.data import driver_prop, key_prop
 from src.excel import Excel
+from src.families import update_driver
 from src.json import Json
 from src.managers import get_managers, update_managers
 from src.results import driver_update_results
-from src.util import unique_list
-
-DRIVER_NAME_MIN_LENGTH = 2
+from src.util import unique_list, validate_driver_name
 
 def get_drivers(families_file: Excel):
     '''
@@ -38,31 +37,26 @@ def update_manager_driver(managers_file: Json, original, updated):
         driver['name'] = updated
     update_managers(managers_file, managers)
 
+def is_driver_exists(families_file: Excel, driver_name):
+    '''
+    Returns whether a driver is in the given families_file.
+    '''
+    return len(families_file.search(driver_name, 'driver', exact=True)) > 0
+
 def update_driver_name(families_file: Excel, managers_file: Json, original, updated):
     '''
     Updates a driver name of all families whom their driver is 'original' to 'updated'.
     Updates managers file too, the driver whose name is 'original' is changed to 'updated'.
     * Note that update validations are based on families_file only and ignores managers_file.
     '''
-    if not updated or not isinstance(updated, str):
-        return driver_update_results["MISSING_DRIVER"]
-
-    if len(updated) < DRIVER_NAME_MIN_LENGTH:
-        return driver_update_results["TOO_SHORT_DRIVER"]
-
-    if original == updated:
-        return driver_update_results["DRIVER_UPDATED"]
-    
-    drivers = families_file.search(original, 'driver', exact=True)
-    if len(drivers) == 0:
+    if not is_driver_exists(families_file, original):
         return driver_update_results["NO_SUCH_DRIVER"]
+
+    if (result := validate_driver_name(updated)) is not None:
+        return result
     
     update_manager_driver(managers_file, original, updated)
     for family in get_driver_families(families_file, original):
-        row_index = families_file.get_row_index(family[key_prop])
-        families_file.replace_cell(row_index, {
-            "key": driver_prop,
-            "value": updated
-        })
+        update_driver(families_file, family[key_prop], updated)
 
     return driver_update_results["DRIVER_UPDATED"]
