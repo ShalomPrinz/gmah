@@ -8,13 +8,18 @@ export type ListItem = string;
 
 interface ColumnListProps {
   list: ListItem[];
-  onItemSelect: (item: string) => void;
+  onItemSelect: (item: ListItem) => void;
 }
 
 function ColumnList({ list, onItemSelect }: ColumnListProps) {
   const [active, setActive] = useState(list[0] ?? "");
 
   useEffect(() => onItemSelect(active), [active]);
+  useEffect(() => {
+    if (list.length > 0 && !list.includes(active)) {
+      setActive(list[0]);
+    }
+  }, [list.length]);
 
   const itemCallback = (item: ListItem) => {
     const activeStyle = active === item ? " active" : "";
@@ -30,7 +35,7 @@ function ColumnList({ list, onItemSelect }: ColumnListProps) {
   };
 
   return (
-    <ListGroup onSelect={(item) => setActive(item ?? "")}>
+    <ListGroup key={active} onSelect={(item) => setActive(item ?? "")}>
       <ConditionalList itemAsKey itemCallback={itemCallback} list={list} />
     </ListGroup>
   );
