@@ -6,8 +6,9 @@ key_prop = "שם מלא"
 street_prop = "רחוב"
 driver_prop = "נהג"
 recommender_prop = "ממליץ"
+notes_prop = "הערות"
 family_properties = [key_prop, street_prop, "בניין", "דירה", "קומה", "מס' בית",
-                     "מס' פלאפון", driver_prop, recommender_prop, "הערות"]
+                     "מס' פלאפון", driver_prop, recommender_prop, notes_prop]
 
 exit_date_prop = "תאריך יציאה"
 reason_prop = "סיבה"

@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from openpyxl.styles import Alignment, Border, Font, NamedStyle, Side, PatternFill
 
 # Excel Styles
@@ -103,4 +104,31 @@ title_page_style = ParagraphStyle(name='TitlePageStyle',
     alignment=1
 )
 
+note_header_style = ParagraphStyle(name='NoteHeaderStyle',
+    fontName="Hebrew",
+    fontSize=16,
+    alignment=2)
+
+note_title_style = ParagraphStyle(name='NoteTitleStyle',
+    fontName="Hebrew-Bold",
+    fontSize=12,
+    spaceAfter=6,
+    alignment=2)
+
+note_content_style = ParagraphStyle(name='NoteContentStyle',
+    fontName="Hebrew",
+    fontSize=12,
+    spaceAfter=15,
+    alignment=2)
+
 header_style = ParagraphStyle(name='HeaderStyle', fontName="Hebrew")
+
+@dataclass
+class Styles:
+    table_style = table_style
+    title_style = title_style
+    title_page_style = title_page_style
+    note_header_style = note_header_style
+    note_title_style = note_title_style
+    note_content_style = note_content_style
+    header_style = header_style

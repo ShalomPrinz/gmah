@@ -9,8 +9,8 @@ from reportlab.pdfbase.ttfonts import TTFont
 
 from bidi.algorithm import get_display
 
-from src.data import system_files_folder
-from src.styles import header_style, table_style, title_style, title_page_style
+from src.data import system_files_folder, key_prop, notes_prop
+from src.styles import Styles
 from src.util import create_folders_path
 
 fonts_dir = "./src/fonts/"
@@ -32,7 +32,7 @@ def to_hebrew(text):
     return get_display(str(text))
 
 def basad_header(canvas, doc):
-    content = Paragraph(to_hebrew('בס"ד'), header_style)
+    content = Paragraph(to_hebrew('בס"ד'), Styles.header_style)
     canvas.saveState()
     content.wrap(doc.width, doc.topMargin)
     content.drawOn(
@@ -53,6 +53,10 @@ class PDFBuilder():
         self.filename = filename
         self.filepath = get_print_path(folder, filename)
         self.template_id = 'basad_template'
+
+        self.notes_header = "הערות"
+        self.notes_item_title_prop = key_prop
+        self.notes_item_content_prop = notes_prop
 
         pdfmetrics.registerFont(
             TTFont(
@@ -102,7 +106,7 @@ class PDFBuilder():
         Appends page with title only, to be used as a delimiter between
         differrent parts of the pdf document.
         '''
-        self.append_title(title, title_page_style)
+        self.append_title(title, Styles.title_page_style)
 
     def append_page(self, title, headers, content):
         '''
@@ -110,6 +114,7 @@ class PDFBuilder():
         '''
         self.append_title(title)
         self.append_table(headers, content)
+        self.append_notes(content)
 
     def build_multi(self, pages, headers):
         '''
@@ -153,12 +158,18 @@ class PDFBuilder():
         self.elements.append(NextPageTemplate(self.template_id))
         self.elements.append(PageBreak())
 
-    def append_title(self, title, style=title_style):
+    def append_line_break(self, times=1):
+        '''
+        Appends times amount of link breaks to the pdf document.
+        '''
+        for _ in range(times):
+            self.elements.append(Paragraph("", Styles.title_style))
+
+    def append_title(self, title, style=Styles.title_style):
         '''
         Appends the given title to the pdf document.
         '''
-        self.elements.append(Paragraph("", style))
-        self.elements.append(Paragraph("", style))
+        self.append_line_break(2)
         self.elements.append(Paragraph(to_hebrew(title), style))
 
     def append_table(self, headers, content):
@@ -170,7 +181,7 @@ class PDFBuilder():
         table_data = [table_headers] + table_content
 
         table = Table(table_data)
-        table.setStyle(table_style)
+        table.setStyle(Styles.table_style)
 
         self.elements.append(table)
 
@@ -192,3 +203,29 @@ class PDFBuilder():
             table_row.reverse()
             table_data.append(table_row)
         return table_data
+    
+    def has_any_notes(self, content):
+        '''
+        Returns whether at least one item in given content has notes.
+        '''
+        for item in content:
+            if item.get(self.notes_item_content_prop, None) is not None:
+                return True
+        return False
+
+    def append_notes(self, content):
+        '''
+        Extracts all given notes of content items and appends them to the document.
+        '''
+        if not self.has_any_notes(content):
+            return
+
+        self.append_line_break()
+        self.elements.append(Paragraph(to_hebrew(self.notes_header), Styles.note_header_style))
+        self.append_line_break()
+
+        for item in content:
+            if (notes := item.get(self.notes_item_content_prop, None)) is not None:
+                title = item.get(self.notes_item_title_prop)
+                self.elements.append(Paragraph(to_hebrew(title), Styles.note_title_style))
+                self.elements.append(Paragraph(to_hebrew(notes), Styles.note_content_style))
