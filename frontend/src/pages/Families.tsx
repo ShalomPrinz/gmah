@@ -3,7 +3,7 @@ import Row from "react-bootstrap/Row";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 
-import { getSearchBy, SearchRow, Table } from "../components";
+import { BottomMenu, getSearchBy, SearchRow, Table } from "../components";
 import IconComponent from "../components/Icon";
 import { useFamiliesSearch } from "../hooks";
 import { familiesTableHeaders, familyIdProp } from "../modules";
@@ -118,16 +118,14 @@ function Families() {
           />
         </Row>
       </main>
-      {isFamilySelected && (
-        <div className="bottom-menu p-4 d-flex">
-          <span className="fs-3 mx-5 my-auto">{selectedFamilyName}</span>
-          <div className="justify-content-center">
-            <EditFamily family={selected!} />
-            <RemoveFamily onRemove={onFamilyRemove} />
-          </div>
-          <MenuClose close={setNoSelectedFamily} />
-        </div>
-      )}
+      <BottomMenu
+        isOpen={isFamilySelected}
+        onMenuClose={setNoSelectedFamily}
+        title={selectedFamilyName}
+      >
+        <EditFamily family={selected!} />
+        <RemoveFamily onRemove={onFamilyRemove} />
+      </BottomMenu>
     </>
   );
 }
@@ -141,19 +139,6 @@ function MenuOpenWrapper(open: (family: Family) => void) {
     >
       <span className="ps-2">אפשרויות</span>
       <IconComponent flipHorizontal icon="options" />
-    </button>
-  );
-}
-
-function MenuClose({ close }: { close: () => void }) {
-  return (
-    <button
-      className="bottom-menu-item bg-secondary text-white rounded border border-none border-0 fs-3 p-3 me-auto"
-      onClick={close}
-      type="button"
-    >
-      <span className="ps-3">סגירת התפריט</span>
-      <IconComponent icon="validateFailure" />
     </button>
   );
 }

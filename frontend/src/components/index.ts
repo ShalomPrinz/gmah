@@ -1,3 +1,4 @@
+import BottomMenu from "./BottomMenu";
 import ColumnList from "./ColumnList";
 import ConditionalList from "./ConditionalList";
 import Dropdown from "./Dropdown";
@@ -14,6 +15,7 @@ export { InputTableGroup, SingleInputTable } from "./InputTableGroup";
 export { ReceiptStatusTable } from "./ReceiptStatusTable";
 export { getSearchBy } from "./SearchRow";
 export {
+  BottomMenu,
   ColumnList,
   ConditionalList,
   Dropdown,
