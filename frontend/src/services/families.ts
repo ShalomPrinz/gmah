@@ -70,6 +70,14 @@ async function restoreFamily(familyName: string) {
   });
 }
 
+async function permanentRemoveFamily(familyName: string) {
+  return remove("family/remove/permanent", {
+    params: {
+      family_name: familyName,
+    },
+  });
+}
+
 async function removeFamilyDriver(familyName: string) {
   await remove("family/driver/remove", {
     params: {
@@ -89,6 +97,7 @@ export {
   addFamilies,
   addFamilyDriver,
   getFamiliesCount,
+  permanentRemoveFamily,
   searchFamilies,
   searchFamiliesHistory,
   updateFamily,

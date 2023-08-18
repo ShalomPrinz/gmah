@@ -265,6 +265,16 @@ def restore_family(families_file: Excel, history_file: Excel, family_name):
         return Exception(
             "המשפחה הוסרה בהצלחה מהסטוריית הנתמכים, אך קרתה שגיאה בהוספת המשפחה לנתמכים")
 
+def permanent_remove_family(history_file: Excel, family_name):
+    '''
+    Removes the given family from families history file permanently.
+    '''
+    try:
+        index = history_file.get_row_index(family_name)
+    except Exception as e:
+        return e
+    history_file.remove_row(index)
+
 def update_driver(families_file: Excel, family_name, driver_name):
     '''
     Updates the given family driver to driver_name.

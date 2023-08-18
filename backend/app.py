@@ -135,6 +135,14 @@ def restore_family():
         return error_response(error)
     return jsonify(), 200
 
+@api_blueprint.route('/family/remove/permanent', methods=["DELETE"])
+def permanent_remove_family():
+    family_name = request.args.get('family_name')
+    error = families.permanent_remove_family(g.families_history_file, family_name)
+    if error is not None:
+        return error_response(error)
+    return jsonify(), 200
+
 @api_blueprint.route('/family/driver/remove', methods=["DELETE"])
 def remove_family_driver():
     family_name = request.args.get('family_name')
@@ -318,8 +326,7 @@ def get_month_printable_report():
 
     response = make_response(printable)
     response.headers['Content-Type'] = 'application/pdf'
-    encoded_filename = month.month_printable_report_name.encode('utf-8')
-    response.headers['Content-Disposition'] = f'inline; filename={encoded_filename}{month.month_printable_suffix}'
+    response.headers['Content-Disposition'] = 'inline'
     return response
 
 @api_blueprint.route('/print/month/all')
