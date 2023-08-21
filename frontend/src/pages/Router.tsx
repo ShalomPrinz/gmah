@@ -55,6 +55,7 @@ const router = createBrowserRouter(
       <Route path="print">
         <Route path="month" element={<Pages.MonthPrintView />} />
         <Route path="completion" element={<Pages.CompletionEditor />} />
+        <Route path="settings" element={<Pages.PrintSettings />} />
       </Route>
     </Route>
   )

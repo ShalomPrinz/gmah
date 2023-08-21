@@ -222,6 +222,11 @@ function NavbarWrapper() {
           url: "/print/completion",
           usesReport: true,
         },
+        {
+          id: 2,
+          name: "הגדרות",
+          url: "/print/settings",
+        },
       ],
       title: "הדפסות",
     },
