@@ -368,4 +368,11 @@ def get_driverless_families():
     families = drivers.get_driverless_families(g.families_file)
     return jsonify(families=families), 200
 
+@api_blueprint.route('/drivers/print', methods=["PUT"])
+def update_driver_print_status():
+    driver_name = request.json['driver_name']
+    print_status = request.json['print_status']
+    drivers.update_driver_print_status(g.managers_file, driver_name, print_status)
+    return jsonify(), 200
+
 app.register_blueprint(api_blueprint)

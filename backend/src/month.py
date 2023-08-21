@@ -120,7 +120,7 @@ def generate_month_files(families_file, month_name, override_name=False):
     generate_month_pdf(month_name, families, managers_file)
 
 def get_all_pages(managers, families):
-    ignore_drivers = [None, "", "בני מנשה", "וענונו"]
+    ignore_drivers = [None, ""]
     pages = []
 
     for manager in managers:
@@ -132,7 +132,7 @@ def get_all_pages(managers, families):
 
         for driver in manager['drivers']:
             driver_name = driver['name']
-            if driver_name in ignore_drivers:
+            if driver_name in ignore_drivers or driver.get('print', None) == "ignore":
                 continue
 
             driver_families = [f for f in families

@@ -26,17 +26,23 @@ def get_driverless_families(families_file: Excel):
     '''
     return families_file.search('', 'driver', empty=True)
 
+def update_driver_property(managers_file: Json, driver_name, property, value):
+    '''
+    Updates a driver property to be given value. Internal module use only.
+    '''
+    managers = get_managers(managers_file)
+    for manager in managers:
+        driver = next((d for d in manager['drivers'] if d['name'] == driver_name), None)
+        if driver is None:
+            continue
+        driver[property] = value
+    update_managers(managers_file, managers)
+
 def update_manager_driver(managers_file: Json, original, updated):
     '''
     Updates a driver name from 'original' to 'updated' in the given managers_file.
     '''
-    managers = get_managers(managers_file)
-    for manager in managers:
-        driver = next((d for d in manager['drivers'] if d['name'] == original), None)
-        if driver is None:
-            continue
-        driver['name'] = updated
-    update_managers(managers_file, managers)
+    update_driver_property(managers_file, original, "name", updated)
 
 def is_driver_exists(families_file: Excel, driver_name):
     '''
@@ -61,3 +67,9 @@ def update_driver_name(families_file: Excel, managers_file: Json, original, upda
         update_driver(families_file, family[key_prop], updated)
 
     return driver_update_results["DRIVER_UPDATED"]
+
+def update_driver_print_status(managers_file: Json, driver_name, print_status):
+    '''
+    Updates a driver print status to be print_status.
+    '''
+    update_driver_property(managers_file, driver_name, "print", print_status)

@@ -23,9 +23,20 @@ async function updateDriverName(originalName: string, newName: string) {
   });
 }
 
+async function updateDriverPrintStatus(
+  driverName: string,
+  printStatus: string
+) {
+  return put("drivers/print", {
+    driver_name: driverName,
+    print_status: printStatus,
+  });
+}
+
 export {
   getDriverFamilies,
   getDriverlessFamilies,
   getDrivers,
   updateDriverName,
+  updateDriverPrintStatus,
 };

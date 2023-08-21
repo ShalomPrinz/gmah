@@ -3,6 +3,7 @@ import type { NonEmptyString } from "./string";
 type Driver = {
   name: string;
   phone: string;
+  print?: string;
 };
 
 interface NoManagerDriver {
