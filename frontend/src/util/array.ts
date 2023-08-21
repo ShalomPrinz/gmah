@@ -20,4 +20,15 @@ function getUnique<T>(array: T[]) {
   return [...new Set(array)];
 }
 
-export { findDuplicatedProperty, getUnique };
+function partition<T>(array: T[], isValid: (item: T) => boolean) {
+  return array.reduce(
+    ([pass, fail], item) => {
+      if (isValid(item)) pass.push(item);
+      else fail.push(item);
+      return [pass, fail];
+    },
+    [Array<T>(), Array<T>()]
+  );
+}
+
+export { findDuplicatedProperty, getUnique, partition };

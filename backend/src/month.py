@@ -124,6 +124,9 @@ def get_all_pages(managers, families):
     pages = []
 
     for manager in managers:
+        if manager.get('print', None) == "ignore":
+            continue
+
         manager_name = manager['name']
         pages.append({ "title": manager_name })
 

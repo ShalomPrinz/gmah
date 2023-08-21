@@ -1,4 +1,4 @@
-import { get, post, remove } from "./http";
+import { get, post, put, remove } from "./http";
 
 async function getManagers() {
   return get("managers");
@@ -16,4 +16,20 @@ async function addManager(managerName: string) {
   return post("managers/add", { manager_name: managerName });
 }
 
-export { addManager, getManagers, updateManagers, removeManager };
+async function updateManagerPrintStatus(
+  managerName: string,
+  printStatus: string
+) {
+  return put("managers/print", {
+    manager_name: managerName,
+    print_status: printStatus,
+  });
+}
+
+export {
+  addManager,
+  getManagers,
+  updateManagers,
+  removeManager,
+  updateManagerPrintStatus,
+};

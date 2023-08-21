@@ -187,6 +187,13 @@ def add_manager():
         return error_response(error)
     return jsonify(), 200
 
+@api_blueprint.route('/managers/print', methods=["PUT"])
+def update_manager_print_status():
+    manager_name = request.json['manager_name']
+    print_status = request.json['print_status']
+    managers.update_manager_print_status(g.managers_file, manager_name, print_status)
+    return jsonify(), 200
+
 @api_blueprint.route('/validate/drivers')
 def validate_drivers():
     error, no_manager_drivers = report.get_no_manager_drivers(g.families_file, g.managers_file)

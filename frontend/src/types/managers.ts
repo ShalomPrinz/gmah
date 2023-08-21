@@ -14,6 +14,7 @@ interface Manager {
   id: string;
   name: NonEmptyString;
   drivers: Driver[];
+  print?: string;
 }
 
 export type { Driver, Manager, NoManagerDriver };

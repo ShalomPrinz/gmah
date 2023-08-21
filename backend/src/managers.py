@@ -81,3 +81,18 @@ def add_manager(managers_file: Json, manager_name):
         "drivers": []
     })
     return update_managers(managers_file, managers)
+
+def update_manager_print_status(managers_file: Json, manager_name, print_status):
+    '''
+    Updates manager print status to the given status.
+    If manager print status is 'ignore', this manager won't be printed in monthly prints.
+    '''
+    if not manager_name:
+        return
+    
+    managers = managers_file.load_json()
+    for m in managers:
+        if manager_name == m["name"]:
+            m["print"] = print_status
+            break
+    update_managers(managers_file, managers)
