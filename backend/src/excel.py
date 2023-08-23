@@ -1,4 +1,5 @@
 from openpyxl import load_workbook
+from openpyxl.packaging.custom import BoolProperty
 from os import path
 
 from src.search import SearchRequest, search, StyleSearchRequest, style_search, ColumnSearchRequest, search_column, FindRequest, find
@@ -151,3 +152,22 @@ class Excel:
         if named_style.name not in self.workbook.named_styles:
             self.workbook.add_named_style(named_style)
             self.save()
+
+    def set_custom_property(self, property, value):
+        '''
+        Creates or overrides custom document property of excel.
+        * Supports boolean properties only.
+        '''
+        prop = BoolProperty(property, value)
+        self.workbook.custom_doc_props.append(prop)
+        self.save()
+
+    def get_custom_property(self, property):
+        '''
+        Returns value of given custom excel property.
+        '''
+        try:
+            prop = self.workbook.custom_doc_props[property]
+        except:
+            return None
+        return None if prop is None else prop.value

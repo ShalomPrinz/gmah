@@ -7,4 +7,9 @@ interface DriverReceipt extends Receipt {
   name: string;
 }
 
-export type { DriverReceipt, Receipt };
+interface Report {
+  name: string;
+  active: boolean;
+}
+
+export type { DriverReceipt, Receipt, Report };

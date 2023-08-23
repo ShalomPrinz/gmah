@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { getReportsList } from "../services";
+import { Report } from "../types";
 
 function useMonthReports(reloadKey: number) {
   const [reports, setReports] = useState([]);
@@ -9,7 +10,7 @@ function useMonthReports(reloadKey: number) {
     getReportsList().then((res) => setReports(res.data.reports));
   }, [reloadKey]);
 
-  return reports;
+  return reports as Report[];
 }
 
 export { useMonthReports };

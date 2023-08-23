@@ -60,9 +60,9 @@ const defaultReport = "";
 
 function useReportSelection(reloadKey: number) {
   const reports = useMonthReports(reloadKey);
-  const options = reports.map((reportName, index) => ({
+  const options = reports.map(({ name }, index) => ({
     eventKey: index.toString(),
-    value: String(reportName ?? defaultReport),
+    value: String(name ?? defaultReport),
   }));
 
   const [selected, setSelected] = useState("0");

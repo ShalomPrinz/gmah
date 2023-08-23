@@ -15,9 +15,13 @@ month_reports_template = f"{system_files_folder}/template.xlsx"
 month_report_prefix = "דוח קבלה "
 month_report_suffix = ".xlsx"
 month_reports_pattern = f"{month_reports_path}{month_report_prefix}*{month_report_suffix}"
+reportname_start_index = len(month_report_prefix)
+reportname_end_index = len(month_report_suffix)
 
 month_printable_report_name = "כל הנהגים"
 month_printable_suffix = '.pdf'
+
+month_active_report_prop = "is_active_report"
 
 # General monthly information
 
@@ -45,14 +49,30 @@ def is_report_name_exists(report_name):
     filepath = get_report_path(report_name)
     return not path.isfile(filepath)
 
+def is_active_report(report_path):
+    '''
+    Returns whether given report is the active report.
+    '''
+    error, report = load_report_file(report_path)
+    if error is not None:
+        return error, None
+    return None, report.get_custom_property(month_active_report_prop)
+
 def get_reports_list():
     '''
     Returns a list with all the generated monthly reports.
     '''
-    start_index = len(month_report_prefix)
-    end_index = len(month_report_suffix)
-    return [path.basename(file)[start_index:-end_index]
-            for file in glob(month_reports_pattern)]
+    reports = []
+    for filepath in glob(month_reports_pattern):
+        filename = path.basename(filepath)[reportname_start_index:-reportname_end_index]
+        error, is_active = is_active_report(filepath)
+        if error is not None:
+            return error, None
+        reports.append({
+            "name": filename,
+            "active": is_active
+        })
+    return None, reports
 
 def get_printable_report(report_name, printable_name):
     '''
@@ -80,6 +100,7 @@ def get_printable_files(report_name):
 def generate_month_report(month_name, families, managers_file):
     '''
     Generates new monthly report tracker based on given families and managers.
+    If the generated report is the only report, it will be set as active report.
     '''
     sheet_title = f'{month_report_prefix}{month_name}'
     filepath = get_report_path(month_name)
@@ -88,7 +109,15 @@ def generate_month_report(month_name, families, managers_file):
     error, report_file = load_month_report(month_name)
     if error is not None:
         return error
+
     append_report(report_file, families, managers_file)
+    
+    error, reports = get_reports_list()
+    if error is not None:
+        return error
+    
+    is_only_report = len(reports) == 1
+    report_file.set_custom_property(month_active_report_prop, is_only_report)
 
 def generate_month_pdf(month_name, families, managers_file):
     '''
