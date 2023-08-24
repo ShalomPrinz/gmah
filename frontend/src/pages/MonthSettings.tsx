@@ -4,12 +4,14 @@ import Row from "react-bootstrap/Row";
 
 import { ColumnList, Table } from "../components";
 import IconComponent from "../components/Icon";
+import { useMonthReports } from "../hooks";
 import {
+  activateReport,
   getManagers,
   updateDriverPrintStatus,
   updateManagerPrintStatus,
 } from "../services";
-import { Driver, type Manager } from "../types";
+import type { Driver, Report, Manager } from "../types";
 import { partition } from "../util";
 
 const managerColumns = [
@@ -28,40 +30,66 @@ const driverColumns = [
   },
 ];
 
+const reportColumns = [
+  {
+    id: 0,
+    label: "שם דוח",
+    path: "name",
+  },
+];
+
 const printIgnore = "ignore";
 const printDisignore = "";
 
 const managersIgnoreSetting = "אחראי נהגים";
 const driversIgnoreSetting = "נהגים";
-const printSettings = [managersIgnoreSetting, driversIgnoreSetting];
+const activeReportSetting = "דוח קבלה פעיל";
+const printSettings = [
+  managersIgnoreSetting,
+  driversIgnoreSetting,
+  activeReportSetting,
+];
 
 function PrintSettings() {
   const [selectedSetting, setSelectedSetting] = useState(printSettings[0]);
   const { managers, managersChanged } = useManagers();
 
+  function getSettingComponent() {
+    switch (selectedSetting) {
+      case managersIgnoreSetting:
+        return (
+          <ManagersIgnore
+            managers={managers}
+            managersChanged={managersChanged}
+          />
+        );
+      case driversIgnoreSetting:
+        return (
+          <DriversIgnore
+            managers={managers}
+            managersChanged={managersChanged}
+          />
+        );
+      case activeReportSetting:
+        return <ActiveReport />;
+      default:
+        throw Error("Wrong month settings selection");
+    }
+  }
+
   return (
     <>
-      <h1 className="text-center my-5">הדפסה חודשית לאחראים ונהגים</h1>
+      <h1 className="text-center my-5">הגדרות לדוח קבלה חודשי</h1>
       <main className="mx-5">
         <Row>
           <Col sm="3">
-            <h3 className="text-center mb-4">הגדרות הדפסה</h3>
+            <h3 className="text-center mb-4">הגדרות</h3>
             <ColumnList
               list={printSettings}
               onItemSelect={(item) => setSelectedSetting(item)}
             />
           </Col>
-          {selectedSetting === managersIgnoreSetting ? (
-            <ManagersIgnore
-              managers={managers}
-              managersChanged={managersChanged}
-            />
-          ) : (
-            <DriversIgnore
-              managers={managers}
-              managersChanged={managersChanged}
-            />
-          )}
+          {getSettingComponent()}
         </Row>
       </main>
     </>
@@ -204,6 +232,72 @@ function DriversIgnore({ managers, managersChanged }: PrintIgnoreProps) {
             dataIdProp="id"
             LastColumn={DisignoreDriverPrint}
           />
+        </div>
+      </Col>
+    </>
+  );
+}
+
+function ActiveReport() {
+  const [reloadKey, setReloadKey] = useState(0);
+  const reportsChanged = () => setReloadKey((prev) => prev + 1);
+  const reports = useMonthReports(reloadKey);
+
+  if (reports.length === 0) {
+    return <Col className="fs-3 m-5">אין דוחות קבלה במערכת</Col>;
+  }
+
+  const activeReport = reports.find(({ active }) => active);
+  const hasActiveReport = typeof activeReport !== "undefined";
+
+  function SetActiveReport({ item }: any) {
+    const report = item as Report;
+    if (report.active) {
+      return (
+        <button
+          className="bg-white text-secondary rounded border border-3 border-secondary button-hover"
+          disabled
+          onClick={() => {}}
+          type="button"
+        >
+          <span className="px-1">פעיל</span>
+        </button>
+      );
+    }
+
+    return (
+      <button
+        className="bg-white text-success rounded border border-3 border-success button-hover"
+        onClick={() => activateReport(report.name).then(reportsChanged)}
+        type="button"
+      >
+        <span className="ps-2">בחר</span>
+        <IconComponent color="green" icon="selectReport" />
+      </button>
+    );
+  }
+
+  return (
+    <>
+      <Col>
+        <div className="w-75 mx-auto text-center">
+          <h4>דוחות קבלה</h4>
+          <Table
+            columns={reportColumns}
+            data={reports as []}
+            dataIdProp="name"
+            LastColumn={SetActiveReport}
+          />
+        </div>
+      </Col>
+      <Col>
+        <div className="w-75 mx-auto text-center">
+          <h4 className="mb-4">דוח קבלה פעיל</h4>
+          {hasActiveReport ? (
+            <h3 className="fw-bold">{activeReport.name}</h3>
+          ) : (
+            <h5>- אין דוח קבלה פעיל -</h5>
+          )}
         </div>
       </Col>
     </>

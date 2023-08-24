@@ -204,6 +204,11 @@ function NavbarWrapper() {
           url: "/month",
           usesReport: true,
         },
+        {
+          id: 3,
+          name: "הגדרות",
+          url: "/month/settings",
+        },
       ],
       title: "ניהול חודשי",
     },
@@ -221,11 +226,6 @@ function NavbarWrapper() {
           name: "דף השלמות",
           url: "/print/completion",
           usesReport: true,
-        },
-        {
-          id: 2,
-          name: "הגדרות",
-          url: "/print/settings",
         },
       ],
       title: "הדפסות",

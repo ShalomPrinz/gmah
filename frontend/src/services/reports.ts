@@ -59,6 +59,12 @@ function getDriverReceiptStatus(reportName: string, name: string) {
   });
 }
 
+function activateReport(reportName: string) {
+  return put("report/activate", {
+    report_name: reportName,
+  });
+}
+
 function updateFamilyReceipt(
   reportName: string,
   familyName: string,
@@ -79,6 +85,7 @@ function updateDriverStatus(reportName: string, status: DriverReceipt[]) {
 }
 
 export {
+  activateReport,
   generateMonthReport,
   getDriverReceiptStatus,
   getFamilyReceiptStatus,

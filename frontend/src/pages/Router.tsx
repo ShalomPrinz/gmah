@@ -51,11 +51,11 @@ const router = createBrowserRouter(
       <Route path="month">
         <Route index element={<Pages.MonthTracker />} />
         <Route path="mark-receive" element={<Pages.MonthReceiptMark />} />
+        <Route path="settings" element={<Pages.MonthSettings />} />
       </Route>
       <Route path="print">
         <Route path="month" element={<Pages.MonthPrintView />} />
         <Route path="completion" element={<Pages.CompletionEditor />} />
-        <Route path="settings" element={<Pages.PrintSettings />} />
       </Route>
     </Route>
   )

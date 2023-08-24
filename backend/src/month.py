@@ -31,6 +31,13 @@ def get_report_path(report_name):
     '''
     return f'{month_reports_path}{month_report_prefix}{report_name}{month_report_suffix}'
 
+def get_report_name(report_path):
+    '''
+    Cuts info such as full file path and file type.
+    Returns report name.
+    '''
+    return path.basename(report_path)[reportname_start_index:-reportname_end_index]
+
 def load_month_report(report_name):
     '''
     Connects to a month report file with the given report_name.
@@ -49,14 +56,11 @@ def is_report_name_exists(report_name):
     filepath = get_report_path(report_name)
     return not path.isfile(filepath)
 
-def is_active_report(report_path):
+def is_active_report(report_file):
     '''
     Returns whether given report is the active report.
     '''
-    error, report = load_report_file(report_path)
-    if error is not None:
-        return error, None
-    return None, report.get_custom_property(month_active_report_prop)
+    return report_file.get_custom_property(month_active_report_prop)
 
 def get_reports_list():
     '''
@@ -64,13 +68,13 @@ def get_reports_list():
     '''
     reports = []
     for filepath in glob(month_reports_pattern):
-        filename = path.basename(filepath)[reportname_start_index:-reportname_end_index]
-        error, is_active = is_active_report(filepath)
+        filename = get_report_name(filepath)
+        error, report = load_report_file(filepath)
         if error is not None:
             return error, None
         reports.append({
             "name": filename,
-            "active": is_active
+            "active": is_active_report(report)
         })
     return None, reports
 
@@ -117,7 +121,7 @@ def generate_month_report(month_name, families, managers_file):
         return error
     
     is_only_report = len(reports) == 1
-    report_file.set_custom_property(month_active_report_prop, is_only_report)
+    set_report_active_status(report_file, is_only_report)
 
 def generate_month_pdf(month_name, families, managers_file):
     '''
@@ -192,3 +196,24 @@ def get_families_content(families_file, completion_families):
             families_content.append(family)
     
     return families_content
+
+def set_report_active_status(report_file, status):
+    '''
+    Sets report active status to given status.
+    '''
+    report_file.set_custom_property(month_active_report_prop, status)
+
+def activate_report(report_name):
+    '''
+    Sets given report to be the active report, and sets all other reports to inactive status.
+    '''
+    for filepath in glob(month_reports_pattern):
+        filename = get_report_name(filepath)
+        error, report_file = load_month_report(filename)
+        if error is not None:
+            return error
+        
+        if filename == report_name:
+            set_report_active_status(report_file, True)
+        elif is_active_report(report_file):
+            set_report_active_status(report_file, False)

@@ -12,7 +12,7 @@ import Managers from "./Managers";
 import MonthPrintView from "./MonthPrintView";
 import MonthReceiptMark from "./MonthReceiptMark";
 import MonthTracker from "./MonthTracker";
-import PrintSettings from "./PrintSettings";
+import MonthSettings from "./MonthSettings";
 import Reports from "./Reports";
 
 import AppErrorBoundary from "./AppErrorBoundary";
@@ -33,7 +33,7 @@ const Pages = {
   MonthPrintView,
   MonthReceiptMark,
   MonthTracker,
-  PrintSettings,
+  MonthSettings,
   Reports,
 };
 

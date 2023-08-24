@@ -319,9 +319,15 @@ def build_completion_page():
     month_name = request.json['month_name']
     title = request.json['title']
     families = request.json['families']
-
     month.generate_completion_pdf(month_name, title, g.families_file, families)
-    
+    return jsonify(), 200
+
+@api_blueprint.route('/report/activate', methods=["PUT"])
+def activate_month_report():
+    report_name = request.json['report_name']
+    error = month.activate_report(report_name)
+    if error is not None:
+        return error_response(error)
     return jsonify(), 200
 
 @api_blueprint.route('/print/month')

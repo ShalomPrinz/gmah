@@ -159,7 +159,13 @@ class Excel:
         * Supports boolean properties only.
         '''
         prop = BoolProperty(property, value)
-        self.workbook.custom_doc_props.append(prop)
+        if self.get_custom_property(property) is None:
+            self.workbook.custom_doc_props.append(prop)
+        else:
+            del self.workbook.custom_doc_props[property]
+            self.workbook.custom_doc_props.append(prop)
+            print("type and stuff", type(self.workbook.custom_doc_props))
+            print("itself", self.workbook.custom_doc_props)
         self.save()
 
     def get_custom_property(self, property):
