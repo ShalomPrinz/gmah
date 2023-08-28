@@ -4,7 +4,7 @@ import Row from "react-bootstrap/Row";
 
 import { ColumnList, Table } from "../components";
 import IconComponent from "../components/Icon";
-import { useMonthReports } from "../hooks";
+import { useReportContext } from "../contexts";
 import {
   activateReport,
   getManagers,
@@ -239,9 +239,7 @@ function DriversIgnore({ managers, managersChanged }: PrintIgnoreProps) {
 }
 
 function ActiveReport() {
-  const [reloadKey, setReloadKey] = useState(0);
-  const reportsChanged = () => setReloadKey((prev) => prev + 1);
-  const reports = useMonthReports(reloadKey);
+  const { reports, reportsUpdated } = useReportContext();
 
   if (reports.length === 0) {
     return <Col className="fs-3 m-5">אין דוחות קבלה במערכת</Col>;
@@ -268,7 +266,7 @@ function ActiveReport() {
     return (
       <button
         className="bg-white text-success rounded border border-3 border-success button-hover"
-        onClick={() => activateReport(report.name).then(reportsChanged)}
+        onClick={() => activateReport(report.name).then(reportsUpdated)}
         type="button"
       >
         <span className="ps-2">בחר</span>

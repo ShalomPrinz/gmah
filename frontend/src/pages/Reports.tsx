@@ -191,7 +191,7 @@ function useDriversValidation() {
 function useGenerateReport() {
   const [isGeneratingReport, setIsGenerating] = useState(false);
   const [hadNameExistsError, setHadNameExistsError] = useState(false);
-  const { reportsCountChanged } = useReportContext();
+  const { reportsUpdated } = useReportContext();
 
   function generateReport(
     value: string | undefined,
@@ -207,7 +207,7 @@ function useGenerateReport() {
           toastId: `reportSuccess:${reportName}`,
         });
         setHadNameExistsError(false);
-        reportsCountChanged();
+        reportsUpdated();
       })
       .catch((err) => {
         if (err?.response?.data?.error === "File Already Exists") {

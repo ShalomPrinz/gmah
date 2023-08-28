@@ -4,13 +4,14 @@ import { getReportsList } from "../services";
 import { Report } from "../types";
 
 function useMonthReports(reloadKey: number) {
-  const [reports, setReports] = useState([]);
+  const [reports, setReports] = useState<Report[]>([]);
+  const activeReportIndex = reports.findIndex((report) => report.active);
 
   useEffect(() => {
     getReportsList().then((res) => setReports(res.data.reports));
   }, [reloadKey]);
 
-  return reports as Report[];
+  return { activeReportIndex, reports };
 }
 
 export { useMonthReports };

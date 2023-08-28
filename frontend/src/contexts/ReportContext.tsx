@@ -1,12 +1,14 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 
 import { Dropdown } from "../components";
 import { useMonthReports } from "../hooks";
+import type { Report } from "../types";
 
 interface ReportContextValue {
+  reports: Report[];
   reportsAvailable: boolean;
-  reportsCountChanged: () => void;
+  reportsUpdated: () => void;
   selectedReport: string;
   SelectReportDropdown: () => JSX.Element;
 }
@@ -26,9 +28,10 @@ interface ReportProviderProps {
 
 function ReportProvider({ children }: ReportProviderProps) {
   const [reloadKey, setReloadKey] = useState(0);
-  const { onSelect, options, selectedReport } = useReportSelection(reloadKey);
+  const { onSelect, options, reports, selectedReport } =
+    useReportSelection(reloadKey);
 
-  function reportsCountChanged() {
+  function reportsUpdated() {
     setReloadKey((key) => key + 1);
   }
 
@@ -45,8 +48,9 @@ function ReportProvider({ children }: ReportProviderProps) {
   }
 
   const value = {
+    reports,
     reportsAvailable: options.length > 0,
-    reportsCountChanged,
+    reportsUpdated,
     selectedReport,
     SelectReportDropdown,
   };
@@ -57,24 +61,34 @@ function ReportProvider({ children }: ReportProviderProps) {
 }
 
 const defaultReport = "";
+const defaultSelected = "0";
 
 function useReportSelection(reloadKey: number) {
-  const reports = useMonthReports(reloadKey);
+  const { activeReportIndex, reports } = useMonthReports(reloadKey);
   const options = reports.map(({ name }, index) => ({
     eventKey: index.toString(),
     value: String(name ?? defaultReport),
   }));
 
-  const [selected, setSelected] = useState("0");
+  const [selected, setSelected] = useState(defaultSelected);
   const selectedReport =
     options.find(({ eventKey }) => selected === eventKey)?.value ??
     defaultReport;
+
+  useEffect(() => {
+    const activeReport =
+      activeReportIndex >= 0 ? activeReportIndex.toString() : defaultSelected;
+
+    if (selected != activeReport) {
+      setSelected(activeReport);
+    }
+  }, [activeReportIndex]);
 
   const onSelect = (eventKey: string | null) => {
     if (eventKey) setSelected(eventKey);
   };
 
-  return { onSelect, options, selectedReport };
+  return { onSelect, options, reports, selectedReport };
 }
 
 export { ReportProvider, useReportContext };
