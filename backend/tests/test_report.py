@@ -2,7 +2,7 @@ import unittest
 from os import path
 
 from src.data import date_prop, status_prop, key_prop, driver_prop_index
-from src.month import generate_month_files, get_report_path, get_reports_list
+from src.month import generate_month_files, get_report_path, get_reports_list, is_active_report, activate_report
 from src.report import get_no_driver_families, get_no_manager_drivers, search_report, search_report_column, update_family_receipt_status, update_driver_receipt_status, get_family_receipt_status, receipt_update_results, get_driver_receipt_status
 from src.results import receipt_update_results
 
@@ -168,7 +168,8 @@ class TestReportsInfo(unittest.TestCase):
                 for current in range(reports_count):
                     self.generate_report(f"report_{current}")
                 
-                actual_reports_count = len(get_reports_list())
+                _, reports = get_reports_list()
+                actual_reports_count = len(reports)
                 self.assertEqual(actual_reports_count, reports_count, message)
     
     def test_get_reports_list_names(self):
@@ -184,7 +185,9 @@ class TestReportsInfo(unittest.TestCase):
                 for name in reports_names:
                     self.generate_report(name)
                 
-                actual_reports_names = sorted(get_reports_list())
+                _, reports = get_reports_list()
+                reports = list(map(lambda r: r["name"], reports))
+                actual_reports_names = sorted(reports)
                 expected_reports_names = sorted(reports_names)
                 self.assertListEqual(actual_reports_names, expected_reports_names, message)
 
@@ -419,7 +422,7 @@ class TestMarkReport(unittest.TestCase):
                 result = update_driver_receipt_status(report_file, status)
                 self.assertEqual(result, expected_result, message)
     
-class TestReportStatusInfo(unittest.TestCase):
+class TestSingleReportInfo(unittest.TestCase):
     def setUpClass():
         setUpFamilies()
         setUpManagers()
@@ -427,11 +430,13 @@ class TestReportStatusInfo(unittest.TestCase):
     def tearDownClass():
         tearDownFamilies()
         tearDownManagers()
+    
+    def tearDown(self):
         tearDownMonth()
 
-    def generate_report(self, family_name="פרינץ"):
+    def generate_report(self, family_name="פרינץ", report_name="שם דוח"):
         families = [Family({"שם מלא": family_name})]
-        return family_name, generate_report(self.assertTrue, families)
+        return family_name, generate_report(self.assertTrue, families, report_name)
     
     def test_get_receipt_status_not_found(self):
         default_receipt_status = {
@@ -445,7 +450,7 @@ class TestReportStatusInfo(unittest.TestCase):
             ("doesn't-exist", "Should return default receipt status if family not found")
         ]
 
-        _, report_file = self.generate_report("family-name")
+        _, report_file = self.generate_report(family_name="family-name")
         for family_name, message in test_cases:
             with self.subTest(f"{family_name}"):
                 receipt_status = get_family_receipt_status(report_file, family_name)
@@ -482,3 +487,38 @@ class TestReportStatusInfo(unittest.TestCase):
             with self.subTest(f"driver_name: {driver_name}"):
                 result = get_driver_receipt_status(report_file, driver_name)
                 self.assertEqual(len(result), expected_result, message)
+
+    def test_first_report_active(self):
+        _, report = self.generate_report(report_name="first")
+        is_active = is_active_report(report)
+        self.assertTrue(is_active, "First report should be set as active")
+        
+        _, report = self.generate_report(report_name="second")
+        is_active = is_active_report(report)
+        self.assertFalse(is_active, "Second report shouldn't be set as active")
+
+    def test_activate_report(self):
+        reports = ["first", "second", "third"]
+        def generate_reports():
+            tearDownMonth()
+            for name in reports:
+                self.generate_report(report_name=name)
+
+        test_cases = [
+            (None,          "first", "Should not set any new active report if given report name is None"),
+            ("",            "first", "Should not set any new active report if given report name is empty string"),
+            ("first",       "first", "Activating active report should not make any affect"),
+            ("second",      "second", "Should activate second report"),
+            ("fake-report", "first", "Should not change active report if given report name doesn't exist")
+        ]
+
+        for report_name, expected_active_report, message in test_cases:
+            with self.subTest(f"report_name: {report_name}"):
+                generate_reports()
+                activate_report(report_name)
+                _, reports_list = get_reports_list()
+                for report in reports_list:
+                    if report["name"] == expected_active_report:
+                        self.assertTrue(report["active"], message)
+                    else:
+                        self.assertFalse(report["active"], message)

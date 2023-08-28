@@ -164,8 +164,6 @@ class Excel:
         else:
             del self.workbook.custom_doc_props[property]
             self.workbook.custom_doc_props.append(prop)
-            print("type and stuff", type(self.workbook.custom_doc_props))
-            print("itself", self.workbook.custom_doc_props)
         self.save()
 
     def get_custom_property(self, property):

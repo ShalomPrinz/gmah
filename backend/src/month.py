@@ -203,16 +203,35 @@ def set_report_active_status(report_file, status):
     '''
     report_file.set_custom_property(month_active_report_prop, status)
 
+def is_report_name_valid(report_name):
+    '''
+    Validates report name is an actual report name.
+    '''
+    if not report_name:
+        return False
+    
+    error, reports_list = get_reports_list()
+    if error is not None:
+        return False
+    
+    if not any(report_name == report["name"] for report in reports_list):
+        return False
+    
+    return True
+
 def activate_report(report_name):
     '''
     Sets given report to be the active report, and sets all other reports to inactive status.
     '''
+    if not is_report_name_valid(report_name):
+        return
+
     for filepath in glob(month_reports_pattern):
         filename = get_report_name(filepath)
         error, report_file = load_month_report(filename)
         if error is not None:
             return error
-        
+
         if filename == report_name:
             set_report_active_status(report_file, True)
         elif is_active_report(report_file):
