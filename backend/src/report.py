@@ -194,8 +194,10 @@ def get_report_completion_families(report_file: Excel, families_file: Excel):
     families = search_families(families_file)
 
     def status_filter(family):
-        return family[status_prop] == report_style_map[report_not_received_name]
-    report = filter(status_filter, search_report(report_file))
+        not_received = family[status_prop] == report_style_map[report_not_received_name]
+        no_driver_no_status = False if family[driver_prop] else family[status_prop] == report_style_map[style_name]
+        return not_received or no_driver_no_status
+    filtered_families = filter(status_filter, search_report(report_file))
 
     def to_completion_family(family):
         if not family[key_prop]:
@@ -208,7 +210,7 @@ def get_report_completion_families(report_file: Excel, families_file: Excel):
             street_prop: family_data[street_prop],
             driver_prop: family[driver_prop]
         }
-    completion_families = map(to_completion_family, report)
+    completion_families = map(to_completion_family, filtered_families)
 
     def not_empty_filter(completion_family):
         return len(completion_family.keys()) > 0
