@@ -105,7 +105,11 @@ def query_families_history():
 
 @api_blueprint.route('/families', methods=["POST"])
 def add_families():
-    result = families.add_families(g.families_file, request.json)
+    req_families = request.json['families']
+    month_insert = request.json['month_insert']
+    result = families.add_families(g.families_file, req_families)
+    if result.status == 200 and month_insert:
+        month.insert_families_to_active(req_families)
     return jsonify(title=result.title, description=result.description, family_name=result.family_key), result.status
 
 @api_blueprint.route('/family', methods=["PUT"])

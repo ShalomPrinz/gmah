@@ -1,3 +1,4 @@
+import { type ReactNode } from "react";
 import { FieldErrors, FormProvider, useForm } from "react-hook-form";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
@@ -12,6 +13,7 @@ import { trimObject } from "../../util";
 import "./Form.css";
 
 interface FormProps {
+  CustomTitle?: ReactNode;
   initialData?: {};
   inputsInRow?: "4" | "6";
   onSubmit: (values: {}) => Promise<any>;
@@ -23,6 +25,7 @@ interface FormProps {
 }
 
 const AppForm = ({
+  CustomTitle,
   initialData,
   inputsInRow,
   onSubmit,
@@ -99,9 +102,7 @@ const AppForm = ({
   return (
     <FormProvider {...formMethods}>
       <form onSubmit={onSubmitInit}>
-        <Row>
-          <h1>{title}</h1>
-        </Row>
+        <Row>{CustomTitle || <h1>{title}</h1>}</Row>
         <Row className="d-flex justify-content-center">
           <ConditionalList itemCallback={inputCallback} list={textInputs} />
         </Row>

@@ -133,6 +133,18 @@ def append_report(report_file: Excel, families, managers_file):
     def family_to_excel_row(family): return to_excel_row(family, managers_file)
     report_file.append_rows(families, family_to_excel_row)
 
+def report_late_append(report_file: Excel, families):
+    '''
+    Appends all given families to the given report.
+    Families won't have driver or manager inside report.
+    '''
+    def family_to_excel_row(family):
+        family_key = family.get(key_prop, None)
+        if family_key is None:
+            raise Exception(f"שגיאה בעדכון דוח קבלה חודשי: למשפחה {family} אין שם")
+        return [family_key, None, None, None, None]
+    report_file.append_rows(families, family_to_excel_row)
+
 def to_excel_row(family, managers_file):
     '''
     Cast family data to report excel row format in the right order.

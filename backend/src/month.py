@@ -2,10 +2,10 @@ from glob import glob
 from os import path, listdir
 
 from src.data import key_prop, driver_prop, pdf_properties, system_files_folder
-from src.errors import FileAlreadyExists
+from src.errors import FileAlreadyExists, ActiveReportNotFound
 from src.families import search_families
 from src.managers import load_managers_file
-from src.report import load_report_file, create_empty_report, append_report
+from src.report import load_report_file, create_empty_report, append_report, report_late_append
 from src.pdf import PDFBuilder, get_print_path, get_print_folder_path
 
 month_reports_folder = f"{system_files_folder}/דוחות קבלה"
@@ -77,6 +77,19 @@ def get_reports_list():
             "active": is_active_report(report)
         })
     return None, reports
+
+def get_active_report():
+    '''
+    Returns the active report file.
+    If no active report found, returns None.
+    '''
+    for filepath in glob(month_reports_pattern):
+        error, report = load_report_file(filepath)
+        if error is not None:
+            return error, None
+        if is_active_report(report):
+            return None, report
+    return None, None
 
 def get_printable_report(report_name, printable_name):
     '''
@@ -236,3 +249,14 @@ def activate_report(report_name):
             set_report_active_status(report_file, True)
         elif is_active_report(report_file):
             set_report_active_status(report_file, False)
+
+def insert_families_to_active(families):
+    '''
+    Adds given families to the active report.
+    '''
+    error, active_report = get_active_report()
+    if error is not None:
+        return error
+    if active_report is None:
+        return ActiveReportNotFound("לא נמצא דוח קבלה פעיל")
+    report_late_append(active_report, families)

@@ -6,6 +6,7 @@ import { useMonthReports } from "../hooks";
 import type { Report } from "../types";
 
 interface ReportContextValue {
+  activeReport: string;
   reports: Report[];
   reportsAvailable: boolean;
   reportsUpdated: () => void;
@@ -28,7 +29,7 @@ interface ReportProviderProps {
 
 function ReportProvider({ children }: ReportProviderProps) {
   const [reloadKey, setReloadKey] = useState(0);
-  const { onSelect, options, reports, selectedReport } =
+  const { onSelect, options, selectedReport, ...reportProps } =
     useReportSelection(reloadKey);
 
   function reportsUpdated() {
@@ -48,11 +49,11 @@ function ReportProvider({ children }: ReportProviderProps) {
   }
 
   const value = {
-    reports,
     reportsAvailable: options.length > 0,
     reportsUpdated,
     selectedReport,
     SelectReportDropdown,
+    ...reportProps,
   };
 
   return (
@@ -71,14 +72,21 @@ function useReportSelection(reloadKey: number) {
   }));
 
   const [selected, setSelected] = useState(defaultSelected);
-  const selectedReport =
-    options.find(({ eventKey }) => selected === eventKey)?.value ??
-    defaultReport;
+
+  function getReportNameByIndex(index: string) {
+    return (
+      options.find(({ eventKey }) => index === eventKey)?.value ?? defaultReport
+    );
+  }
+
+  function getActiveReportIndex() {
+    return activeReportIndex >= 0
+      ? activeReportIndex.toString()
+      : defaultSelected;
+  }
 
   useEffect(() => {
-    const activeReport =
-      activeReportIndex >= 0 ? activeReportIndex.toString() : defaultSelected;
-
+    const activeReport = getActiveReportIndex();
     if (selected != activeReport) {
       setSelected(activeReport);
     }
@@ -88,7 +96,13 @@ function useReportSelection(reloadKey: number) {
     if (eventKey) setSelected(eventKey);
   };
 
-  return { onSelect, options, reports, selectedReport };
+  return {
+    activeReport: getReportNameByIndex(getActiveReportIndex()),
+    onSelect,
+    options,
+    reports,
+    selectedReport: getReportNameByIndex(selected),
+  };
 }
 
 export { ReportProvider, useReportContext };

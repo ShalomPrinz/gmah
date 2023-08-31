@@ -24,8 +24,11 @@ async function searchFamiliesHistory(query: string, by: string) {
  * will be this family's name. If there was an unexpected error, the string will
  * simply be "Unexpected".
  */
-async function addFamilies(families: Family[]) {
-  return post("families", families).catch((error) => {
+async function addFamilies(families: Family[], monthInsert: boolean) {
+  return post("families", {
+    families,
+    month_insert: monthInsert,
+  }).catch((error) => {
     let familyName = "Unexpected";
 
     if (

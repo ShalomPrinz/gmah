@@ -9,25 +9,21 @@ class FileResourcesMissingError(Exception):
         self.result = Result(404, "File Resource Missing", description)
 
 class FileNotFoundError(Exception):
-    '''
-    File not found.
-    '''
     def __init__(self, description):
         super().__init__()
         self.result = Result(404, "File Not Found", description)
 
 class FamilyNotFoundError(Exception):
-    '''
-    Family not found.
-    '''
     def __init__(self, description):
         super().__init__()
         self.result = Result(404, "Family Not Found", description)
 
 class FileAlreadyExists(Exception):
-    '''
-    File already exists.
-    '''
     def __init__(self, description):
         super().__init__()
         self.result = Result(409, "File Already Exists", description)
+
+class ActiveReportNotFound(Exception):
+    def __init__(self, description):
+        super().__init__()
+        self.result = Result(404, "Active Report Not Found", description)

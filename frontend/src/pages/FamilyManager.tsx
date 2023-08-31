@@ -20,14 +20,12 @@ const columns = [
 const operations = [
   {
     id: "0",
-    buttonText: "מעבר לעמוד",
     description: "הוסף משפחה",
     title: "הוספת משפחה אחת",
     url: "single",
   },
   {
     id: "1",
-    buttonText: "מעבר לעמוד",
     description: "הוספת משפחות באמצעות Word או ידנית",
     title: "הוסף מספר משפחות",
     url: "many",
@@ -40,7 +38,7 @@ function FamilyManager() {
       className="link-decoration p-2 rounded bg-default border border-none border-0"
       to={item.url}
     >
-      <span className="ps-2">{item.buttonText}</span>
+      <span className="ps-2">מעבר לעמוד</span>
       <IconComponent flipHorizontal icon="options" />
     </Link>
   );
