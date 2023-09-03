@@ -95,10 +95,14 @@ def get_printable_report(report_name, printable_name):
     '''
     Returns a single printable file.
     '''
+    printables = get_printable_files(report_name)
+    if len(printables) == 0:
+        return None, None
+
     filename = printable_name or month_printable_report_name
-    path = get_print_path(report_name, filename)
+    path_prefix = get_print_path(report_name, filename)
     try:
-        with open(f'{path}{month_printable_suffix}', 'rb') as printable:
+        with open(f'{path_prefix}{month_printable_suffix}', 'rb') as printable:
             return printable.read(), None
     except Exception as e:
         return None, e

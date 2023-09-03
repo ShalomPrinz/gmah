@@ -342,6 +342,8 @@ def get_month_printable_report():
     printable, error = month.get_printable_report(report_name, printable)
     if error is not None:
         return error_response(error)
+    if printable is None:
+        return jsonify(), 200
 
     response = make_response(printable)
     response.headers['Content-Type'] = 'application/pdf'

@@ -9,11 +9,21 @@ const pageTitle = "הדפסת דוח קבלה לנהגים";
 function MonthPrintView() {
   const { reportsAvailable, selectedReport } = useReportContext();
   const files = usePrintableFiles(selectedReport);
+  const hasFiles = files.length !== 0;
 
   const [selectedPrintable, setSelectedPrintable] = useState("");
   const url = usePrintableReport(selectedReport, selectedPrintable);
 
   if (!reportsAvailable) return <NoMonthReports pageTitle={pageTitle} />;
+  if (!hasFiles)
+    return (
+      <div className="text-center">
+        <h1 className="my-5">{pageTitle}</h1>
+        <h3>
+          אין קבצים להדפסה בחודש <strong>{selectedReport}</strong>.
+        </h3>
+      </div>
+    );
 
   const reportPickerWidth = reportsAvailable ? "30%" : "80%";
 
