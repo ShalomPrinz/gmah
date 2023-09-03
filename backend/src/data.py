@@ -1,6 +1,7 @@
 system_files_folder = "system_files"
 families_filename = f"{system_files_folder}/נתמכים.xlsx"
 families_history_filename = f"{system_files_folder}/הסטוריית נתמכים.xlsx"
+holiday_families_filename = f"{system_files_folder}/נתמכי חגים.xlsx"
 
 key_prop = "שם מלא"
 street_prop = "רחוב"
@@ -13,6 +14,8 @@ family_properties = [key_prop, street_prop, "בניין", "דירה", "קומה"
 exit_date_prop = "תאריך יציאה"
 reason_prop = "סיבה"
 history_properties = [*family_properties[:-3], recommender_prop, exit_date_prop, reason_prop]
+
+holiday_properties = [*family_properties[:-3], recommender_prop, notes_prop]
 
 driver_prop_index = family_properties.index(driver_prop)
 

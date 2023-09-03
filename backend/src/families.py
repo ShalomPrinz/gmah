@@ -1,6 +1,6 @@
 from enum import Enum
 
-from src.data import driver_prop, key_prop, family_properties, families_filename, families_history_filename, history_properties, exit_date_prop, reason_prop
+from src.data import driver_prop, key_prop, family_properties, families_filename, families_history_filename, holiday_families_filename, history_properties, holiday_properties, exit_date_prop, reason_prop
 from src.excel import Excel
 from src.util import without_hyphen, insert_hyphen, validate_driver_name
 from src.results import Result, add_results, add_many_error, add_many_results, driver_update_results
@@ -54,6 +54,30 @@ class FamiliesHistorySearchBy(Enum):
             case _:
                 return [0]
 
+class HolidayFamiliesSearchBy(Enum):
+    NAME = 'name'
+    STREET = 'street'
+    R11R = 'r11r'
+
+    @classmethod
+    def get_search_columns(cls, search_by):
+        if search_by is None:
+            return []
+
+        search_by = getattr(
+            HolidayFamiliesSearchBy,
+            search_by.upper(),
+            HolidayFamiliesSearchBy.NAME)
+        match search_by:
+            case HolidayFamiliesSearchBy.NAME:
+                return [0]
+            case HolidayFamiliesSearchBy.STREET:
+                return [1]
+            case HolidayFamiliesSearchBy.R11R:
+                return [7]
+            case _:
+                return [0]
+
 def load_families_excel(filename, row_properties, search_enum):
     '''
     Internal wrapper for loading excel files containing families
@@ -94,6 +118,19 @@ def load_families_history_file():
         families_history_filename,
         history_properties,
         FamiliesHistorySearchBy)
+
+def load_holiday_families_file():
+    '''
+    Connects to the holiday famileis source file.
+
+    Returns a tuple: (error, file)
+        - If connection has failed, file will be None
+        - If connection has succeed, error will be None
+    '''
+    return load_families_excel(
+        holiday_families_filename,
+        holiday_properties,
+        HolidayFamiliesSearchBy)
 
 def to_excel_row(family):
     '''

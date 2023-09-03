@@ -84,6 +84,8 @@ def load_files():
         return error_response(error)
     g.managers_file = managers_file
 
+# Families
+
 @api_blueprint.route('/familiesCount')
 def families_count():
     count = families.get_count(g.families_file)
@@ -101,6 +103,17 @@ def query_families_history():
     query = request.args.get('query')
     search_by = request.args.get('by')    
     query_result = families.search_families(g.families_history_file, query, search_by)
+    return jsonify(families=query_result), 200
+
+@api_blueprint.route('/families/holiday')
+def query_holiday_families():
+    error, holiday_families_file = families.load_holiday_families_file()
+    if error is not None:
+        return error_response(error)
+
+    query = request.args.get('query')
+    search_by = request.args.get('by')
+    query_result = families.search_families(holiday_families_file, query, search_by)
     return jsonify(families=query_result), 200
 
 @api_blueprint.route('/families', methods=["POST"])
@@ -162,6 +175,8 @@ def add_family_driver():
         return result_error_response(result)
     return jsonify(title=result.title, description=result.description), result.status
 
+# Managers
+
 @api_blueprint.route('/managers')
 def get_managers():
     api_blueprint_managers = managers.get_managers(g.managers_file)
@@ -209,6 +224,8 @@ def validate_drivers():
         return error_response(error)
 
     return jsonify(no_manager_drivers=no_manager_drivers, no_driver_families=no_driver_families), 200
+
+# Month and report
 
 @api_blueprint.route('/generate/month', methods=["POST"])
 def generate_month():
@@ -355,6 +372,8 @@ def get_month_printable_files():
     report_name = request.args.get('report_name')
     files = month.get_printable_files(report_name)    
     return jsonify(files=files), 200
+
+# Drivers
 
 @api_blueprint.route('/drivers')
 def get_drivers():

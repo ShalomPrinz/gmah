@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 
 import { BottomMenu, getSearchBy, SearchRow, Table } from "../components";
 import IconComponent from "../components/Icon";
-import { useFamiliesSearch } from "../hooks";
+import { File, useFamiliesSearch } from "../hooks";
 import {
   familiesHistoryTableHeaders,
   type Family,
@@ -73,7 +73,11 @@ async function permanentRemoveFamilyWrapper(
 function FamiliesHistory() {
   const [query, setQuery] = useState("");
   const [searchBy, setSearchBy] = useState("name");
-  const { families, reloadFamilies } = useFamiliesSearch(query, searchBy, true);
+  const { families, reloadFamilies } = useFamiliesSearch(
+    query,
+    searchBy,
+    File.FAMILIES_HISTORY
+  );
 
   const {
     isFamilySelected,

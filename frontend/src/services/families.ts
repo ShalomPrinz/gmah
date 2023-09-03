@@ -16,6 +16,10 @@ async function searchFamiliesHistory(query: string, by: string) {
   return get("families/history", { params: { query, by } });
 }
 
+async function searchHolidayFamilies(query: string, by: string) {
+  return get("families/holiday", { params: { query, by } });
+}
+
 /**
  * Posts families to database.
  *
@@ -103,6 +107,7 @@ export {
   permanentRemoveFamily,
   searchFamilies,
   searchFamiliesHistory,
+  searchHolidayFamilies,
   updateFamily,
   removeFamily,
   removeFamilyDriver,

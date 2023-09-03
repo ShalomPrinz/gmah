@@ -230,6 +230,17 @@ function NavbarWrapper() {
       ],
       title: "הדפסות",
     },
+    {
+      id: 3,
+      pages: [
+        {
+          id: 0,
+          name: "נתמכי חגים",
+          url: "/holidays",
+        },
+      ],
+      title: "חגים",
+    },
   ];
 
   return <AppNavbar pages={pages} />;
