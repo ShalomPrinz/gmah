@@ -35,6 +35,7 @@ class StyleSearchRequest(BaseRequest):
     search_by: str
     search_style: str
     style_map: Dict[str, Any]
+    exact: bool = False
 
 def is_match(request, value):
     return request.query == value if request.exact else request.query in value
@@ -81,7 +82,7 @@ def style_search(request: StyleSearchRequest):
             cell_value = row[column].value
             if cell_value is None:
                 continue # Don't insert no value cell into search result
-            if request.query in cell_value:
+            if is_match(request, cell_value):
                 matching_row = {}
                 for index, cell in enumerate(row):
                     key = request.headers[index]

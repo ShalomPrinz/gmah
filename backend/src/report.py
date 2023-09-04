@@ -239,7 +239,8 @@ def get_driver_receipt_status(report_file: Excel, driver_name):
         driver_name,
         'driver',
         search_style='receive',
-        style_map=report_style_map)
+        style_map=report_style_map,
+        exact=True)
 
     if not result:
         return []

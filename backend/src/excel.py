@@ -75,7 +75,8 @@ class Excel:
             query,
             search_by='',
             search_style=None,
-            style_map={}):
+            style_map={},
+            exact=False):
         request = StyleSearchRequest(
             headers=self.get_headers(),
             query=query,
@@ -83,7 +84,8 @@ class Excel:
             search_by=search_by,
             search_enum=self.search_enum,
             search_style=search_style,
-            style_map=style_map
+            style_map=style_map,
+            exact=exact
         )
 
         return style_search(request)
