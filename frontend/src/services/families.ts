@@ -57,6 +57,13 @@ async function updateFamily(originalName: string, familyData: Family) {
   });
 }
 
+async function updateHolidayFamily(originalName: string, familyData: Family) {
+  return put("holiday/family", {
+    original_name: originalName,
+    family_data: familyData,
+  });
+}
+
 async function removeFamily(
   familyName: string,
   exitDate: string,
@@ -109,6 +116,7 @@ export {
   searchFamiliesHistory,
   searchHolidayFamilies,
   updateFamily,
+  updateHolidayFamily,
   removeFamily,
   removeFamilyDriver,
   restoreFamily,

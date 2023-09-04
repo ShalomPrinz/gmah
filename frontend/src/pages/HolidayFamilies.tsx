@@ -1,11 +1,15 @@
 import { useState } from "react";
 import Row from "react-bootstrap/Row";
+import { Link } from "react-router-dom";
 
 import { BottomMenu, SearchRow, Table, getSearchBy } from "../components";
-import { familyIdProp, familiesTableHeaders, type Family } from "../modules";
-import { File, useFamiliesSearch, useFamilySelection } from "../hooks";
-import { Link } from "react-router-dom";
 import IconComponent from "../components/Icon";
+import {
+  familyIdProp,
+  type Family,
+  holidayFamiliesTableHeaders,
+} from "../modules";
+import { File, useFamiliesSearch, useFamilySelection } from "../hooks";
 
 const buttons = [
   {
@@ -60,7 +64,7 @@ function HolidayFamilies() {
         />
         <Row>
           <Table
-            columns={familiesTableHeaders}
+            columns={holidayFamiliesTableHeaders}
             data={families}
             dataIdProp={familyIdProp}
             headerHighlight={getSearchByHeader(searchBy)}

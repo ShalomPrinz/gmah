@@ -16,6 +16,7 @@ function trimObject(obj: any) {
   let trimmedObj: any = {};
 
   for (const key in obj) {
+    if (typeof obj[key] === "number") obj[key] = obj[key].toString();
     if (typeof obj[key] !== "string") continue;
 
     trimmedObj[key] = obj[key].trim();

@@ -5,6 +5,7 @@ family_id_prop="שם מלא"
 family_attributes=([0]=$family_id_prop [1]="רחוב" [2]="בניין" [3]="דירה" [4]="קומה" [5]="מס' בית" [6]="מס' פלאפון" [7]="נהג" [8]="ממליץ" [9]="הערות")
 add_family_exclude="7 9"
 families_table_exclude="9"
+holiday_families_exclude="7"
 
 history_family_attributes=("${family_attributes[@]:0:7}")
 history_family_attributes+=( "ממליץ" "תאריך יציאה" "סיבה" )
@@ -72,7 +73,7 @@ function add_labeled_families_array {
             value="${family_attributes[$idx]}"
             path=$(prepare_path "$value")
             var_text+='{id: '$idx', label: "'$value'", path: "'$path'"'
-            if [[ "$var_name" == "editFamilyInputs" && "$value" == "הערות" ]]; then
+            if [[ "$var_name" =~ ^edit.* && "$value" == "הערות" ]]; then
                 var_text+=', doubleSize: true'
             fi
             var_text+='},'
@@ -87,6 +88,9 @@ function add_labeled_families_array {
 # Edit Family
 add_labeled_families_array "editFamilyInputs" ""
 
+# Edit Holiday Family
+add_labeled_families_array "editHolidayFamilyInputs" "$holiday_families_exclude"
+
 # Add Families
 add_labeled_families_array "addFamilyHeaders" "$add_family_exclude"
 
@@ -95,6 +99,9 @@ add_families_array "familiesTableHeaders" "path" "$families_table_exclude" "${fa
 
 # Families History Table
 add_families_array "familiesHistoryTableHeaders" "path" "" "${history_family_attributes[@]}"
+
+# Holiday Families Table
+add_families_array "holidayFamiliesTableHeaders" "path" "$holiday_families_exclude" "${family_attributes[@]}"
 
 function write_family_properties {
     local var_name="familyProperties"

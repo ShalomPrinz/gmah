@@ -29,7 +29,10 @@ const router = createBrowserRouter(
       <Route path="families">
         <Route index element={<Pages.Families />} />
         <Route path="edit">
-          <Route path=":name" element={<Pages.EditFamily />} />
+          <Route
+            path=":name"
+            element={<Pages.EditFamily familyType="regular" />}
+          />
         </Route>
         <Route path="history" element={<Pages.FamiliesHistory />} />
         <Route path="add">
@@ -59,6 +62,12 @@ const router = createBrowserRouter(
       </Route>
       <Route path="holidays">
         <Route index element={<Pages.HolidayFamilies />} />
+        <Route path="edit">
+          <Route
+            path=":name"
+            element={<Pages.EditFamily familyType="holiday" />}
+          />
+        </Route>
       </Route>
     </Route>
   )

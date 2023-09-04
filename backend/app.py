@@ -134,6 +134,19 @@ def update_family():
         return error_response(error)
     return jsonify(), 200
 
+@api_blueprint.route('/holiday/family', methods=["PUT"])
+def update_holiday_family():
+    error, holiday_families_file = families.load_holiday_families_file()
+    if error is not None:
+        return error_response(error)
+
+    original_name = request.json['original_name']
+    family_data = request.json['family_data']
+    error = families.update_family(holiday_families_file, original_name, family_data)
+    if error is not None:
+        return error_response(error)
+    return jsonify(), 200
+
 @api_blueprint.route('/family/remove', methods=["DELETE"])
 def remove_family():
     family_name = request.args.get('family_name')

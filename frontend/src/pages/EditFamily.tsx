@@ -4,15 +4,23 @@ import { Form } from "../components";
 import { useLocationState } from "../hooks";
 import {
   editFamilyInputs,
+  editHolidayFamilyInputs,
   familiesObjectSchema,
   familyIdProp,
 } from "../modules";
 import type { Family, FormFamily } from "../modules";
-import { updateFamily } from "../services";
+import { updateFamily, updateHolidayFamily } from "../services";
 import { reverseFamilyPreparation } from "../util";
 
-function getInitialFamily(family: Family) {
-  return editFamilyInputs.reduce(
+type Input = {
+  id: number;
+  label: string;
+  path: string;
+  doubleSize?: boolean;
+};
+
+function getInitialFamily(inputs: Input[], family: Family) {
+  return inputs.reduce(
     (obj, { label, path }) => ({
       ...obj,
       [path]: family[label as keyof Family] || "",
@@ -21,15 +29,31 @@ function getInitialFamily(family: Family) {
   );
 }
 
-function EditFamily() {
+const editFamilyProps = {
+  regular: {
+    inputs: editFamilyInputs,
+    updateFunc: updateFamily,
+  },
+  holiday: {
+    inputs: editHolidayFamilyInputs,
+    updateFunc: updateHolidayFamily,
+  },
+};
+
+interface EditFamilyProps {
+  familyType: keyof typeof editFamilyProps;
+}
+
+function EditFamily({ familyType }: EditFamilyProps) {
   const originalFamily = useLocationState<Family>("EditFamily", "family");
   if (originalFamily === undefined) return <>Error</>;
 
   const originalName = originalFamily[familyIdProp];
+  const { inputs, updateFunc } = editFamilyProps[familyType];
 
   const handleSubmit = async (formFamily: FormFamily) => {
     const family = reverseFamilyPreparation(formFamily);
-    return updateFamily(originalName, family)
+    return updateFunc(originalName, family)
       .then(() => {
         toast.success(`שינית את פרטי משפחת ${originalName} בהצלחה`);
         return false;
@@ -40,7 +64,7 @@ function EditFamily() {
       });
   };
 
-  const initialFamily = getInitialFamily(originalFamily);
+  const initialFamily = getInitialFamily(inputs, originalFamily);
 
   return (
     <main className="container my-4 text-center">
@@ -50,7 +74,7 @@ function EditFamily() {
         onSubmit={(values) => handleSubmit(values as FormFamily)}
         schema={familiesObjectSchema}
         submitText="לחץ כאן לאישור"
-        textInputs={editFamilyInputs}
+        textInputs={inputs}
         title={`שינוי פרטים: ${originalName}`}
       />
     </main>

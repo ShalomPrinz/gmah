@@ -1,8 +1,10 @@
 export {
   editFamilyInputs,
+  editHolidayFamilyInputs,
   addFamilyHeaders,
   familiesTableHeaders,
   familiesHistoryTableHeaders,
+  holidayFamiliesTableHeaders,
   familyProperties,
   defaultFamily,
   familyIdProp,
