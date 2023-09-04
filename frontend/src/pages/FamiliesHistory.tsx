@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 
 import { BottomMenu, getSearchBy, SearchRow, Table } from "../components";
 import IconComponent from "../components/Icon";
-import { File, useFamiliesSearch } from "../hooks";
+import { File, useFamiliesSearch, useFamilySelection } from "../hooks";
 import {
   familiesHistoryTableHeaders,
   type Family,
@@ -170,20 +170,6 @@ function PermanentRemoveFamily({ onRemove }: { onRemove: () => void }) {
       <IconComponent icon="removeItem" />
     </button>
   );
-}
-
-function useFamilySelection() {
-  const [selected, setSelected] = useState<Family | undefined>(undefined);
-  const setNoSelectedFamily = () => setSelected(undefined);
-  const isFamilySelected = typeof selected !== "undefined";
-  const selectedFamilyName = isFamilySelected ? selected[familyIdProp] : "";
-
-  return {
-    isFamilySelected,
-    setSelected,
-    setNoSelectedFamily,
-    selectedFamilyName,
-  };
 }
 
 export default FamiliesHistory;

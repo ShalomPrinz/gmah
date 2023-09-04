@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 
 import { BottomMenu, getSearchBy, SearchRow, Table } from "../components";
 import IconComponent from "../components/Icon";
-import { useFamiliesSearch } from "../hooks";
+import { useFamiliesSearch, useFamilySelection } from "../hooks";
 import { familiesTableHeaders, familyIdProp } from "../modules";
 import type { Family } from "../modules";
 import { removeFamily } from "../services";
@@ -180,21 +180,6 @@ function RemoveFamily({ onRemove }: { onRemove: (reason: string) => void }) {
       />
     </>
   );
-}
-
-function useFamilySelection() {
-  const [selected, setSelected] = useState<Family | undefined>(undefined);
-  const setNoSelectedFamily = () => setSelected(undefined);
-  const isFamilySelected = typeof selected !== "undefined";
-  const selectedFamilyName = isFamilySelected ? selected[familyIdProp] : "";
-
-  return {
-    isFamilySelected,
-    selected,
-    setSelected,
-    setNoSelectedFamily,
-    selectedFamilyName,
-  };
 }
 
 export default Families;
