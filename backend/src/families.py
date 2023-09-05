@@ -93,7 +93,7 @@ def load_families_excel(filename, row_properties, search_enum):
     except Exception as e:
         return (e, None)
 
-def load_families_file():
+def load_families_file(filepath=families_filename):
     '''
     Connects to the families source file.
 
@@ -102,7 +102,7 @@ def load_families_file():
         - If connection has succeed, error will be None
     '''
     return load_families_excel(
-        families_filename,
+        filepath,
         family_properties,
         FamiliesSearchBy)
 

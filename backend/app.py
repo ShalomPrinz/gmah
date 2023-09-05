@@ -9,6 +9,7 @@ import src.families as families
 import src.month as month
 import src.report as report
 import src.drivers as drivers
+import src.holiday as holiday
 
 from src.results import get_result, Result
 
@@ -419,6 +420,21 @@ def update_driver_print_status():
     driver_name = request.json['driver_name']
     print_status = request.json['print_status']
     drivers.update_driver_print_status(g.managers_file, driver_name, print_status)
+    return jsonify(), 200
+
+# Holidays
+
+@api_blueprint.route('/holiday/new', methods=["POST"])
+def generate_holiday_files():
+    error, holiday_families_file = families.load_holiday_families_file()
+    if error is not None:
+        return error_response(error)
+
+    holiday_name = request.json['holiday_name']
+    holiday_families = request.json['holiday_families']
+    error = holiday.initialize_holiday(g.families_file, holiday_families_file, holiday_name, holiday_families)
+    if error is not None:
+        return error_response(error)
     return jsonify(), 200
 
 app.register_blueprint(api_blueprint)

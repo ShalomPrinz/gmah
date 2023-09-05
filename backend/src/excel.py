@@ -33,6 +33,9 @@ class Excel:
 
     def save(self):
         self.workbook.save(self.filename)
+    
+    def duplicate(self, new_path):
+        self.workbook.save(new_path)
 
     def get_rows_num(self):
         return self.worksheet.max_row

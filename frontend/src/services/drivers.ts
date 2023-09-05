@@ -1,4 +1,4 @@
-import { get, put, remove } from "./http";
+import { get, put } from "./http";
 
 async function getDrivers() {
   return get("drivers");

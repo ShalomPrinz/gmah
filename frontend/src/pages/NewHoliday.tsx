@@ -1,17 +1,16 @@
+import { useEffect, useRef, useState } from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
+import { toast } from "react-toastify";
 
 import { SearchRow, Table, getSearchBy } from "../components";
-import { useEffect, useRef, useState } from "react";
 import IconComponent from "../components/Icon";
-import { toast } from "react-toastify";
 import {
-  CompletionFamily,
-  HolidaySelectFamily,
+  type HolidaySelectFamily,
   familyIdProp,
   holidayFamiliesSelectionTableHeaders,
 } from "../modules";
-import { searchHolidayFamilies } from "../services";
+import { searchHolidayFamilies, startNewHoliday } from "../services";
 
 const buttons = [
   {
@@ -43,6 +42,21 @@ function NewHoliday() {
   const { removeFromSelection, selectFamily, selectedList } =
     useHolidaySelection();
   const hasSelectedFamilies = selectedList.length > 0;
+
+  function generateHoliday() {
+    const title = titleRef.current?.value;
+    if (typeof title === "undefined") {
+      toast.warn("לא ניתן לפתוח חג חדש ללא שם החג", {
+        toastId: "holidayNameMissingError",
+      });
+      return;
+    }
+
+    const families = selectedList.map((family) => family[familyIdProp]);
+    startNewHoliday(title, families)
+      .then(() => toast.success(`יצרת חג חדש בשם ${title} בהצלחה`))
+      .catch(() => toast.error("קרתה שגיאה בלתי צפויה"));
+  }
 
   return (
     <>
@@ -79,36 +93,34 @@ function NewHoliday() {
             </Row>
           </Col>
           <Col sm="4" style={{ marginBottom: "150px" }}>
-            {holidayHasFamilies ? (
-              hasSelectedFamilies ? (
-                <>
-                  <label className="fs-3 ps-4">כותרת:</label>
-                  <input
-                    className="fs-4 mb-4 p-2 rounded form-text-input"
-                    placeholder="הכנס שם חג..."
-                    ref={titleRef}
-                    type="text"
-                  />
-                  <Table
-                    columns={holidayFamiliesSelectionTableHeaders}
-                    data={selectedList}
-                    dataIdProp={familyIdProp}
-                    LastColumn={SelectionRemoveButton(removeFromSelection)}
-                    numberedTable
-                  />
-                </>
+            <>
+              <label className="fs-3 ps-4">כותרת:</label>
+              <input
+                className="fs-4 mb-4 p-2 rounded form-text-input"
+                placeholder="הכנס שם חג..."
+                ref={titleRef}
+                type="text"
+              />
+              {hasSelectedFamilies ? (
+                <Table
+                  columns={holidayFamiliesSelectionTableHeaders}
+                  data={selectedList}
+                  dataIdProp={familyIdProp}
+                  LastColumn={SelectionRemoveButton(removeFromSelection)}
+                  numberedTable
+                />
               ) : (
-                <h5 className="fw-light my-5">- לא נבחרו משפחות לחג -</h5>
-              )
-            ) : (
-              <></>
-            )}
+                <h5 className="fw-light my-5">
+                  - לא נבחרו משפחות נוספות לחג -
+                </h5>
+              )}
+            </>
           </Col>
         </Row>
       </main>
       <button
         className="fs-3 bg-default rounded p-4 mt-5 ms-5 mb-5 position-fixed bottom-0 start-0 button-hover"
-        onClick={() => {}}
+        onClick={generateHoliday}
         type="button"
       >
         <span className="ps-3">סיום הבחירה</span>
