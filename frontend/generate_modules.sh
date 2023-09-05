@@ -10,6 +10,8 @@ holiday_families_exclude="7"
 history_family_attributes=("${family_attributes[@]:0:7}")
 history_family_attributes+=( "ממליץ" "תאריך יציאה" "סיבה" )
 
+holiday_select_family_attributes=([0]=$family_id_prop [1]="ממליץ")
+
 report_date_prop="תאריך"
 report_receive_prop="קיבל/ה"
 report_columns=([0]=$family_id_prop [1]="אחראי" [2]="נהג" [3]=$report_date_prop [4]=$report_receive_prop)
@@ -103,6 +105,9 @@ add_families_array "familiesHistoryTableHeaders" "path" "" "${history_family_att
 # Holiday Families Table
 add_families_array "holidayFamiliesTableHeaders" "path" "$holiday_families_exclude" "${family_attributes[@]}"
 
+# Holiday Families Selection Table
+add_families_array "holidayFamiliesSelectionTableHeaders" "path" "" "${holiday_select_family_attributes[@]}"
+
 function write_family_properties {
     local var_name="familyProperties"
     echo "export const $var_name = " >> $output_file
@@ -158,6 +163,24 @@ function write_family_type {
 
 write_family_type "Family" true
 write_family_type "FormFamily" false
+
+function write_special_family_type {
+    local var_name=$1
+    shift 1
+    local attrs=("$@")
+    echo "export type $var_name = " >> $output_file
+
+    local var_text="{"
+    for idx in ${!attrs[@]}; do
+        var_text+='"'${attrs[$idx]}'": string;'
+    done
+    var_text+="}"
+
+    echo -e "$var_text\n" >> $output_file
+    index_type_exports+="$var_name,"
+}
+
+write_special_family_type "HolidaySelectFamily" "${holiday_select_family_attributes[@]}"
 
 # Family ID Prop
 fip_name="familyIdProp"

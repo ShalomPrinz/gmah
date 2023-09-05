@@ -71,6 +71,11 @@ export const holidayFamiliesTableHeaders = [
   { id: 9, path: "הערות" },
 ];
 
+export const holidayFamiliesSelectionTableHeaders = [
+  { id: 0, path: "שם מלא" },
+  { id: 1, path: "ממליץ" },
+];
+
 export const familyProperties = [
   "שם מלא",
   "רחוב",
@@ -122,5 +127,7 @@ export type FormFamily = {
   ממליץ: string;
   הערות: string;
 };
+
+export type HolidaySelectFamily = { "שם מלא": string; ממליץ: string };
 
 export const familyIdProp = "שם מלא";

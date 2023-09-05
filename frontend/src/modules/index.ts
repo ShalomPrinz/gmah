@@ -5,6 +5,7 @@ export {
   familiesTableHeaders,
   familiesHistoryTableHeaders,
   holidayFamiliesTableHeaders,
+  holidayFamiliesSelectionTableHeaders,
   familyProperties,
   defaultFamily,
   familyIdProp,
@@ -18,7 +19,7 @@ export {
   reportDateProp,
 } from "./reports";
 
-export type { Family, FormFamily } from "./families";
+export type { Family, FormFamily, HolidaySelectFamily } from "./families";
 
 export type { CompletionFamily } from "./reports";
 

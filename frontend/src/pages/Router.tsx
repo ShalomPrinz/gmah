@@ -68,6 +68,7 @@ const router = createBrowserRouter(
             element={<Pages.EditFamily familyType="holiday" />}
           />
         </Route>
+        <Route path="new" element={<Pages.NewHoliday />} />
       </Route>
     </Route>
   )

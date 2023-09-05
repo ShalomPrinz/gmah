@@ -238,6 +238,11 @@ function NavbarWrapper() {
           name: "נתמכי חגים",
           url: "/holidays",
         },
+        {
+          id: 1,
+          name: "חג חדש",
+          url: "/holidays/new",
+        },
       ],
       title: "חגים",
     },
