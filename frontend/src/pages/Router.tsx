@@ -69,6 +69,7 @@ const router = createBrowserRouter(
           />
         </Route>
         <Route path="new" element={<Pages.NewHoliday />} />
+        <Route path="manage" element={<Pages.HolidayManagement />} />
       </Route>
     </Route>
   )

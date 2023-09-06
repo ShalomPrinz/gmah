@@ -8,6 +8,7 @@ import Families from "./Families";
 import FamiliesHistory from "./FamiliesHistory";
 import FamilyManager from "./FamilyManager";
 import HolidayFamilies from "./HolidayFamilies";
+import HolidayManagement from "./HolidayManagement";
 import Home from "./Home";
 import Managers from "./Managers";
 import MonthPrintView from "./MonthPrintView";
@@ -31,6 +32,7 @@ const Pages = {
   FamiliesHistory,
   FamilyManager,
   HolidayFamilies,
+  HolidayManagement,
   Home,
   Managers,
   MonthPrintView,

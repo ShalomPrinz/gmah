@@ -437,4 +437,9 @@ def generate_holiday_files():
         return error_response(error)
     return jsonify(), 200
 
+@api_blueprint.route('/holidays')
+def get_holidays_list():
+    holidays = holiday.get_holidays_list()
+    return jsonify(holidays=holidays), 200
+
 app.register_blueprint(api_blueprint)

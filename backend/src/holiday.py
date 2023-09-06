@@ -1,3 +1,4 @@
+from os import listdir
 
 from src.data import key_prop, system_files_folder
 from src.excel import Excel
@@ -6,6 +7,16 @@ from src.util import create_folders_path
 
 holidays_folder_name = f"{system_files_folder}/חגים"
 holidays_folder = f"./{holidays_folder_name}"
+
+def get_holidays_list():
+    '''
+    Returns a list of all holiday names in system.
+    '''
+    holidays_list = listdir(holidays_folder_name)
+    def has_files_filter(folder):
+        folder_path = f"{holidays_folder_name}/{folder}"
+        return len(listdir(folder_path)) > 0
+    return list(filter(has_files_filter, holidays_list))
 
 def create_holiday_path(name):
     '''

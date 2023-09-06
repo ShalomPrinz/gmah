@@ -243,6 +243,11 @@ function NavbarWrapper() {
           name: "חג חדש",
           url: "/holidays/new",
         },
+        {
+          id: 2,
+          name: "ניהול חג",
+          url: "/holidays/manage",
+        },
       ],
       title: "חגים",
     },

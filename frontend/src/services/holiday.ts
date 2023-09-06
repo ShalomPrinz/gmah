@@ -1,4 +1,4 @@
-import { post } from "./http";
+import { get, post } from "./http";
 
 async function startNewHoliday(holidayName: string, holidayFamilies: string[]) {
   return post("holiday/new", {
@@ -7,4 +7,8 @@ async function startNewHoliday(holidayName: string, holidayFamilies: string[]) {
   });
 }
 
-export { startNewHoliday };
+async function getHolidaysList() {
+  return get("holidays");
+}
+
+export { getHolidaysList, startNewHoliday };
