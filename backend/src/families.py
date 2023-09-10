@@ -11,6 +11,7 @@ class FamiliesSearchBy(Enum):
     STREET = 'street'
     PHONE = 'phone'
     DRIVER = 'driver'
+    R11R = 'r11r'
 
     @classmethod
     def get_search_columns(cls, search_by):
@@ -30,6 +31,8 @@ class FamiliesSearchBy(Enum):
                 return [5, 6]
             case FamiliesSearchBy.DRIVER:
                 return [7]
+            case FamiliesSearchBy.R11R:
+                return [8]
             case _:
                 return [0]
 
@@ -57,7 +60,6 @@ class FamiliesHistorySearchBy(Enum):
 class HolidayFamiliesSearchBy(Enum):
     NAME = 'name'
     STREET = 'street'
-    DRIVER = 'driver'
     R11R = 'r11r'
 
     @classmethod
@@ -74,10 +76,8 @@ class HolidayFamiliesSearchBy(Enum):
                 return [0]
             case HolidayFamiliesSearchBy.STREET:
                 return [1]
-            case HolidayFamiliesSearchBy.DRIVER:
-                return [7]
             case HolidayFamiliesSearchBy.R11R:
-                return [8]
+                return [7]
             case _:
                 return [0]
 
@@ -246,7 +246,7 @@ def add_family(families_file: Excel, family, excel_cast=to_excel_row):
     families_file.append_rows(excel_families)
     return add_results["FAMILY_ADDED"]
 
-def add_families(families_file: Excel, families, excel_cast=to_excel_row):
+def add_families(families_file: Excel, families):
     '''
     Adds a list of families to the families file.
 
@@ -254,7 +254,7 @@ def add_families(families_file: Excel, families, excel_cast=to_excel_row):
     stop the addition of families and return error information.
     '''
     for family in families:
-        result = add_family(families_file, family, excel_cast)
+        result = add_family(families_file, family)
         if result.status != 200:
             return add_many_error(result, family[key_prop])
     return add_many_results["FAMILIES_ADDED"]

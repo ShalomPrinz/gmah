@@ -15,7 +15,7 @@ exit_date_prop = "תאריך יציאה"
 reason_prop = "סיבה"
 history_properties = [*family_properties[:-3], recommender_prop, exit_date_prop, reason_prop]
 
-holiday_properties = family_properties
+holiday_properties = [*family_properties[:-3], recommender_prop, notes_prop]
 
 driver_prop_index = family_properties.index(driver_prop)
 

@@ -3,7 +3,7 @@ from os import listdir, path
 from src.data import key_prop, system_files_folder
 from src.drivers import get_drivers_multi_files, get_driver_families, get_driverless_families
 from src.excel import Excel
-from src.families import search_families, load_holiday_families_file, permanent_remove_family, add_families, to_holiday_row, remove_driver, add_driver
+from src.families import search_families, load_families_file, permanent_remove_family, add_families, remove_driver, add_driver
 from src.json import Json
 from src.util import create_folders_path, duplicate_excel_template
 
@@ -75,14 +75,14 @@ def load_holiday_specific_families_file(holiday_name):
     Returns families file of the given holiday.
     '''
     filepath = get_holiday_families_path(holiday_name)
-    return load_holiday_families_file(filepath)
+    return load_families_file(filepath)
 
 def load_added_families_file(holiday_name):
     '''
     Returns added families file of the given holiday_name.
     '''
     filepath = get_holiday_added_families_path(holiday_name)
-    return load_holiday_families_file(filepath)
+    return load_families_file(filepath)
 
 def get_holiday_families_status(holiday_file: Excel, holiday_name):
     '''
@@ -127,7 +127,7 @@ def update_holiday_families_status(holiday_file: Excel, holiday_name, holiday_fa
             if len(families) == 0:
                 continue
             families_to_add.append(families[0])
-    return None, add_families(added_families_file, families_to_add, to_holiday_row)
+    return None, add_families(added_families_file, families_to_add)
 
 def load_both_holiday_files(holiday_name):
     '''

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 
@@ -16,7 +16,7 @@ import { useHolidayContext } from "../contexts";
 
 function HolidayDrivers() {
   const { selectedHoliday } = useHolidayContext();
-  const drivers = useDrivers(selectedHoliday);
+  const { addLocalDriver, drivers } = useDrivers(selectedHoliday);
   const [selectedDriver, setSelectedDriver] = useState("");
   const { driverFamilies, driverlessFamilies, familiesChanged } = useFamilies(
     selectedHoliday,
@@ -43,6 +43,7 @@ function HolidayDrivers() {
       <main className="container">
         <Row>
           <Col sm="4">
+            <NewDriverInput addDriver={addLocalDriver} />
             <QueryDisplay
               columnList={drivers}
               setSelected={setSelectedDriver}
@@ -85,6 +86,40 @@ function HolidayDrivers() {
         </Row>
       </main>
     </>
+  );
+}
+
+interface NewDriverInputProps {
+  addDriver: (driver: string) => void;
+}
+
+function NewDriverInput({ addDriver }: NewDriverInputProps) {
+  const newDriverRef = useRef<HTMLInputElement>(null);
+
+  function addDriverFunc() {
+    if (newDriverRef?.current?.value) {
+      addDriver(newDriverRef.current.value);
+      newDriverRef.current.value = "";
+    }
+  }
+
+  return (
+    <div className="text-center">
+      <input
+        className="fs-5 text-center form-text-input p-1 mx-2 border border-3 border-primary"
+        ref={newDriverRef}
+        style={{ width: "40%" }}
+        title="שם הנהג"
+        type="text"
+      />
+      <button
+        className="bg-success text-white rounded px-3 py-1 fs-5"
+        onClick={addDriverFunc}
+        type="button"
+      >
+        הוסף נהג
+      </button>
+    </div>
   );
 }
 
@@ -132,7 +167,7 @@ function RemoveButton(remove: (item: any) => void) {
 }
 
 function useDrivers(holidayName: string) {
-  const [drivers, setDrivers] = useState([]);
+  const [drivers, setDrivers] = useState<string[]>([]);
 
   useEffect(() => {
     if (!holidayName) return;
@@ -147,7 +182,11 @@ function useDrivers(holidayName: string) {
       );
   }, [holidayName]);
 
-  return drivers;
+  function addLocalDriver(driver: string) {
+    setDrivers((prev) => [driver, ...prev]);
+  }
+
+  return { addLocalDriver, drivers };
 }
 
 function useDriverFamilies(
