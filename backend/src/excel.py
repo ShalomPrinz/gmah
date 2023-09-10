@@ -103,13 +103,12 @@ class Excel:
 
         return search_column(request)
 
-    def append_rows(self, families, to_excel_row):
-        for family in families:
+    def append_rows(self, families_data):
+        for family_data in families_data:
             new_row = self.get_rows_num() + 1
             self.worksheet.insert_rows(idx=new_row, amount=1)
 
-            row_data = to_excel_row(family)
-            for column, value in enumerate(row_data, 1):
+            for column, value in enumerate(family_data, 1):
                 cell = self.worksheet.cell(row=new_row, column=column)
                 cell.value = value
                 cell.style = self.cell_style

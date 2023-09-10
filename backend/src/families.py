@@ -239,7 +239,8 @@ def add_family(families_file: Excel, family, excel_cast=to_excel_row):
     if validation_error := validate_phones(family):
         return validation_error
 
-    families_file.append_rows([family], excel_cast)
+    excel_families = [excel_cast(family)]
+    families_file.append_rows(excel_families)
     return add_results["FAMILY_ADDED"]
 
 def add_families(families_file: Excel, families, excel_cast=to_excel_row):

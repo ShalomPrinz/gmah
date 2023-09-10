@@ -120,8 +120,8 @@ def append_report(report_file: Excel, families, managers_file):
     '''
     Appends all given families to the given report.
     '''
-    def family_to_excel_row(family): return to_excel_row(family, managers_file)
-    report_file.append_rows(families, family_to_excel_row)
+    excel_families = list(map(lambda f: to_excel_row(f, managers_file), families))
+    report_file.append_rows(excel_families)
 
 def report_late_append(report_file: Excel, families):
     '''
@@ -133,7 +133,8 @@ def report_late_append(report_file: Excel, families):
         if family_key is None:
             raise Exception(f"שגיאה בעדכון דוח קבלה חודשי: למשפחה {family} אין שם")
         return [family_key, None, None, None, None]
-    report_file.append_rows(families, family_to_excel_row)
+    excel_families = list(map(family_to_excel_row, families))
+    report_file.append_rows(excel_families)
 
 def to_excel_row(family, managers_file):
     '''
