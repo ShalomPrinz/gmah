@@ -2,7 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 
-import { ColumnList, type ListItem, Search, Table } from "../components";
+import {
+  ColumnList,
+  type ListItem,
+  Search,
+  Table,
+  NoHolidays,
+} from "../components";
 import IconComponent from "../components/Icon";
 import { type Family, familyIdProp, reportCompletionBuilder } from "../modules";
 import {
@@ -14,14 +20,17 @@ import {
 } from "../services";
 import { useHolidayContext } from "../contexts";
 
+const pageTitle = "נהגים לחג";
 function HolidayDrivers() {
-  const { selectedHoliday } = useHolidayContext();
+  const { hasHolidays, selectedHoliday } = useHolidayContext();
   const { addLocalDriver, drivers } = useDrivers(selectedHoliday);
   const [selectedDriver, setSelectedDriver] = useState("");
   const { driverFamilies, driverlessFamilies, familiesChanged } = useFamilies(
     selectedHoliday,
     selectedDriver
   );
+
+  if (!hasHolidays) return <NoHolidays pageTitle={pageTitle} />;
 
   function removeFamilyDriverFunc(family: Family) {
     removeHolidayDriver(selectedHoliday, family[familyIdProp]).then(
@@ -39,7 +48,7 @@ function HolidayDrivers() {
 
   return (
     <>
-      <h1 className="mt-5 mb-4 text-center">נהגים</h1>
+      <h1 className="mt-5 mb-4 text-center">{pageTitle}</h1>
       <main className="container">
         <Row>
           <Col sm="4">

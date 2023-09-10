@@ -229,6 +229,12 @@ function NavbarWrapper() {
           url: "/print/completion",
           usesReport: true,
         },
+        {
+          id: 2,
+          name: "חג",
+          url: "/print/holiday",
+          usesHoliday: true,
+        },
       ],
       title: "הדפסות",
     },

@@ -59,6 +59,7 @@ const router = createBrowserRouter(
       <Route path="print">
         <Route path="month" element={<Pages.MonthPrintView />} />
         <Route path="completion" element={<Pages.CompletionEditor />} />
+        <Route path="holiday" element={<Pages.HolidayPrintView />} />
       </Route>
       <Route path="holidays">
         <Route index element={<Pages.HolidayFamilies />} />

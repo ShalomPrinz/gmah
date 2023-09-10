@@ -1,26 +1,26 @@
 import { useEffect, useState } from "react";
 
-import { ColumnList, NoMonthReports } from "../components";
-import { useReportContext } from "../contexts";
+import { ColumnList, NoHolidays } from "../components";
+import { useHolidayContext } from "../contexts";
 import { getPrintableFiles, getPrintableReport } from "../services";
 import { createPdfBlob, openNewTab } from "../util";
 
-const pageTitle = "הדפסת דוח קבלה לנהגים";
-function MonthPrintView() {
-  const { reportsAvailable, selectedReport } = useReportContext();
-  const files = usePrintableFiles(selectedReport);
+const pageTitle = "הדפסת חלוקת חג לנהגים";
+function HolidayPrintView() {
+  const { hasHolidays, selectedHoliday } = useHolidayContext();
+  const files = usePrintableFiles(selectedHoliday);
   const hasFiles = files.length !== 0;
 
   const [selectedPrintable, setSelectedPrintable] = useState("");
-  const url = usePrintableReport(selectedReport, selectedPrintable);
+  const url = usePrintableReport(selectedHoliday, selectedPrintable);
 
-  if (!reportsAvailable) return <NoMonthReports pageTitle={pageTitle} />;
+  if (!hasHolidays) return <NoHolidays pageTitle={pageTitle} />;
   if (!hasFiles)
     return (
       <div className="text-center">
         <h1 className="my-5">{pageTitle}</h1>
         <h3>
-          אין קבצים להדפסה בחודש <strong>{selectedReport}</strong>.
+          אין קבצים להדפסה עבור החג <strong>{selectedHoliday}</strong>.
         </h3>
       </div>
     );
@@ -30,7 +30,7 @@ function MonthPrintView() {
       <main className="mt-5 text-center d-flex justify-content-center">
         <div className="mx-5" style={{ width: "30%" }}>
           <h1>{pageTitle}</h1>
-          <h2 className="fw-bold my-5">דוח קבלה {selectedReport}</h2>
+          <h2 className="fw-bold my-5">{selectedHoliday}</h2>
           <ColumnList
             list={files}
             onItemSelect={(item) => setSelectedPrintable(item)}
@@ -60,13 +60,13 @@ function MonthPrintView() {
   );
 }
 
-function usePrintableFiles(reportName: string) {
+function usePrintableFiles(holidayName: string) {
   const [files, setFiles] = useState([]);
 
   useEffect(() => {
-    if (!reportName) return;
+    if (!holidayName) return;
 
-    getPrintableFiles(reportName)
+    getPrintableFiles(holidayName)
       .then((res) => setFiles(res.data.files))
       .catch((err) => {
         console.error(
@@ -74,18 +74,18 @@ function usePrintableFiles(reportName: string) {
           err
         );
       });
-  }, [reportName]);
+  }, [holidayName]);
 
   return files;
 }
 
-function usePrintableReport(reportName: string, printable: string) {
+function usePrintableReport(holidayName: string, printable: string) {
   const [url, setUrl] = useState("");
 
   useEffect(() => {
-    if (!reportName) return;
+    if (!holidayName) return;
 
-    getPrintableReport(reportName, printable)
+    getPrintableReport(holidayName, printable)
       .then((res) => setUrl(createPdfBlob(res.data)))
       .catch((err) => {
         console.error(
@@ -93,9 +93,9 @@ function usePrintableReport(reportName: string, printable: string) {
           err
         );
       });
-  }, [reportName, printable]);
+  }, [holidayName, printable]);
 
   return url;
 }
 
-export default MonthPrintView;
+export default HolidayPrintView;

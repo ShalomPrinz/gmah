@@ -4,6 +4,7 @@ import ConditionalList from "./ConditionalList";
 import Dropdown from "./Dropdown";
 import Form from "./Form/Form";
 import Navbar from "./Navbar/Navbar";
+import NoHolidays from "./NoHolidays";
 import NoMonthReports from "./NoMonthReports";
 import RadioMenu from "./RadioMenu";
 import Search from "./Search";
@@ -21,6 +22,7 @@ export {
   Dropdown,
   Form,
   Navbar,
+  NoHolidays,
   NoMonthReports,
   RadioMenu,
   Search,

@@ -4,7 +4,7 @@ import Row from "react-bootstrap/Row";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 
-import { getSearchBy, SearchRow, Table } from "../components";
+import { getSearchBy, NoHolidays, SearchRow, Table } from "../components";
 import IconComponent from "../components/Icon";
 import { useHolidayContext } from "../contexts";
 import {
@@ -34,7 +34,7 @@ const defaultHoliday = "";
 const pageTitle = "ניהול חג";
 
 function HolidayManagement() {
-  const { selectedHoliday } = useHolidayContext();
+  const { hasHolidays, selectedHoliday } = useHolidayContext();
   const [query, setQuery] = useState("");
   const [searchBy, setSearchBy] = useState("");
 
@@ -57,22 +57,7 @@ function HolidayManagement() {
       .catch(() => toast.error("קרתה שגיאה בשמירת השינויים"));
   }
 
-  if (selectedHoliday === defaultHoliday) {
-    return (
-      <div className="text-center">
-        <h1 className="my-5">{pageTitle}</h1>
-        <h3>
-          אין חגים במערכת. באפשרותך
-          <Link
-            className="link-decoration rounded fs-5 p-3 me-2 fs-3"
-            to="/holidays/new"
-          >
-            לייצר חג חדש
-          </Link>
-        </h3>
-      </div>
-    );
-  }
+  if (!hasHolidays) return <NoHolidays pageTitle={pageTitle} />;
 
   return (
     <>
