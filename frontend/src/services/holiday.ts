@@ -1,4 +1,4 @@
-import { get, post, put } from "./http";
+import { get, post, put, remove } from "./http";
 
 async function startNewHoliday(holidayName: string) {
   return post("holiday/new", {
@@ -56,12 +56,35 @@ async function getHolidayDriverlessFamilies(holidayName: string) {
   });
 }
 
+async function removeHolidayDriver(holidayName: string, familyName: string) {
+  return remove("holiday/driver/remove", {
+    params: {
+      holiday_name: holidayName,
+      family_name: familyName,
+    },
+  });
+}
+
+async function addHolidayDriver(
+  holidayName: string,
+  familyName: string,
+  driverName: string
+) {
+  return post("holiday/driver/add", {
+    holiday_name: holidayName,
+    family_name: familyName,
+    driver_name: driverName,
+  });
+}
+
 export {
+  addHolidayDriver,
   getHolidayDrivers,
   getHolidayDriverFamilies,
   getHolidayDriverlessFamilies,
   getHolidaysList,
   getHolidayStatus,
+  removeHolidayDriver,
   startNewHoliday,
   updateHolidayStatus,
 };

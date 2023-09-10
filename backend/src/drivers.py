@@ -1,4 +1,4 @@
-from src.data import driver_prop, key_prop
+from src.data import key_prop
 from src.excel import Excel
 from src.families import update_driver
 from src.json import Json

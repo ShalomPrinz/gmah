@@ -57,6 +57,7 @@ class FamiliesHistorySearchBy(Enum):
 class HolidayFamiliesSearchBy(Enum):
     NAME = 'name'
     STREET = 'street'
+    DRIVER = 'driver'
     R11R = 'r11r'
 
     @classmethod
@@ -73,8 +74,10 @@ class HolidayFamiliesSearchBy(Enum):
                 return [0]
             case HolidayFamiliesSearchBy.STREET:
                 return [1]
-            case HolidayFamiliesSearchBy.R11R:
+            case HolidayFamiliesSearchBy.DRIVER:
                 return [7]
+            case HolidayFamiliesSearchBy.R11R:
+                return [8]
             case _:
                 return [0]
 

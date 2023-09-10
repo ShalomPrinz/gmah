@@ -6,9 +6,11 @@ import { ColumnList, type ListItem, Search, Table } from "../components";
 import IconComponent from "../components/Icon";
 import { type Family, familyIdProp, reportCompletionBuilder } from "../modules";
 import {
+  addHolidayDriver,
   getHolidayDriverFamilies,
   getHolidayDriverlessFamilies,
   getHolidayDrivers,
+  removeHolidayDriver,
 } from "../services";
 import { useHolidayContext } from "../contexts";
 
@@ -22,11 +24,17 @@ function HolidayDrivers() {
   );
 
   function removeFamilyDriverFunc(family: Family) {
-    // removeFamilyDriver(family[familyIdProp]).then(familiesChanged);
+    removeHolidayDriver(selectedHoliday, family[familyIdProp]).then(
+      familiesChanged
+    );
   }
 
   function addFamilyDriverFunc(family: Family) {
-    // addFamilyDriver(family[familyIdProp], selectedDriver).then(familiesChanged);
+    addHolidayDriver(
+      selectedHoliday,
+      family[familyIdProp],
+      selectedDriver
+    ).then(familiesChanged);
   }
 
   return (
@@ -41,8 +49,8 @@ function HolidayDrivers() {
             />
           </Col>
           <Col sm="4">
-            <h2 className="my-3">{selectedDriver}</h2>
             <div className="text-center">
+              <h3 className="mt-4 mb-3">{selectedDriver}</h3>
               {driverFamilies.length > 0 ? (
                 <Table
                   columns={reportCompletionBuilder}
@@ -169,6 +177,8 @@ function useDriverlessFamilies(holidayName: string, reloadKey: number) {
   const [families, setFamilies] = useState([]);
 
   useEffect(() => {
+    if (!holidayName) return;
+
     getHolidayDriverlessFamilies(holidayName)
       .then((res) => setFamilies(res.data.families))
       .catch((error) =>

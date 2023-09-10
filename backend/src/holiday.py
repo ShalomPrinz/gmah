@@ -3,7 +3,7 @@ from os import listdir, path
 from src.data import key_prop, system_files_folder
 from src.drivers import get_drivers_multi_files, get_driver_families, get_driverless_families
 from src.excel import Excel
-from src.families import search_families, load_holiday_families_file, permanent_remove_family, add_families, to_holiday_row
+from src.families import search_families, load_holiday_families_file, permanent_remove_family, add_families, to_holiday_row, remove_driver, add_driver
 from src.json import Json
 from src.util import create_folders_path, duplicate_excel_template
 
@@ -179,3 +179,31 @@ def get_holiday_driverless_families(holiday_name):
     for f in files:
         families += get_driverless_families(f)
     return None, list(filter(lambda f: f[key_prop], families))
+
+def remove_holiday_driver_family(holiday_name, family_name):
+    '''
+    Removes driver name from given family in given holiday.
+    '''
+    error, files = load_both_holiday_files(holiday_name)
+    if error is not None:
+        return error
+    
+    for f in files:
+        try:
+            remove_driver(f, family_name)
+        except:
+            continue
+
+def add_holiday_driver(holiday_name, family_name, driver_name):
+    '''
+    Adds given driver to family.
+    '''
+    error, files = load_both_holiday_files(holiday_name)
+    if error is not None:
+        return error
+    
+    for f in files:
+        try:
+            add_driver(f, family_name, driver_name)
+        except:
+            continue
