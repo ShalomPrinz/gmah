@@ -42,8 +42,12 @@ function HolidayManagement() {
     useHolidayFamilies(query, searchBy, selectedHoliday);
   const resultHasFamilies = searchResult.length > 0;
 
-  const { removeFromSelection, selectFamily, selectedList } =
-    useHolidaySelection(selectedFamilies);
+  const {
+    removeFromSelection,
+    selectFamily,
+    selectManyFamilies,
+    selectedList,
+  } = useHolidaySelection(selectedFamilies);
   const hasSelectedFamilies = selectedList.length > 0;
 
   function saveFamiliesSelection() {
@@ -77,11 +81,23 @@ function HolidayManagement() {
         <Row className="mx-5">
           <Col className="text-center ps-5" sm="8">
             <SearchRow
+              marginBottom="1"
               onQueryChange={(q: string) => setQuery(q)}
               onSearchByChange={(value: string) => setSearchBy(value)}
               queryPlaceholder={`הכנס ${getSearchByText(searchBy)} של משפחה...`}
               searchBy={buttons}
             />
+            {searchResult.length === 0 ? (
+              <></>
+            ) : (
+              <button
+                className="mb-3 p-2 rounded bg-default fs-5"
+                onClick={() => selectManyFamilies(searchResult)}
+                type="button"
+              >
+                הוסף את {searchResult.length} המשפחות שתואמות את החיפוש
+              </button>
+            )}
             <Row className="mx-5">
               {holidayHasFamilies ? (
                 resultHasFamilies ? (
@@ -211,23 +227,31 @@ function useHolidaySelection(initialSelectedList: HolidaySelectFamily[]) {
     second: HolidaySelectFamily
   ) => first[familyIdProp] === second[familyIdProp];
 
-  function selectFamily(item: HolidaySelectFamily) {
-    if (selectedList.findIndex((f) => isSameFamily(f, item)) !== -1) {
-      toast.warn(`המשפחה ${item[familyIdProp]} כבר נמצאת בנתמכים הנוספים לחג`, {
-        toastId: item[familyIdProp],
-      });
+  function selectFamily(family: HolidaySelectFamily) {
+    if (selectedList.findIndex((f) => isSameFamily(f, family)) !== -1) {
+      toast.warn(
+        `המשפחה ${family[familyIdProp]} כבר נמצאת בנתמכים הנוספים לחג`,
+        {
+          toastId: family[familyIdProp],
+        }
+      );
       return;
     }
 
-    setSelectedList((prev) => [...prev, item]);
+    setSelectedList((prev) => [...prev, family]);
   }
 
-  function removeFromSelection(item: HolidaySelectFamily) {
-    setSelectedList((prev) => prev.filter((f) => !isSameFamily(f, item)));
+  function selectManyFamilies(families: HolidaySelectFamily[]) {
+    families.forEach(selectFamily);
+  }
+
+  function removeFromSelection(family: HolidaySelectFamily) {
+    setSelectedList((prev) => prev.filter((f) => !isSameFamily(f, family)));
   }
 
   return {
     selectFamily,
+    selectManyFamilies,
     selectedList,
     removeFromSelection,
   };

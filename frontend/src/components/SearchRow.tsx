@@ -28,6 +28,7 @@ function getSearchBy(buttons: Button[]) {
 }
 
 interface SearchRowProps {
+  marginBottom?: "3" | "1";
   onQueryChange: (query: string) => void;
   onSearchByChange: (searchBy: string) => void;
   queryPlaceholder: string;
@@ -37,6 +38,7 @@ interface SearchRowProps {
 }
 
 function SearchRow({
+  marginBottom = "3",
   onQueryChange,
   onSearchByChange,
   queryPlaceholder,
@@ -51,7 +53,7 @@ function SearchRow({
   const searchBoxWidth = disableResultDisplay ? "8" : "6";
 
   return (
-    <Row className="mb-3">
+    <Row className={`mb-${marginBottom}`}>
       <Col sm={searchByMenu}>
         <h2>חפש באמצעות:</h2>
         <RadioMenu
