@@ -1,5 +1,6 @@
-from uuid import uuid4
+from openpyxl import load_workbook
 from os import makedirs, path, umask
+from uuid import uuid4
 
 from src.results import driver_update_results
 
@@ -48,3 +49,12 @@ def validate_driver_name(driver_name):
         return driver_update_results["TOO_SHORT_DRIVER"]
     
     return None
+
+def duplicate_excel_template(template_path, sheet_title, filepath):
+    '''
+    Loads a template, modifies its sheet title and saves the workbook in filepath.
+    '''
+    workbook = load_workbook(template_path)
+    sheet = workbook[workbook.sheetnames[0]]
+    sheet.title = sheet_title
+    workbook.save(filepath)

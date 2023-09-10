@@ -5,8 +5,9 @@ from src.data import key_prop, driver_prop, pdf_properties, system_files_folder
 from src.errors import FileAlreadyExists, ActiveReportNotFound
 from src.families import search_families
 from src.managers import load_managers_file
-from src.report import load_report_file, create_empty_report, append_report, report_late_append
+from src.report import load_report_file, append_report, report_late_append
 from src.pdf import PDFBuilder, get_print_path, get_print_folder_path
+from src.util import duplicate_excel_template
 
 month_reports_folder = f"{system_files_folder}/דוחות קבלה"
 month_reports_path = f"{month_reports_folder}/"
@@ -125,7 +126,7 @@ def generate_month_report(month_name, families, managers_file):
     '''
     sheet_title = f'{month_report_prefix}{month_name}'
     filepath = get_report_path(month_name)
-    create_empty_report(month_reports_template, sheet_title, filepath)
+    duplicate_excel_template(month_reports_template, sheet_title, filepath)
 
     error, report_file = load_month_report(month_name)
     if error is not None:

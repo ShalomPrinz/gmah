@@ -119,7 +119,7 @@ def load_families_history_file():
         history_properties,
         FamiliesHistorySearchBy)
 
-def load_holiday_families_file():
+def load_holiday_families_file(filepath=holiday_families_filename):
     '''
     Connects to the holiday famileis source file.
 
@@ -128,7 +128,7 @@ def load_holiday_families_file():
         - If connection has succeed, error will be None
     '''
     return load_families_excel(
-        holiday_families_filename,
+        filepath,
         holiday_properties,
         HolidayFamiliesSearchBy)
 
@@ -143,6 +143,12 @@ def to_history_row(family):
     Cast family data to history row format in the right order
     '''
     return [family.get(attr, None) for attr in history_properties]
+
+def to_holiday_row(family):
+    '''
+    Cast family data to holiday row format in the right order
+    '''
+    return [family.get(attr, None) for attr in holiday_properties]
 
 def get_count(families_file: Excel):
     '''
@@ -236,7 +242,7 @@ def add_family(families_file: Excel, family, excel_cast=to_excel_row):
     families_file.append_rows([family], excel_cast)
     return add_results["FAMILY_ADDED"]
 
-def add_families(families_file: Excel, families):
+def add_families(families_file: Excel, families, excel_cast=to_excel_row):
     '''
     Adds a list of families to the families file.
 
@@ -244,7 +250,7 @@ def add_families(families_file: Excel, families):
     stop the addition of families and return error information.
     '''
     for family in families:
-        result = add_family(families_file, family)
+        result = add_family(families_file, family, excel_cast)
         if result.status != 200:
             return add_many_error(result, family[key_prop])
     return add_many_results["FAMILIES_ADDED"]
@@ -302,15 +308,16 @@ def restore_family(families_file: Excel, history_file: Excel, family_name):
         return Exception(
             "המשפחה הוסרה בהצלחה מהסטוריית הנתמכים, אך קרתה שגיאה בהוספת המשפחה לנתמכים")
 
-def permanent_remove_family(history_file: Excel, family_name):
+def permanent_remove_family(families_file: Excel, family_name):
     '''
-    Removes the given family from families history file permanently.
+    Removes the given family from families_file permanently.
+    Returns error if family not found in given families_file.
     '''
     try:
-        index = history_file.get_row_index(family_name)
+        index = families_file.get_row_index(family_name)
     except Exception as e:
         return e
-    history_file.remove_row(index)
+    families_file.remove_row(index)
 
 def update_driver(families_file: Excel, family_name, driver_name):
     '''

@@ -425,21 +425,42 @@ def update_driver_print_status():
 # Holidays
 
 @api_blueprint.route('/holiday/new', methods=["POST"])
-def generate_holiday_files():
-    error, holiday_families_file = families.load_holiday_families_file()
-    if error is not None:
-        return error_response(error)
-
+def generate_holiday():
     holiday_name = request.json['holiday_name']
-    holiday_families = request.json['holiday_families']
-    error = holiday.initialize_holiday(g.families_file, holiday_families_file, holiday_name, holiday_families)
-    if error is not None:
-        return error_response(error)
+    holiday.initialize_holiday(g.families_file, holiday_name)
     return jsonify(), 200
 
 @api_blueprint.route('/holidays')
 def get_holidays_list():
     holidays = holiday.get_holidays_list()
     return jsonify(holidays=holidays), 200
+
+@api_blueprint.route('holiday/status')
+def get_holiday_families_selection():
+    error, holiday_families_file = families.load_holiday_families_file()
+    if error is not None:
+        return error_response(error)
+
+    holiday_name = request.args.get('holiday_name')
+    error, status = holiday.get_holiday_families_status(holiday_families_file, holiday_name)
+    if error is not None:
+        return error_response(error)
+    return jsonify(status=status), 200
+
+@api_blueprint.route('holiday/status/update', methods=["PUT"])
+def update_holiday_families_selection():
+    error, holiday_families_file = families.load_holiday_families_file()
+    if error is not None:
+        return error_response(error)
+
+    holiday_name = request.json['holiday_name']
+    holiday_families = request.json['holiday_families']
+    error, result = holiday.update_holiday_families_status(holiday_families_file, holiday_name, holiday_families)
+    if error is not None:
+        return error_response(error)
+
+    if result.status != 200:
+        return result_error_response(result)
+    return jsonify(), 200
 
 app.register_blueprint(api_blueprint)

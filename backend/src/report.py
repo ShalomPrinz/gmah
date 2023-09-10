@@ -1,5 +1,4 @@
 from enum import Enum
-from openpyxl import load_workbook
 from re import match
 
 from src.data import report_properties, key_prop, street_prop, driver_prop, date_prop, status_prop, date_pattern, default_date, default_status
@@ -10,6 +9,7 @@ from src.json import Json
 from src.managers import find_manager
 from src.results import receipt_update_results
 from src.styles import report_cell_style, report_received_style, report_not_received_style, report_received_name, report_not_received_name, style_name
+from src.util import duplicate_excel_template
 
 class ReportSearchBy(Enum):
     NAME = 'name'
@@ -115,16 +115,6 @@ def get_no_driver_families(families_file: Excel):
     return None, no_driver_families
 
 # Report generation
-
-def create_empty_report(template_path, sheet_title, filepath):
-    '''
-    Loads a template, modifies its sheet title and saves the workbook.
-    When this function returns, given filepath is a blank month report.
-    '''
-    workbook = load_workbook(template_path)
-    sheet = workbook[workbook.sheetnames[0]]
-    sheet.title = sheet_title
-    workbook.save(filepath)
 
 def append_report(report_file: Excel, families, managers_file):
     '''
