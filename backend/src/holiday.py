@@ -1,8 +1,10 @@
 from os import listdir, path
 
 from src.data import key_prop, system_files_folder
+from src.drivers import get_drivers_multi_files, get_driver_families, get_driverless_families
 from src.excel import Excel
 from src.families import search_families, load_holiday_families_file, permanent_remove_family, add_families, to_holiday_row
+from src.json import Json
 from src.util import create_folders_path, duplicate_excel_template
 
 holidays_folder_name = f"{system_files_folder}/חגים"
@@ -68,6 +70,13 @@ def initialize_holiday(families_file: Excel, holiday_name):
     holiday_added_families_path = get_holiday_added_families_path(holiday_name)
     duplicate_excel_template(holidays_template_path, "נתמכים", holiday_added_families_path)
 
+def load_holiday_specific_families_file(holiday_name):
+    '''
+    Returns families file of the given holiday.
+    '''
+    filepath = get_holiday_families_path(holiday_name)
+    return load_holiday_families_file(filepath)
+
 def load_added_families_file(holiday_name):
     '''
     Returns added families file of the given holiday_name.
@@ -119,3 +128,54 @@ def update_holiday_families_status(holiday_file: Excel, holiday_name, holiday_fa
                 continue
             families_to_add.append(families[0])
     return None, add_families(added_families_file, families_to_add, to_holiday_row)
+
+def load_both_holiday_files(holiday_name):
+    '''
+    Returns both holiday families file and holiday added families file, in that order.
+    '''
+    error, holiday_families_file = load_holiday_specific_families_file(holiday_name)
+    if error is not None:
+        return error, None
+
+    error, added_families_file = load_added_families_file(holiday_name)
+    if error is not None:
+        return error, None    
+    
+    return None, [holiday_families_file, added_families_file]
+
+def get_holiday_drivers(managers_file: Json, holiday_name):
+    '''
+    Returns all holiday drivers.
+    '''
+    error, files = load_both_holiday_files(holiday_name)
+    if error is not None:
+        return error, None
+
+    drivers = get_drivers_multi_files(files, managers_file)
+    return None, drivers
+
+def get_holiday_driver_families(holiday_name, driver_name):
+    '''
+    Returns all families whom their driver is the given driver in the given holiday.
+    '''
+    error, files = load_both_holiday_files(holiday_name)
+    if error is not None:
+        return error, None
+    
+    families = []
+    for f in files:
+        families += get_driver_families(f, driver_name)
+    return None, families
+
+def get_holiday_driverless_families(holiday_name):
+    '''
+    Returns all families without driver in the given holiday.
+    '''
+    error, files = load_both_holiday_files(holiday_name)
+    if error is not None:
+        return error, None
+    
+    families = []
+    for f in files:
+        families += get_driverless_families(f)
+    return None, list(filter(lambda f: f[key_prop], families))

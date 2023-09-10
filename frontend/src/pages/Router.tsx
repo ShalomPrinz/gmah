@@ -69,7 +69,10 @@ const router = createBrowserRouter(
           />
         </Route>
         <Route path="new" element={<Pages.NewHoliday />} />
-        <Route path="manage" element={<Pages.HolidayManagement />} />
+        <Route path="manage">
+          <Route index element={<Pages.HolidayManagement />} />
+          <Route path="drivers" element={<Pages.HolidayDrivers />} />
+        </Route>
       </Route>
     </Route>
   )

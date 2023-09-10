@@ -251,6 +251,12 @@ function NavbarWrapper() {
           url: "/holidays/manage",
           usesHoliday: true,
         },
+        {
+          id: 3,
+          name: "נהגים",
+          url: "/holidays/manage/drivers",
+          usesHoliday: true,
+        },
       ],
       title: "חגים",
     },

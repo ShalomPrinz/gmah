@@ -463,4 +463,29 @@ def update_holiday_families_selection():
         return result_error_response(result)
     return jsonify(), 200
 
+@api_blueprint.route('holiday/drivers')
+def get_holiday_drivers_status():
+    holiday_name = request.args.get('holiday_name')
+    error, drivers = holiday.get_holiday_drivers(g.managers_file, holiday_name)
+    if error is not None:
+        return error_response(error)
+    return jsonify(drivers=drivers), 200
+
+@api_blueprint.route('holiday/drivers/families')
+def get_holiday_driver_families():
+    holiday_name = request.args.get('holiday_name')
+    driver_name = request.args.get('driver_name')
+    error, families = holiday.get_holiday_driver_families(holiday_name, driver_name)
+    if error is not None:
+        return error_response(error)
+    return jsonify(families=families), 200
+
+@api_blueprint.route('holiday/drivers/driverless')
+def get_holiday_driverless_families():
+    holiday_name = request.args.get('holiday_name')
+    error, families = holiday.get_holiday_driverless_families(holiday_name)
+    if error is not None:
+        return error_response(error)
+    return jsonify(families=families), 200
+
 app.register_blueprint(api_blueprint)

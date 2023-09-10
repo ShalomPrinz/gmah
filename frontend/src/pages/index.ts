@@ -7,6 +7,7 @@ import EditManagers from "./EditManagers";
 import Families from "./Families";
 import FamiliesHistory from "./FamiliesHistory";
 import FamilyManager from "./FamilyManager";
+import HolidayDrivers from "./HolidayDrivers";
 import HolidayFamilies from "./HolidayFamilies";
 import HolidayManagement from "./HolidayManagement";
 import Home from "./Home";
@@ -31,6 +32,7 @@ const Pages = {
   Families,
   FamiliesHistory,
   FamilyManager,
+  HolidayDrivers,
   HolidayFamilies,
   HolidayManagement,
   Home,

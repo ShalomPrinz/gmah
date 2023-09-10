@@ -28,7 +28,38 @@ async function updateHolidayStatus(
   });
 }
 
+async function getHolidayDrivers(holidayName: string) {
+  return get("holiday/drivers", {
+    params: {
+      holiday_name: holidayName,
+    },
+  });
+}
+
+async function getHolidayDriverFamilies(
+  holidayName: string,
+  driverName: string
+) {
+  return get("holiday/drivers/families", {
+    params: {
+      holiday_name: holidayName,
+      driver_name: driverName,
+    },
+  });
+}
+
+async function getHolidayDriverlessFamilies(holidayName: string) {
+  return get("holiday/drivers/driverless", {
+    params: {
+      holiday_name: holidayName,
+    },
+  });
+}
+
 export {
+  getHolidayDrivers,
+  getHolidayDriverFamilies,
+  getHolidayDriverlessFamilies,
   getHolidaysList,
   getHolidayStatus,
   startNewHoliday,

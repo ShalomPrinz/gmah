@@ -14,6 +14,16 @@ def get_drivers(families_file: Excel, managers_file: Json):
     managers_drivers = get_managers_drivers(managers_file)
     return unique_list(families_drivers + managers_drivers)
 
+def get_drivers_multi_files(files: list[Excel], managers_file: Json):
+    '''
+    Returns all unique drivers from all given families files.
+    '''
+    all_drivers = get_managers_drivers(managers_file)
+    for file in files:
+        file_drivers = file.column_search("", 'driver')
+        all_drivers += file_drivers
+    return unique_list(all_drivers)
+
 def get_driver_families(families_file: Excel, driver_name):
     '''
     Returns all families whom their driver is the given driver.
