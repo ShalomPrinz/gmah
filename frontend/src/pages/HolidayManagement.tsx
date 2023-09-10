@@ -4,18 +4,15 @@ import Row from "react-bootstrap/Row";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 
-import { Dropdown, getSearchBy, SearchRow, Table } from "../components";
+import { getSearchBy, SearchRow, Table } from "../components";
 import IconComponent from "../components/Icon";
+import { useHolidayContext } from "../contexts";
 import {
   type HolidaySelectFamily,
   familyIdProp,
   holidayFamiliesSelectionTableHeaders,
 } from "../modules";
-import {
-  getHolidaysList,
-  getHolidayStatus,
-  updateHolidayStatus,
-} from "../services";
+import { getHolidayStatus, updateHolidayStatus } from "../services";
 
 const buttons = [
   {
@@ -37,7 +34,7 @@ const defaultHoliday = "";
 const pageTitle = "ניהול חג";
 
 function HolidayManagement() {
-  const { HolidaysDropdown, selectedHoliday } = useHolidays();
+  const { selectedHoliday } = useHolidayContext();
   const [query, setQuery] = useState("");
   const [searchBy, setSearchBy] = useState("");
 
@@ -76,10 +73,7 @@ function HolidayManagement() {
   return (
     <>
       <main className="text-center">
-        <div className="d-flex justify-content-center align-items-center">
-          <h1 className="my-5">{pageTitle}</h1>
-          <div className="me-4">{HolidaysDropdown}</div>
-        </div>
+        <h1 className="my-5">{pageTitle}</h1>
         <Row className="mx-5">
           <Col className="text-center ps-5" sm="8">
             <SearchRow
@@ -237,42 +231,6 @@ function useHolidaySelection(initialSelectedList: HolidaySelectFamily[]) {
     selectedList,
     removeFromSelection,
   };
-}
-
-function useHolidays() {
-  const [holidays, setHolidays] = useState<string[]>([]);
-
-  useEffect(() => {
-    getHolidaysList()
-      .then((res) => setHolidays(res.data.holidays))
-      .catch(() =>
-        console.error("Error occurred while trying to get holidays list")
-      );
-  }, []);
-
-  return useHolidaysDropdown(holidays);
-}
-
-function useHolidaysDropdown(holidays: string[]) {
-  const [selected, setSelected] = useState("0");
-  const onSelect = (eventKey: string | null) => {
-    if (eventKey) setSelected(eventKey);
-  };
-
-  const options = holidays.map((name, index) => ({
-    eventKey: index.toString(),
-    value: name,
-  }));
-
-  const selectedHoliday =
-    options.find(({ eventKey }) => selected === eventKey)?.value ??
-    defaultHoliday;
-
-  const HolidaysDropdown = (
-    <Dropdown onSelect={onSelect} options={options} title={selectedHoliday} />
-  );
-
-  return { HolidaysDropdown, selectedHoliday };
 }
 
 export default HolidayManagement;

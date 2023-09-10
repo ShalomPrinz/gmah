@@ -2,9 +2,11 @@ import { useRef } from "react";
 import { toast } from "react-toastify";
 
 import IconComponent from "../components/Icon";
+import { useHolidayContext } from "../contexts";
 import { startNewHoliday } from "../services";
 
 function NewHoliday() {
+  const { holidaysUpdated } = useHolidayContext();
   const titleRef = useRef<HTMLInputElement>(null);
 
   function generateHoliday() {
@@ -18,7 +20,8 @@ function NewHoliday() {
 
     startNewHoliday(title)
       .then(() => toast.success(`יצרת חג חדש בשם ${title} בהצלחה`))
-      .catch(() => toast.error("קרתה שגיאה בלתי צפויה"));
+      .catch(() => toast.error("קרתה שגיאה בלתי צפויה"))
+      .finally(holidaysUpdated);
   }
 
   return (

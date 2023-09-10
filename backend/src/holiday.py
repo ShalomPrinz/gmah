@@ -1,4 +1,4 @@
-from os import listdir
+from os import listdir, path
 
 from src.data import key_prop, system_files_folder
 from src.excel import Excel
@@ -33,12 +33,20 @@ def get_holiday_added_families_path(holiday_name):
 def get_holidays_list():
     '''
     Returns a list of all holiday names in system.
+    Sorts the list so the latest created holiday will be first item in list.
     '''
     holidays_list = listdir(holidays_folder_name)
+
+    def get_creation_time(folder):
+        folder_path = get_holiday_path(folder)
+        return path.getctime(folder_path)
+    sorted_holidays = sorted(holidays_list, key=get_creation_time, reverse=True)
+
     def has_files_filter(folder):
         folder_path = get_holiday_path(folder)
         return len(listdir(folder_path)) > 0
-    return list(filter(has_files_filter, holidays_list))
+    
+    return list(filter(has_files_filter, sorted_holidays))
 
 def create_holiday_path(name):
     '''

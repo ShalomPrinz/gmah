@@ -8,7 +8,11 @@ import Offcanvas from "react-bootstrap/Offcanvas";
 import { useMediaQuery } from "react-responsive";
 import { NavLink, useLocation } from "react-router-dom";
 
-import { useHistoryContext, useReportContext } from "../../contexts";
+import {
+  useHistoryContext,
+  useHolidayContext,
+  useReportContext,
+} from "../../contexts";
 import ConditionalList from "../ConditionalList";
 import IconComponent from "../Icon";
 
@@ -19,6 +23,7 @@ interface Page {
   id: number;
   name: string;
   url: string;
+  usesHoliday?: boolean;
   usesReport?: boolean;
 }
 
@@ -44,10 +49,7 @@ function AppNavbar({ pages }: NavbarProps) {
   const [expanded, setExpanded] = useState(false);
   const hasCollapseOption = useMediaQuery({ maxWidth: expandSizePx });
 
-  const { pathname } = useLocation();
-  const usingReport = isCurrentPageUsesReport(pages, pathname);
-
-  const { SelectReportDropdown } = useReportContext();
+  const AppDropdown = useAppDropdown(pages);
 
   const { goBack } = useHistoryContext();
 
@@ -126,7 +128,7 @@ function AppNavbar({ pages }: NavbarProps) {
       </Navbar.Collapse>
       {displayGoBack && (
         <>
-          {usingReport && <SelectReportDropdown />}
+          <AppDropdown />
           <NavbarButton
             Icon={<IconComponent flipHorizontal icon="forwardItem" />}
             onClick={goBack}
@@ -247,6 +249,7 @@ function NavbarWrapper() {
           id: 2,
           name: "ניהול חג",
           url: "/holidays/manage",
+          usesHoliday: true,
         },
       ],
       title: "חגים",
@@ -256,12 +259,35 @@ function NavbarWrapper() {
   return <AppNavbar pages={pages} />;
 }
 
+function useAppDropdown(pages: PageCollection[]) {
+  const { pathname } = useLocation();
+  const { SelectReportDropdown } = useReportContext();
+  const { SelectHolidayDropdown } = useHolidayContext();
+
+  if (isCurrentPageUsesReport(pages, pathname)) {
+    return SelectReportDropdown;
+  } else if (isCurrentPageUsesHoliday(pages, pathname)) {
+    return SelectHolidayDropdown;
+  } else {
+    return () => <></>;
+  }
+}
+
 function isCurrentPageUsesReport(
   collection: PageCollection[],
   currentUrl: string
 ) {
   return collection.some(({ pages }) =>
     pages.some((page) => page.url === currentUrl && page.usesReport)
+  );
+}
+
+function isCurrentPageUsesHoliday(
+  collection: PageCollection[],
+  currentUrl: string
+) {
+  return collection.some(({ pages }) =>
+    pages.some((page) => page.url === currentUrl && page.usesHoliday)
   );
 }
 
