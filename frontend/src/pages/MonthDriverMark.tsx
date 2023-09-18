@@ -11,12 +11,17 @@ interface MonthDriverMarkProps {
 }
 
 function MonthDriverMark({ driverName, reportName }: MonthDriverMarkProps) {
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const { isLoading, driverStatus } = useDriverStatus(reportName, driverName);
   const hasFamilies = driverStatus.length > 0;
 
   function onSubmit(values: DriverReceipt[]) {
-    if (toastErrors(values)) return;
+    if (isAnyMissingDate(values)) {
+      toastMissingDateError();
+      return;
+    }
 
+    setIsUpdatingStatus(true);
     updateDriverStatus(reportName, values)
       .then(() =>
         toast.success(
@@ -31,7 +36,8 @@ function MonthDriverMark({ driverName, reportName }: MonthDriverMarkProps) {
             toastId: `${driverName}:${message}`,
           }
         );
-      });
+      })
+      .finally(() => setTimeout(() => setIsUpdatingStatus(false), 200));
   }
 
   return (
@@ -40,6 +46,7 @@ function MonthDriverMark({ driverName, reportName }: MonthDriverMarkProps) {
         <ReceiptStatusTable
           formName={driverName}
           initialValues={driverStatus}
+          isLoading={isUpdatingStatus}
           onSubmit={onSubmit}
         />
       ) : isLoading ? (
@@ -71,17 +78,14 @@ function useDriverStatus(reportName: string, driverName: string) {
   return { isLoading, driverStatus };
 }
 
-/** Returns true if has error */
-function toastErrors(values: DriverReceipt[]) {
-  for (const receipt of values) {
-    if (receipt.date == null || receipt.date === "") {
-      toast.error("לא ניתן לשנות את סטטוס הקבלה ללא תאריך", {
-        toastId: "dateError",
-      });
-      return true;
-    }
-  }
-  return false;
+function isAnyMissingDate(values: DriverReceipt[]) {
+  return values.some((receipt) => !receipt.date);
+}
+
+function toastMissingDateError() {
+  toast.error("לא ניתן לשנות את סטטוס הקבלה ללא תאריך", {
+    toastId: "dateError",
+  });
 }
 
 export default MonthDriverMark;

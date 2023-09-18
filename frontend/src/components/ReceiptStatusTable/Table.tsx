@@ -7,14 +7,16 @@ import type { FormItem, FormValues } from "./types";
 import { prepareKey } from "../../util";
 
 interface ReceiptStatusTableProps {
-  initialValues: FormItem[];
   formName: string;
+  initialValues: FormItem[];
+  isLoading: boolean;
   onSubmit: (values: FormItem[]) => void;
 }
 
 function ReceiptStatusTable({
   formName,
   initialValues,
+  isLoading,
   onSubmit,
 }: ReceiptStatusTableProps) {
   const name = prepareKey(formName);
@@ -30,13 +32,7 @@ function ReceiptStatusTable({
   useEffect(() => formMethods.reset(defaultValues), [name, initialValues]);
 
   // All form methods are required for Form Context Provider
-  const {
-    control,
-    handleSubmit,
-    formState: { isSubmitting },
-    getValues,
-    reset,
-  } = formMethods;
+  const { control, handleSubmit, getValues, reset } = formMethods;
 
   const { fields } = useFieldArray({
     name: name,
@@ -70,8 +66,10 @@ function ReceiptStatusTable({
         <h2 className="d-flex justify-content-between">
           <span className="fs-1 fw-bold bottom-border">{formName}</span>
           <button
-            className="bg-default fs-4 rounded mx-5 px-3 py-2"
-            disabled={isSubmitting}
+            className={`bg-default fs-4 rounded mx-5 px-3 py-2${
+              isLoading ? " bg-secondary" : ""
+            }`}
+            disabled={isLoading}
             type="submit"
           >
             שמור שינויים
