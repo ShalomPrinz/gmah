@@ -235,6 +235,12 @@ function NavbarWrapper() {
           url: "/print/holiday",
           usesHoliday: true,
         },
+        {
+          id: 3,
+          name: "השלמות לחג",
+          url: "/print/holiday/completion",
+          usesHoliday: true,
+        },
       ],
       title: "הדפסות",
     },

@@ -49,9 +49,12 @@ class PDFBuilder():
     Builds a pdf with the given path.
     Access it with build_single() or build_multi().
     '''
-    def __init__(self, folder, filename):
+    def __init__(self, filename, filepath=None, folder=None):
+        if filepath is None and folder is None:
+            raise Exception("Internal Server Error: PDFBuilder must be built with filepath or folder")
+
         self.filename = filename
-        self.filepath = get_print_path(folder, filename)
+        self.filepath = filepath or get_print_path(folder, filename)
         self.template_id = 'basad_template'
 
         self.notes_header = "הערות"

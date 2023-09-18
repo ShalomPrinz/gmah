@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
-import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import { getSearchBy, NoHolidays, SearchRow, Table } from "../components";
@@ -30,7 +29,6 @@ const buttons = [
 
 const { getSearchByHeader, getSearchByText } = getSearchBy(buttons);
 
-const defaultHoliday = "";
 const pageTitle = "ניהול חג";
 
 function HolidayManagement() {

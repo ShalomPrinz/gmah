@@ -365,12 +365,17 @@ def activate_month_report():
         return error_response(error)
     return jsonify(), 200
 
-@api_blueprint.route('/print/month')
-def get_month_printable_report():
-    report_name = request.args.get('report_name')
-    printable = request.args.get('printable')
+# Prints
 
-    printable, error = month.get_printable_report(report_name, printable)
+@api_blueprint.route('/print/generate', methods=["POST"])
+def generate_general_printable():
+    holiday_name = request.json['holiday_name']
+    title = request.json['title']
+    content = request.json['content']
+    holiday.generate_holiday_custom_pdf(holiday_name, title, content)
+    return jsonify(), 200
+
+def get_printable_response(printable, error):
     if error is not None:
         return error_response(error)
     if printable is None:
@@ -381,10 +386,32 @@ def get_month_printable_report():
     response.headers['Content-Disposition'] = 'inline'
     return response
 
+@api_blueprint.route('/print/month')
+def get_month_printable_report():
+    report_name = request.args.get('report_name')
+    printable = request.args.get('printable')
+
+    printable, error = month.get_printable_report(report_name, printable)
+    return get_printable_response(printable, error)
+
+@api_blueprint.route('/print/holiday')
+def get_holiday_printable():
+    holiday_name = request.args.get('holiday_name')
+    printable = request.args.get('printable')
+
+    printable, error = holiday.get_holiday_printable(holiday_name, printable)
+    return get_printable_response(printable, error)
+
 @api_blueprint.route('/print/month/all')
 def get_month_printable_files():
     report_name = request.args.get('report_name')
     files = month.get_printable_files(report_name)    
+    return jsonify(files=files), 200
+
+@api_blueprint.route('/print/holiday/all')
+def get_holiday_printable_files():
+    holiday_name = request.args.get('holiday_name')
+    files = holiday.get_printable_files(holiday_name)    
     return jsonify(files=files), 200
 
 # Drivers
@@ -434,6 +461,14 @@ def generate_holiday():
 def get_holidays_list():
     holidays = holiday.get_holidays_list()
     return jsonify(holidays=holidays), 200
+
+@api_blueprint.route('holiday/families')
+def get_holiday_regular_families():
+    holiday_name = request.args.get('holiday_name')
+    error, families = holiday.get_holiday_regular_families(holiday_name)
+    if error is not None:
+        return error_response(error)
+    return jsonify(families=families), 200
 
 @api_blueprint.route('holiday/status')
 def get_holiday_families_selection():
@@ -505,6 +540,12 @@ def add_holiday_family_driver():
     error = holiday.add_holiday_driver(holiday_name, family_name, driver_name)
     if error is not None:
         return error_response(error)
+    return jsonify(), 200
+
+@api_blueprint.route('/holiday/generate/printable', methods=["POST"])
+def generate_holiday_printable():
+    holiday_name = request.json['holiday_name']
+    holiday.generate_holiday_main_pdf(holiday_name, g.managers_file)
     return jsonify(), 200
 
 app.register_blueprint(api_blueprint)

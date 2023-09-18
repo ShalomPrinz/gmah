@@ -1,13 +1,13 @@
 from glob import glob
 from os import path, listdir
 
-from src.data import key_prop, driver_prop, pdf_properties, system_files_folder
+from src.data import key_prop, pdf_properties, system_files_folder
 from src.errors import FileAlreadyExists, ActiveReportNotFound
 from src.families import search_families
 from src.managers import load_managers_file
 from src.report import load_report_file, append_report, report_late_append
 from src.pdf import PDFBuilder, get_print_path, get_print_folder_path
-from src.util import duplicate_excel_template
+from src.util import duplicate_excel_template, get_all_pages
 
 month_reports_folder = f"{system_files_folder}/דוחות קבלה"
 month_reports_path = f"{month_reports_folder}/"
@@ -147,7 +147,7 @@ def generate_month_pdf(month_name, families, managers_file):
     '''
     managers = managers_file.load_json()
     pages = get_all_pages(managers, families)
-    builder = PDFBuilder(month_name, month_printable_report_name)
+    builder = PDFBuilder(month_printable_report_name, folder=month_name)
     builder.build_multi(pages, pdf_properties)
 
 def generate_month_files(families_file, month_name, override_name=False):
@@ -170,38 +170,12 @@ def generate_month_files(families_file, month_name, override_name=False):
     generate_month_report(month_name, families, managers_file)
     generate_month_pdf(month_name, families, managers_file)
 
-def get_all_pages(managers, families):
-    ignore_drivers = [None, ""]
-    pages = []
-
-    for manager in managers:
-        if manager.get('print', None) == "ignore":
-            continue
-
-        manager_name = manager['name']
-        pages.append({ "title": manager_name })
-
-        for driver in manager['drivers']:
-            driver_name = driver['name']
-            if driver_name in ignore_drivers or driver.get('print', None) == "ignore":
-                continue
-
-            driver_families = [f for f in families
-                               if f[driver_prop] == driver_name]
-            if len(driver_families) > 0:
-                pages.append({
-                    "title": driver_name,
-                    "content": driver_families
-                })
-
-    return pages
-
 def generate_completion_pdf(month_name, title, families_file, families):
     '''
     Generates new completion file in print format.
     '''
     pdf_content = get_families_content(families_file, families)
-    builder = PDFBuilder(month_name, title)
+    builder = PDFBuilder(title, folder=month_name)
     builder.build_single(title, pdf_properties, pdf_content)
 
 def get_families_content(families_file, completion_families):

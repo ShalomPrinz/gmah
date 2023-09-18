@@ -18,6 +18,14 @@ async function getHolidayStatus(holidayName: string) {
   });
 }
 
+async function getHolidayRegularFamilies(holidayName: string) {
+  return get("holiday/families", {
+    params: {
+      holiday_name: holidayName,
+    },
+  });
+}
+
 async function updateHolidayStatus(
   holidayName: string,
   holidayFamilies: string[]
@@ -82,6 +90,7 @@ export {
   getHolidayDrivers,
   getHolidayDriverFamilies,
   getHolidayDriverlessFamilies,
+  getHolidayRegularFamilies,
   getHolidaysList,
   getHolidayStatus,
   removeHolidayDriver,
