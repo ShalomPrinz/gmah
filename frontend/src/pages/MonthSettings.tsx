@@ -5,6 +5,7 @@ import Row from "react-bootstrap/Row";
 import { ColumnList, Table } from "../components";
 import IconComponent from "../components/Icon";
 import { useReportContext } from "../contexts";
+import { useReloadKey } from "../hooks";
 import {
   activateReport,
   getManagers,
@@ -303,8 +304,7 @@ function ActiveReport() {
 }
 
 function useManagers() {
-  const [reloadKey, setReloadKey] = useState(0);
-  const managersChanged = () => setReloadKey((prev) => prev + 1);
+  const { reloadKey, updateKey } = useReloadKey();
 
   const [managers, setManagers] = useState<Manager[]>([]);
 
@@ -316,7 +316,7 @@ function useManagers() {
       );
   }, [reloadKey]);
 
-  return { managers, managersChanged };
+  return { managers, managersChanged: updateKey };
 }
 
 const isIgnored = (item: any) => item.print === printIgnore;

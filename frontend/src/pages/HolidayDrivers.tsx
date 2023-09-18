@@ -10,6 +10,8 @@ import {
   NoHolidays,
 } from "../components";
 import IconComponent from "../components/Icon";
+import { useHolidayContext } from "../contexts";
+import { useReloadKey } from "../hooks";
 import { type Family, familyIdProp, reportCompletionBuilder } from "../modules";
 import {
   addHolidayDriver,
@@ -18,7 +20,6 @@ import {
   getHolidayDrivers,
   removeHolidayDriver,
 } from "../services";
-import { useHolidayContext } from "../contexts";
 
 const pageTitle = "נהגים לחג";
 function HolidayDrivers() {
@@ -241,18 +242,14 @@ function useDriverlessFamilies(holidayName: string, reloadKey: number) {
 }
 
 function useFamilies(holidayName: string, driverName: string) {
-  const [reloadKey, setReloadKey] = useState(0);
+  const { reloadKey, updateKey } = useReloadKey();
   const driverFamilies = useDriverFamilies(holidayName, driverName, reloadKey);
   const driverlessFamilies = useDriverlessFamilies(holidayName, reloadKey);
-
-  function familiesChanged() {
-    setReloadKey((prev) => prev + 1);
-  }
 
   return {
     driverFamilies,
     driverlessFamilies,
-    familiesChanged,
+    familiesChanged: updateKey,
   };
 }
 

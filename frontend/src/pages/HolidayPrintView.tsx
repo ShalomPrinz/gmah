@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 
 import { ColumnList, NoHolidays } from "../components";
 import { useHolidayContext } from "../contexts";
+import { useReloadKey } from "../hooks";
 import {
   getHolidayPrintableFiles,
   getHolidayPrintable,
@@ -91,14 +92,11 @@ function HolidayPrintView() {
 }
 
 function useHolidayPrintables(holidayName: string, printable: string) {
-  const [reloadKey, setReloadKey] = useState(0);
-  function printablesUpdated() {
-    setReloadKey((prev) => prev + 1);
-  }
+  const { reloadKey, updateKey } = useReloadKey();
 
   const files = usePrintableFiles(holidayName, reloadKey);
   const url = usePrintable(holidayName, printable, reloadKey);
-  return { files, printablesUpdated, url };
+  return { files, printablesUpdated: updateKey, url };
 }
 
 function usePrintableFiles(holidayName: string, reloadKey: number) {

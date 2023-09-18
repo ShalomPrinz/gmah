@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 
 import { Dropdown } from "../components";
+import { useReloadKey } from "../hooks";
 import { getHolidaysList } from "../services";
 
 interface HolidayContextValue {
@@ -27,12 +28,8 @@ interface HolidayProviderProps {
 }
 
 function HolidayProvider({ children }: HolidayProviderProps) {
-  const [reloadKey, setReloadKey] = useState(0);
+  const { reloadKey, updateKey } = useReloadKey();
   const { onSelect, options, selectedHoliday } = useHolidays(reloadKey);
-
-  function holidaysUpdated() {
-    setReloadKey((key) => key + 1);
-  }
 
   function SelectHolidayDropdown() {
     return selectedHoliday ? (
@@ -48,7 +45,7 @@ function HolidayProvider({ children }: HolidayProviderProps) {
 
   const value = {
     hasHolidays: options.length > 0,
-    holidaysUpdated,
+    holidaysUpdated: updateKey,
     selectedHoliday,
     SelectHolidayDropdown,
   };

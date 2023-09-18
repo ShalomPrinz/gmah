@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 
 import { Dropdown } from "../components";
-import { useMonthReports } from "../hooks";
+import { useMonthReports, useReloadKey } from "../hooks";
 import type { Report } from "../types";
 
 interface ReportContextValue {
@@ -28,13 +28,9 @@ interface ReportProviderProps {
 }
 
 function ReportProvider({ children }: ReportProviderProps) {
-  const [reloadKey, setReloadKey] = useState(0);
+  const { reloadKey, updateKey } = useReloadKey();
   const { onSelect, options, selectedReport, ...reportProps } =
     useReportSelection(reloadKey);
-
-  function reportsUpdated() {
-    setReloadKey((key) => key + 1);
-  }
 
   function SelectReportDropdown() {
     return selectedReport ? (
@@ -50,7 +46,7 @@ function ReportProvider({ children }: ReportProviderProps) {
 
   const value = {
     reportsAvailable: options.length > 0,
-    reportsUpdated,
+    reportsUpdated: updateKey,
     selectedReport,
     SelectReportDropdown,
     ...reportProps,

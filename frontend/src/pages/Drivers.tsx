@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 
 import { ColumnList, type ListItem, Search, Table } from "../components";
 import IconComponent from "../components/Icon";
+import { useReloadKey } from "../hooks";
 import { type Family, familyIdProp, reportCompletionBuilder } from "../modules";
 import {
   addFamilyDriver,
@@ -173,7 +174,7 @@ function RemoveButton(remove: (item: any) => void) {
 }
 
 function useDrivers() {
-  const [reloadKey, setReloadKey] = useState(0);
+  const { reloadKey, updateKey } = useReloadKey();
   const [drivers, setDrivers] = useState([]);
 
   useEffect(() => {
@@ -184,11 +185,7 @@ function useDrivers() {
       );
   }, [reloadKey]);
 
-  function driversChanged() {
-    setReloadKey((prev) => prev + 1);
-  }
-
-  return { drivers, driversChanged };
+  return { drivers, driversChanged: updateKey };
 }
 
 function useDriverFamilies(driverName: string, reloadKey: number) {
@@ -228,18 +225,14 @@ function useDriverlessFamilies(reloadKey: number) {
 }
 
 function useFamilies(driverName: string) {
-  const [reloadKey, setReloadKey] = useState(0);
+  const { reloadKey, updateKey } = useReloadKey();
   const driverFamilies = useDriverFamilies(driverName, reloadKey);
   const driverlessFamilies = useDriverlessFamilies(reloadKey);
-
-  function familiesChanged() {
-    setReloadKey((prev) => prev + 1);
-  }
 
   return {
     driverFamilies,
     driverlessFamilies,
-    familiesChanged,
+    familiesChanged: updateKey,
   };
 }
 
