@@ -1,7 +1,8 @@
 import unittest
 
 from src.data import driver_prop
-from src.families import get_count, search_families, add_family, add_families, update_family, remove_family, restore_family, FamiliesSearchBy, remove_driver, add_driver
+from src.drivers import get_driver_families
+from src.families import get_count, search_families, add_family, add_families, update_family, remove_family, restore_family, FamiliesSearchBy, remove_driver, remove_many_drivers, add_driver
 from src.results import add_results, add_many_results, add_many_error
 from src.errors import FamilyNotFoundError
 from src.search import find, FindRequest
@@ -300,6 +301,33 @@ class TestDataManagement(unittest.TestCase):
                 remove_driver(families_file, family_name)
                 family = search_families(families_file, family_name)[0]
                 self.assertEqual(family[driver_prop], "", message)
+
+    def test_remove_many_drivers(self):
+        first_driver = "שלום"
+        second_driver = "פרינץ"
+        families = [Family({"שם מלא": "שלמה", driver_prop: first_driver}),
+                    Family({"שם מלא": "חיים", driver_prop: second_driver}),
+                    Family({"שם מלא": "נחום", driver_prop: None}),
+                    Family({"שם מלא": "הראל", driver_prop: ""}),
+                    Family({"שם מלא": "ברוך", driver_prop: first_driver})]
+
+        test_cases = [
+            (None,              2, 1, "Should do nothing if given drivers list is None"),
+            ([None, ""],        2, 1, "Should do nothing if given drivers are None or empty string"),
+            ([first_driver],    0, 1, "Should remove first_driver from families"),
+            ([second_driver],   2, 0, "Should remove second_driver from families"),
+            ([second_driver, first_driver], 0, 0, "Should remove both first and second drivers from families")
+        ]
+
+        for drivers, expected_first, expected_second, message in test_cases:
+            with self.subTest(f"Removed Drivers: {drivers}"):
+                families_file = write_families(families)
+                remove_many_drivers(families_file, drivers)
+
+                first_driver_families = len(get_driver_families(families_file, first_driver))
+                self.assertEqual(first_driver_families, expected_first, message)
+                second_driver_families = len(get_driver_families(families_file, second_driver))
+                self.assertEqual(second_driver_families, expected_second, message)
 
     def test_add_driver(self):
         original_driver = "נהג כלשהו"

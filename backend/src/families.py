@@ -339,6 +339,17 @@ def remove_driver(families_file: Excel, family_name):
     '''
     update_driver(families_file, family_name, "")
 
+def remove_many_drivers(families_file: Excel, drivers):
+    '''
+    Removes all given drivers from families_file.
+    '''
+    if drivers is None or len(drivers) <= 0:
+        return
+
+    for family in search_families(families_file):
+        if family.get(driver_prop, None) in drivers:
+            remove_driver(families_file, family.get(key_prop))
+
 def add_driver(families_file: Excel, family_name, driver_name):
     '''
     Adds driver to given family.

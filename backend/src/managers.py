@@ -22,16 +22,32 @@ def get_managers(managers_file: Json):
     '''
     return managers_file.load_json()
 
-def get_managers_drivers(managers_file: Json):
+def get_drivers(managers):
     '''
-    Returns all drivers from the given managers_file.
+    Returns all drivers from the given managers.
     '''
     drivers = []
-    for manager in get_managers(managers_file):
+    for manager in managers:
         manager_drivers = map(lambda d: d["name"], manager["drivers"])
         manager_drivers = filter(lambda d: d, manager_drivers)
         drivers.extend(list(manager_drivers))
     return drivers
+
+def get_managers_drivers(managers_file: Json):
+    '''
+    Returns all drivers from the given managers_file.
+    '''
+    managers = get_managers(managers_file)
+    return get_drivers(managers)
+
+def get_drivers_diff(managers_file: Json, new_managers):
+    '''
+    Returns a list of all drivers that exist in current managers_file,
+    but doesn't exist in new_managers.
+    '''
+    prev_drivers = get_managers_drivers(managers_file)
+    new_drivers = get_drivers(new_managers)
+    return [driver for driver in prev_drivers if driver not in new_drivers]
 
 def update_managers(managers_file: Json, managers):
     '''

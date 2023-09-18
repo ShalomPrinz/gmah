@@ -193,13 +193,15 @@ def add_family_driver():
 
 @api_blueprint.route('/managers')
 def get_managers():
-    api_blueprint_managers = managers.get_managers(g.managers_file)
-    return jsonify(managers=api_blueprint_managers), 200
+    response_managers = managers.get_managers(g.managers_file)
+    return jsonify(managers=response_managers), 200
 
 @api_blueprint.route('/managers', methods=["POST"])
 def update_managers():
-    api_blueprint_managers = request.json['managers']
-    error = managers.update_managers(g.managers_file, api_blueprint_managers)
+    request_managers = request.json['managers']
+    removed_drivers = managers.get_drivers_diff(g.managers_file, request_managers)
+    families.remove_many_drivers(g.families_file, removed_drivers)
+    error = managers.update_managers(g.managers_file, request_managers)
     if error is not None:
         return error_response(error)
     return jsonify(), 200
