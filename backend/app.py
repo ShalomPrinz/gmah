@@ -151,9 +151,18 @@ def update_holiday_family():
 @api_blueprint.route('/family/remove', methods=["DELETE"])
 def remove_family():
     family_name = request.args.get('family_name')
+    remove_from = request.args.get('from')
     exit_date = request.args.get('exit_date')
     reason = request.args.get('reason')
-    error = families.remove_family(g.families_file, g.families_history_file, family_name, exit_date, reason)
+
+    origin_file = g.families_file
+    if remove_from == "holiday":
+        error, holiday_families_file = families.load_holiday_families_file()
+        if error is not None:
+            return error_response(error)
+        origin_file = holiday_families_file
+    
+    error = families.remove_family(origin_file, g.families_history_file, family_name, exit_date, reason)
     if error is not None:
         return error_response(error)
     return jsonify(), 200

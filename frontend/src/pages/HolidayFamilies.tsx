@@ -2,7 +2,13 @@ import { useState } from "react";
 import Row from "react-bootstrap/Row";
 import { Link } from "react-router-dom";
 
-import { BottomMenu, SearchRow, Table, getSearchBy } from "../components";
+import {
+  BottomMenu,
+  RemoveFamily,
+  SearchRow,
+  Table,
+  getSearchBy,
+} from "../components";
 import IconComponent from "../components/Icon";
 import {
   familyIdProp,
@@ -35,7 +41,7 @@ const { getSearchByHeader, getSearchByText } = getSearchBy(buttons);
 function HolidayFamilies() {
   const [query, setQuery] = useState("");
   const [searchBy, setSearchBy] = useState("name");
-  const { families } = useFamiliesSearch(
+  const { families, reloadFamilies } = useFamiliesSearch(
     query,
     searchBy,
     File.HOLIDAY_FAMILIES
@@ -48,6 +54,11 @@ function HolidayFamilies() {
     setNoSelectedFamily,
     selectedFamilyName,
   } = useFamilySelection();
+
+  const onFamilyRemoveSuccess = () => {
+    setNoSelectedFamily();
+    reloadFamilies();
+  };
 
   return (
     <>
@@ -78,6 +89,11 @@ function HolidayFamilies() {
         title={selectedFamilyName}
       >
         <EditFamily family={selected!} />
+        <RemoveFamily
+          familyName={selectedFamilyName}
+          from="holiday"
+          onRemoveSuccess={onFamilyRemoveSuccess}
+        />
       </BottomMenu>
     </>
   );

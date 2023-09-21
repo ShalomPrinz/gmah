@@ -7,6 +7,7 @@ import Navbar from "./Navbar/Navbar";
 import NoHolidays from "./NoHolidays";
 import NoMonthReports from "./NoMonthReports";
 import RadioMenu from "./RadioMenu";
+import RemoveFamily from "./RemoveFamily";
 import Search from "./Search";
 import SearchRow from "./SearchRow";
 import Table from "./Table/Table";
@@ -25,6 +26,7 @@ export {
   NoHolidays,
   NoMonthReports,
   RadioMenu,
+  RemoveFamily,
   Search,
   SearchRow,
   Table,

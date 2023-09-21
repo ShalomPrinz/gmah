@@ -6,6 +6,7 @@ import {
   searchFamiliesHistory,
   searchHolidayFamilies,
 } from "../services";
+import { useReloadKey } from "./useReloadKey";
 
 enum File {
   FAMILIES,
@@ -32,9 +33,7 @@ function useFamiliesSearch(
   file: File = File.FAMILIES
 ) {
   const [families, setFamilies] = useState<Family[]>([]);
-
-  const [searchKey, setSearchKey] = useState(0);
-  const reloadFamilies = () => setSearchKey((prev) => prev + 1);
+  const { reloadKey, updateKey } = useReloadKey();
 
   const searchFunc = getSearchFunc(file);
 
@@ -44,9 +43,9 @@ function useFamiliesSearch(
       .catch((error) =>
         console.error("Error occurred while trying to search families", error)
       );
-  }, [query, searchBy, searchKey]);
+  }, [query, searchBy, reloadKey]);
 
-  return { families, reloadFamilies };
+  return { families, reloadFamilies: updateKey };
 }
 
 export { File, useFamiliesSearch };

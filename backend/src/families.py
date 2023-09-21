@@ -270,24 +270,24 @@ def update_family(families_file: Excel, original_name, family):
     families_file.replace_row(index, family)
 
 def remove_family(
-        families_file: Excel,
+        origin_families_file: Excel,
         history_file: Excel,
         family_name,
         exit_date,
         reason):
     '''
-    Moves the given family from families file to families history file.
+    Moves the given family from origin families file to families history file.
     '''
     try:
-        index = families_file.get_row_index(family_name)
+        index = origin_families_file.get_row_index(family_name)
     except Exception as e:
         return e
 
-    family_data = families_file.search(family_name, 'name')[0]
+    family_data = origin_families_file.search(family_name, 'name')[0]
     family_data[exit_date_prop] = exit_date
     family_data[reason_prop] = reason
 
-    families_file.remove_row(index)
+    origin_families_file.remove_row(index)
 
     result = add_family(history_file, family_data, to_history_row)
     if result.status != 200:

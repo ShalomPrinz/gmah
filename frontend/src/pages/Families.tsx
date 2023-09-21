@@ -1,15 +1,18 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import Row from "react-bootstrap/Row";
 import { Link } from "react-router-dom";
-import { toast } from "react-toastify";
 
-import { BottomMenu, getSearchBy, SearchRow, Table } from "../components";
+import {
+  BottomMenu,
+  getSearchBy,
+  RemoveFamily,
+  SearchRow,
+  Table,
+} from "../components";
 import IconComponent from "../components/Icon";
 import { useFamiliesSearch, useFamilySelection } from "../hooks";
 import { familiesTableHeaders, familyIdProp } from "../modules";
 import type { Family } from "../modules";
-import { removeFamily } from "../services";
-import { getFormattedToday } from "../util";
 
 const buttons = [
   {
@@ -38,28 +41,6 @@ const buttons = [
 
 const { getSearchByHeader, getSearchByText } = getSearchBy(buttons);
 
-async function removeFamilyWrapper(
-  familyName: string,
-  reason: string,
-  onRemoveSuccess: () => void
-) {
-  return removeFamily(familyName, getFormattedToday() ?? "", reason)
-    .then(() => {
-      toast.success(`העברת את משפחת ${familyName} להסטוריית הנתמכים`, {
-        toastId: `removeSuccess:${familyName}`,
-      });
-      onRemoveSuccess();
-    })
-    .catch(({ response }) => {
-      toast.error(
-        `לא הצלחנו להעביר את המשפחה ${familyName} להסטוריית הנתמכים: ${response.data.description}`,
-        {
-          toastId: `removeFailure:${familyName}`,
-        }
-      );
-    });
-}
-
 const marginFromBottomMenuStyle = (familiesLength: number) => {
   let marginBottom = "30px";
   if (familiesLength === 2) marginBottom = "90px";
@@ -84,11 +65,10 @@ function Families() {
     selectedFamilyName,
   } = useFamilySelection();
 
-  const onFamilyRemove = (reason: string) =>
-    removeFamilyWrapper(selectedFamilyName, reason, () => {
-      setNoSelectedFamily();
-      reloadFamilies();
-    });
+  const onFamilyRemoveSuccess = () => {
+    setNoSelectedFamily();
+    reloadFamilies();
+  };
 
   return (
     <>
@@ -124,7 +104,11 @@ function Families() {
         title={selectedFamilyName}
       >
         <EditFamily family={selected!} />
-        <RemoveFamily onRemove={onFamilyRemove} />
+        <RemoveFamily
+          familyName={selectedFamilyName}
+          from="regular"
+          onRemoveSuccess={onFamilyRemoveSuccess}
+        />
       </BottomMenu>
     </>
   );
@@ -153,32 +137,6 @@ function EditFamily({ family }: { family: Family }) {
       <span className="ps-2">עריכה</span>
       <IconComponent icon="editFamily" />
     </Link>
-  );
-}
-
-function RemoveFamily({ onRemove }: { onRemove: (reason: string) => void }) {
-  const reasonRef = useRef<HTMLInputElement>(null);
-
-  const onRemoveClick = () => onRemove(reasonRef?.current?.value ?? "");
-
-  return (
-    <>
-      <button
-        className="bottom-menu-item bg-danger text-white rounded border border-none border-0 fs-3 p-3"
-        onClick={onRemoveClick}
-        type="button"
-      >
-        <span className="ps-2">הסרה</span>
-        <IconComponent icon="removeItem" />
-      </button>
-      <label className="fs-5 mx-0">סיבת ההסרה:</label>
-      <input
-        className="bottom-menu-item rounded p-2"
-        placeholder="דוגמא: לא עונה לטלפון"
-        ref={reasonRef}
-        type="text"
-      />
-    </>
   );
 }
 

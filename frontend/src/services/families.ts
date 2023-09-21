@@ -66,12 +66,14 @@ async function updateHolidayFamily(originalName: string, familyData: Family) {
 
 async function removeFamily(
   familyName: string,
+  from: "regular" | "holiday",
   exitDate: string,
   reason: string
 ) {
   return remove("family/remove", {
     params: {
       family_name: familyName,
+      from,
       exit_date: exitDate,
       reason,
     },
