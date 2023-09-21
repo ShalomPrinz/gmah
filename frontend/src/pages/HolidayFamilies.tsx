@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Row from "react-bootstrap/Row";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 import {
   BottomMenu,
@@ -10,12 +11,13 @@ import {
   getSearchBy,
 } from "../components";
 import IconComponent from "../components/Icon";
+import { File, useFamiliesSearch, useFamilySelection } from "../hooks";
 import {
   familyIdProp,
   type Family,
   holidayFamiliesTableHeaders,
 } from "../modules";
-import { File, useFamiliesSearch, useFamilySelection } from "../hooks";
+import { moveHolidayToRegular } from "../services";
 
 const buttons = [
   {
@@ -38,6 +40,30 @@ const buttons = [
 
 const { getSearchByHeader, getSearchByText } = getSearchBy(buttons);
 
+async function permanentAddFamilyWrapper(
+  familyName: string,
+  onPermanentAddSuccess: () => void
+) {
+  return moveHolidayToRegular(familyName)
+    .then(() => {
+      toast.success(
+        `העברת את משפחת ${familyName} ממשפחות החגים למשפחות הקבועות`,
+        {
+          toastId: `permanentAddSuccess:${familyName}`,
+        }
+      );
+      onPermanentAddSuccess();
+    })
+    .catch(({ response }) => {
+      toast.error(
+        `לא הצלחנו להעביר את המשפחה ${familyName} למשפחות הקבועות: ${response.data.description}`,
+        {
+          toastId: `permanentAddFailure:${familyName}`,
+        }
+      );
+    });
+}
+
 function HolidayFamilies() {
   const [query, setQuery] = useState("");
   const [searchBy, setSearchBy] = useState("name");
@@ -58,6 +84,11 @@ function HolidayFamilies() {
   const onFamilyRemoveSuccess = () => {
     setNoSelectedFamily();
     reloadFamilies();
+  };
+
+  const addFamilyWrapper = (familyName: string) => () => {
+    permanentAddFamilyWrapper(familyName, reloadFamilies);
+    setNoSelectedFamily();
   };
 
   return (
@@ -89,6 +120,9 @@ function HolidayFamilies() {
         title={selectedFamilyName}
       >
         <EditFamily family={selected!} />
+        <PermanentAddFamily
+          addFamilyPermanently={addFamilyWrapper(selectedFamilyName)}
+        />
         <RemoveFamily
           familyName={selectedFamilyName}
           from="holiday"
@@ -122,6 +156,23 @@ function EditFamily({ family }: { family: Family }) {
       <span className="ps-2">עריכה</span>
       <IconComponent icon="editFamily" />
     </Link>
+  );
+}
+
+function PermanentAddFamily({
+  addFamilyPermanently,
+}: {
+  addFamilyPermanently: () => void;
+}) {
+  return (
+    <button
+      className="bottom-menu-item bg-primary text-white rounded border border-none border-0 fs-3 p-3 me-0"
+      onClick={addFamilyPermanently}
+      type="button"
+    >
+      <span className="ps-2">לקבועים</span>
+      <IconComponent icon="addFamily" />
+    </button>
   );
 }
 

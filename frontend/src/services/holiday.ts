@@ -85,6 +85,18 @@ async function addHolidayDriver(
   });
 }
 
+async function moveHolidayToRegular(familyName: string) {
+  return post("holiday/move/regular", {
+    family_name: familyName,
+  });
+}
+
+async function moveRegularToHoliday(familyName: string) {
+  return post("families/move/holiday", {
+    family_name: familyName,
+  });
+}
+
 export {
   addHolidayDriver,
   getHolidayDrivers,
@@ -93,6 +105,8 @@ export {
   getHolidayRegularFamilies,
   getHolidaysList,
   getHolidayStatus,
+  moveHolidayToRegular,
+  moveRegularToHoliday,
   removeHolidayDriver,
   startNewHoliday,
   updateHolidayStatus,

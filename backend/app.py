@@ -559,4 +559,28 @@ def generate_holiday_printable():
     holiday.generate_holiday_main_pdf(holiday_name, g.managers_file)
     return jsonify(), 200
 
+@api_blueprint.route('/holiday/move/regular', methods=["POST"])
+def move_holiday_family_to_regular():
+    error, holiday_families_file = families.load_holiday_families_file()
+    if error is not None:
+        return error_response(error)
+
+    family_name = request.json['family_name']
+    error = families.move_holiday_to_regular(g.families_file, holiday_families_file, family_name)
+    if error is not None:
+        return error_response(error)
+    return jsonify(), 200
+
+@api_blueprint.route('/families/move/holiday', methods=["POST"])
+def move_regular_family_to_holiday():
+    error, holiday_families_file = families.load_holiday_families_file()
+    if error is not None:
+        return error_response(error)
+
+    family_name = request.json['family_name']
+    error = families.move_regular_to_holiday(g.families_file, holiday_families_file, family_name)
+    if error is not None:
+        return error_response(error)
+    return jsonify(), 200 
+
 app.register_blueprint(api_blueprint)

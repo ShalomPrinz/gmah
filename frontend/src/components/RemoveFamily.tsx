@@ -31,7 +31,7 @@ function RemoveFamily({
   return (
     <>
       <button
-        className="bottom-menu-item bg-danger text-white rounded border border-none border-0 fs-3 p-3"
+        className="bottom-menu-item bg-danger text-white rounded border border-none border-0 fs-3 p-3 me-0"
         onClick={onRemoveClick}
         type="button"
       >

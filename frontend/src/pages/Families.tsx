@@ -13,6 +13,8 @@ import IconComponent from "../components/Icon";
 import { useFamiliesSearch, useFamilySelection } from "../hooks";
 import { familiesTableHeaders, familyIdProp } from "../modules";
 import type { Family } from "../modules";
+import { moveRegularToHoliday } from "../services";
+import { toast } from "react-toastify";
 
 const buttons = [
   {
@@ -41,6 +43,30 @@ const buttons = [
 
 const { getSearchByHeader, getSearchByText } = getSearchBy(buttons);
 
+async function holidayMoveFamilyWrapper(
+  familyName: string,
+  onPermanentAddSuccess: () => void
+) {
+  return moveRegularToHoliday(familyName)
+    .then(() => {
+      toast.success(
+        `העברת את משפחת ${familyName} מהמשפחות הקבועות למשפחות החגים`,
+        {
+          toastId: `holidayAddSuccess:${familyName}`,
+        }
+      );
+      onPermanentAddSuccess();
+    })
+    .catch(({ response }) => {
+      toast.error(
+        `לא הצלחנו להעביר את המשפחה ${familyName} למשפחות החגים: ${response.data.description}`,
+        {
+          toastId: `holidayAddFailure:${familyName}`,
+        }
+      );
+    });
+}
+
 const marginFromBottomMenuStyle = (familiesLength: number) => {
   let marginBottom = "30px";
   if (familiesLength === 2) marginBottom = "90px";
@@ -68,6 +94,11 @@ function Families() {
   const onFamilyRemoveSuccess = () => {
     setNoSelectedFamily();
     reloadFamilies();
+  };
+
+  const moveFamilyToHoliday = (familyName: string) => () => {
+    holidayMoveFamilyWrapper(familyName, reloadFamilies);
+    setNoSelectedFamily();
   };
 
   return (
@@ -104,6 +135,9 @@ function Families() {
         title={selectedFamilyName}
       >
         <EditFamily family={selected!} />
+        <MoveToHoliday
+          toHolidayFamily={moveFamilyToHoliday(selectedFamilyName)}
+        />
         <RemoveFamily
           familyName={selectedFamilyName}
           from="regular"
@@ -137,6 +171,19 @@ function EditFamily({ family }: { family: Family }) {
       <span className="ps-2">עריכה</span>
       <IconComponent icon="editFamily" />
     </Link>
+  );
+}
+
+function MoveToHoliday({ toHolidayFamily }: { toHolidayFamily: () => void }) {
+  return (
+    <button
+      className="bottom-menu-item bg-primary text-white rounded border border-none border-0 fs-3 p-3 me-0"
+      onClick={toHolidayFamily}
+      type="button"
+    >
+      <span className="ps-2">לחגים</span>
+      <IconComponent icon="addFamily" />
+    </button>
   );
 }
 

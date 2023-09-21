@@ -14,8 +14,8 @@ function BottomMenu({ children, isOpen, onMenuClose, title }: BottomMenuProps) {
   return (
     <>
       {isOpen && (
-        <div className="bottom-menu p-4 d-flex">
-          <span className="fs-3 mx-5 my-auto">{title}</span>
+        <div className="bottom-menu p-4 d-flex mx-0">
+          <span className="fs-3 me-5 my-auto">{title}</span>
           <div className="justify-content-center">{children}</div>
           <MenuCloseButton close={onMenuClose} />
         </div>

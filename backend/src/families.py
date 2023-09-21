@@ -269,6 +269,19 @@ def update_family(families_file: Excel, original_name, family):
         return e
     families_file.replace_row(index, family)
 
+def move_family(origin_file: Excel, family_name):
+    '''
+    Removes the given family from origin file and returns its data.
+    '''
+    try:
+        index = origin_file.get_row_index(family_name)
+    except Exception as e:
+        return e, None
+    
+    family_data = origin_file.search(family_name, 'name')[0]
+    origin_file.remove_row(index)
+    return None, family_data
+
 def remove_family(
         origin_families_file: Excel,
         history_file: Excel,
@@ -278,16 +291,12 @@ def remove_family(
     '''
     Moves the given family from origin families file to families history file.
     '''
-    try:
-        index = origin_families_file.get_row_index(family_name)
-    except Exception as e:
-        return e
-
-    family_data = origin_families_file.search(family_name, 'name')[0]
+    error, family_data = move_family(origin_families_file, family_name)
+    if error is not None:
+        return error
+    
     family_data[exit_date_prop] = exit_date
     family_data[reason_prop] = reason
-
-    origin_families_file.remove_row(index)
 
     result = add_family(history_file, family_data, to_history_row)
     if result.status != 200:
@@ -298,19 +307,40 @@ def restore_family(families_file: Excel, history_file: Excel, family_name):
     '''
     Moves the given family from families history file to families file.
     '''
-    try:
-        index = history_file.get_row_index(family_name)
-    except Exception as e:
-        return e
-
-    family_data = history_file.search(family_name, 'name')[0]
-
-    history_file.remove_row(index)
+    error, family_data = move_family(history_file, family_name)
+    if error is not None:
+        return error
 
     result = add_family(families_file, family_data, to_excel_row)
     if result.status != 200:
         return Exception(
             "המשפחה הוסרה בהצלחה מהסטוריית הנתמכים, אך קרתה שגיאה בהוספת המשפחה לנתמכים")
+
+def move_holiday_to_regular(families_file: Excel, holiday_file: Excel, family_name):
+    '''
+    Moves the given family from holiday file to families file.
+    '''
+    error, family_data = move_family(holiday_file, family_name)
+    if error is not None:
+        return error
+
+    result = add_family(families_file, family_data, to_excel_row)
+    if result.status != 200:
+        return Exception(
+            "המשפחה הוסרה בהצלחה מהמשפחות לחגים, אך קרתה שגיאה בהוספת המשפחה לנתמכים הקבועים")
+
+def move_regular_to_holiday(families_file: Excel, holiday_file: Excel, family_name):
+    '''
+    Moves the given family from families file to holiday file.
+    '''
+    error, family_data = move_family(families_file, family_name)
+    if error is not None:
+        return error
+
+    result = add_family(holiday_file, family_data, to_excel_row)
+    if result.status != 200:
+        return Exception(
+            "המשפחה הוסרה בהצלחה מהמשפחות הקבועות, אך קרתה שגיאה בהוספת המשפחה למשפחות החגים")
 
 def permanent_remove_family(families_file: Excel, family_name):
     '''
