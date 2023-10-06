@@ -18,6 +18,8 @@ report_columns=([0]=$family_id_prop [1]="אחראי" [2]="נהג" [3]=$report_da
 report_completion_columns=([0]=$family_id_prop [1]="נהג" [2]="רחוב")
 build_completion_exclude="1"
 
+family_receipt_history_attributes=([0]="חודש" [1]=$report_date_prop [2]=$report_receive_prop)
+
 # Path Preparation
 
 dir_path="src/modules/"
@@ -46,16 +48,15 @@ function prepare_path {
 
 function add_families_array {
     local var_name=$1
-    local obj_attr=$2
-    local excludes=$3
-    shift 3
+    local excludes=$2
+    shift 2
     local attrs=("$@")
     echo "export const $var_name = " >> $output_file
 
     local var_text="["
     for idx in ${!attrs[@]}; do
         if [[ ! " $excludes " =~ " $idx " ]]; then
-            var_text+='{id: '$idx', '$obj_attr': "'${attrs[$idx]}'"},'
+            var_text+='{id: '$idx', 'path': "'${attrs[$idx]}'"},'
         fi
     done
     var_text+="]"
@@ -97,16 +98,19 @@ add_labeled_families_array "editHolidayFamilyInputs" "$holiday_families_exclude"
 add_labeled_families_array "addFamilyHeaders" "$add_family_exclude"
 
 # Families Table
-add_families_array "familiesTableHeaders" "path" "$families_table_exclude" "${family_attributes[@]}"
+add_families_array "familiesTableHeaders" "$families_table_exclude" "${family_attributes[@]}"
 
 # Families History Table
-add_families_array "familiesHistoryTableHeaders" "path" "" "${history_family_attributes[@]}"
+add_families_array "familiesHistoryTableHeaders" "" "${history_family_attributes[@]}"
 
 # Holiday Families Table
-add_families_array "holidayFamiliesTableHeaders" "path" "$holiday_families_exclude" "${family_attributes[@]}"
+add_families_array "holidayFamiliesTableHeaders" "$holiday_families_exclude" "${family_attributes[@]}"
 
 # Holiday Families Selection Table
-add_families_array "holidayFamiliesSelectionTableHeaders" "path" "" "${holiday_select_family_attributes[@]}"
+add_families_array "holidayFamiliesSelectionTableHeaders" "" "${holiday_select_family_attributes[@]}"
+
+# Family Receipt History Table
+add_families_array "familyReceiptHistoryHeaders" "" "${family_receipt_history_attributes[@]}"
 
 function write_family_properties {
     local var_name="familyProperties"

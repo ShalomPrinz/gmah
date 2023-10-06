@@ -198,6 +198,14 @@ def add_family_driver():
         return result_error_response(result)
     return jsonify(title=result.title, description=result.description), result.status
 
+@api_blueprint.route('/family/receipt/history')
+def get_family_receipt_history():
+    family_name = request.args.get('family_name')
+    error, statuses = month.get_family_receipt_history(family_name)
+    if error is not None:
+        return error_response(error)
+    return jsonify(statuses=statuses), 200
+
 # Managers
 
 @api_blueprint.route('/managers')

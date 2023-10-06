@@ -1,11 +1,11 @@
 from glob import glob
 from os import path, listdir
 
-from src.data import key_prop, pdf_properties, system_files_folder
+from src.data import key_prop, pdf_properties, system_files_folder, date_prop, status_prop
 from src.errors import FileAlreadyExists, ActiveReportNotFound
 from src.families import search_families
 from src.managers import load_managers_file
-from src.report import load_report_file, append_report, report_late_append
+from src.report import load_report_file, append_report, report_late_append, get_family_receipt_status, default_receipt
 from src.pdf import PDFBuilder, get_print_path, get_print_folder_path
 from src.util import duplicate_excel_template, get_all_pages
 
@@ -116,6 +116,31 @@ def get_printable_files(report_name):
     def without_ending(filename):
         return filename[:-len(month_printable_suffix)]
     return list(map(without_ending, listdir(folder_path)))
+
+def get_family_receipt_history(family_name):
+    '''
+    Returns family receipt statuses of all-time month reports history.
+    '''
+    error, reports_list = get_reports_list()
+    if error is not None:
+        return error, None
+    
+    statuses = []
+    for report_props in reports_list:
+        current_month = report_props["name"]
+        error, report_file = load_month_report(current_month)
+        if error is not None:
+            return error, None
+        status = get_family_receipt_status(report_file, family_name)
+        if status == default_receipt:
+            continue
+        statuses.append({
+            **{ "חודש": current_month },
+            date_prop: status["date"],
+            status_prop: status["status"]
+        })
+
+    return None, statuses
 
 # Monthly files generation
 

@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import { get, post, put, remove } from "./http";
 
 import type { Family } from "../modules";
+import { getUnique } from "../util";
 
 async function getFamiliesCount() {
   return get("familiesCount");
@@ -18,6 +19,20 @@ async function searchFamiliesHistory(query: string, by: string) {
 
 async function searchHolidayFamilies(query: string, by: string) {
   return get("families/holiday", { params: { query, by } });
+}
+
+async function getAllFamilies() {
+  const [regular, history, holiday] = await Promise.all([
+    searchFamilies("", ""),
+    searchFamiliesHistory("", ""),
+    searchHolidayFamilies("", ""),
+  ]);
+
+  return getUnique([
+    ...regular.data.families,
+    ...history.data.families,
+    ...holiday.data.families,
+  ]);
 }
 
 /**
@@ -109,10 +124,20 @@ async function addFamilyDriver(familyName: string, driverName: string) {
   });
 }
 
+async function getFamilyReceiptHistory(familyName: string) {
+  return get("family/receipt/history", {
+    params: {
+      family_name: familyName,
+    },
+  });
+}
+
 export {
   addFamilies,
   addFamilyDriver,
   getFamiliesCount,
+  getFamilyReceiptHistory,
+  getAllFamilies,
   permanentRemoveFamily,
   searchFamilies,
   searchFamiliesHistory,

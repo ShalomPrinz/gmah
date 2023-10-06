@@ -6,6 +6,7 @@ export {
   familiesHistoryTableHeaders,
   holidayFamiliesTableHeaders,
   holidayFamiliesSelectionTableHeaders,
+  familyReceiptHistoryHeaders,
   familyProperties,
   defaultFamily,
   familyIdProp,

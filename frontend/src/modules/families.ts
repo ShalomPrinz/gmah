@@ -76,6 +76,12 @@ export const holidayFamiliesSelectionTableHeaders = [
   { id: 1, path: "ממליץ" },
 ];
 
+export const familyReceiptHistoryHeaders = [
+  { id: 0, path: "חודש" },
+  { id: 1, path: "תאריך" },
+  { id: 2, path: "קיבל/ה" },
+];
+
 export const familyProperties = [
   "שם מלא",
   "רחוב",

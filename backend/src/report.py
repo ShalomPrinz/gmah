@@ -9,7 +9,6 @@ from src.json import Json
 from src.managers import find_manager
 from src.results import receipt_update_results
 from src.styles import report_cell_style, report_received_style, report_not_received_style, report_received_name, report_not_received_name, style_name
-from src.util import duplicate_excel_template
 
 class ReportSearchBy(Enum):
     NAME = 'name'
