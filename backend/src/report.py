@@ -4,7 +4,7 @@ from re import match
 from src.data import report_properties, key_prop, street_prop, driver_prop, date_prop, status_prop, date_pattern, default_date, default_status
 from src.errors import FamilyNotFoundError
 from src.excel import Excel
-from src.families import search_families
+from src.families import search_families, permanent_remove_family
 from src.json import Json
 from src.managers import find_manager
 from src.results import receipt_update_results
@@ -149,6 +149,12 @@ def to_excel_row(family, managers_file):
     manager = find_manager(managers_file, driver) or default_manager
 
     return [family_key, manager, driver, None, None]
+
+def remove_from_report(report_file: Excel, family_name):
+    '''
+    Removes given family from given report.
+    '''
+    return permanent_remove_family(report_file, family_name)
 
 # Report data tracking
 

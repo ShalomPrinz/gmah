@@ -384,6 +384,15 @@ def activate_month_report():
         return error_response(error)
     return jsonify(), 200
 
+@api_blueprint.route('/report/remove/family', methods=["DELETE"])
+def remove_family_from_report():
+    report_name = request.args.get('report_name')
+    family_name = request.args.get('family_name')
+    error = month.remove_family_from_report(report_name, family_name)
+    if error is not None:
+        return error_response(error)
+    return jsonify(), 200
+
 # Prints
 
 @api_blueprint.route('/print/generate', methods=["POST"])

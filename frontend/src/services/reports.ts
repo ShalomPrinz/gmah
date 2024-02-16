@@ -1,4 +1,4 @@
-import { get, post, put } from "./http";
+import { get, post, put, remove } from "./http";
 import type { DriverReceipt, Receipt } from "../types";
 
 function generateMonthReport(name: string, override: boolean) {
@@ -84,6 +84,15 @@ function updateDriverStatus(reportName: string, status: DriverReceipt[]) {
   });
 }
 
+function removeFamilyFromReport(reportName: string, familyName: string) {
+  return remove("/report/remove/family", {
+    params: {
+      report_name: reportName,
+      family_name: familyName,
+    },
+  });
+}
+
 export {
   activateReport,
   generateMonthReport,
@@ -96,4 +105,5 @@ export {
   getReportsList,
   updateDriverStatus,
   updateFamilyReceipt,
+  removeFamilyFromReport,
 };

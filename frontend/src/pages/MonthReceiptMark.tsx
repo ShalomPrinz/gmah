@@ -5,7 +5,7 @@ import MonthFamilyMark from "./MonthFamilyMark";
 
 import { ColumnList, ConditionalList, Search } from "../components";
 import type { ListItem } from "../components";
-import { useLocationState } from "../hooks";
+import { useLocationState, useReloadKey } from "../hooks";
 import { getReportColumn } from "../services";
 
 interface MarkMode {
@@ -38,7 +38,10 @@ function MonthMarkWrapper() {
   const { markMode, markModeCallback } = useMarkMode();
   const isFamilyMode = markMode.id === familyMarkMode.id;
 
-  const reportColumn = useReportColumn(reportName, markMode.searchBy);
+  const { reportColumn, reloadReportColumnList } = useReportColumn(
+    reportName,
+    markMode.searchBy
+  );
 
   const [selected, setSelected] = useState("");
   const noSelectedItem = selected === "";
@@ -64,6 +67,10 @@ function MonthMarkWrapper() {
           ) : isFamilyMode ? (
             <MonthFamilyMark
               familyName={selected}
+              familyRemovedCallback={() => {
+                setSelected("");
+                reloadReportColumnList();
+              }}
               key={selected}
               reportName={reportName}
             />
@@ -110,6 +117,7 @@ function QueryDisplay({
 
 function useReportColumn(reportName: string, searchBy: string) {
   const [searchResult, setSearchResult] = useState([]);
+  const { reloadKey, updateKey } = useReloadKey();
 
   useEffect(() => {
     getReportColumn(reportName, "", searchBy)
@@ -117,9 +125,9 @@ function useReportColumn(reportName: string, searchBy: string) {
       .catch((error) =>
         console.error("Error occurred while trying to search in report", error)
       );
-  }, [reportName, searchBy]);
+  }, [reportName, searchBy, reloadKey]);
 
-  return searchResult;
+  return { reportColumn: searchResult, reloadReportColumnList: updateKey };
 }
 
 function useMarkMode() {

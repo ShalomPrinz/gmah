@@ -5,7 +5,7 @@ from src.data import key_prop, pdf_properties, system_files_folder, date_prop, s
 from src.errors import FileAlreadyExists, ActiveReportNotFound
 from src.families import search_families
 from src.managers import load_managers_file
-from src.report import load_report_file, append_report, report_late_append, get_family_receipt_status, default_receipt
+from src.report import load_report_file, append_report, report_late_append, get_family_receipt_status, default_receipt, remove_from_report
 from src.pdf import PDFBuilder, get_print_path, get_print_folder_path
 from src.util import duplicate_excel_template, get_all_pages
 
@@ -90,7 +90,7 @@ def get_active_report():
             return error, None
         if is_active_report(report):
             return None, report
-    return None, None
+    return None, ActiveReportNotFound("לא נמצא דוח קבלה פעיל")
 
 def get_printable_report(report_name, printable_name):
     '''
@@ -261,6 +261,13 @@ def insert_families_to_active(families):
     error, active_report = get_active_report()
     if error is not None:
         return error
-    if active_report is None:
-        return ActiveReportNotFound("לא נמצא דוח קבלה פעיל")
     report_late_append(active_report, families)
+
+def remove_family_from_report(report_name, family_name):
+    '''
+    Removes given family from given report.
+    '''
+    error, report_file = load_month_report(report_name)
+    if error is not None:
+        return error
+    return remove_from_report(report_file, family_name)

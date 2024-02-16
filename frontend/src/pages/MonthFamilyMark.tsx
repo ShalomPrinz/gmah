@@ -4,16 +4,26 @@ import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import { toast } from "react-toastify";
 
-import { getFamilyReceiptStatus, updateFamilyReceipt } from "../services";
-import { concatArray, getTodayDate } from "../util";
+import IconComponent from "../components/Icon";
+import {
+  getFamilyReceiptStatus,
+  removeFamilyFromReport,
+  updateFamilyReceipt,
+} from "../services";
 import type { Receipt } from "../types";
+import { concatArray, getTodayDate } from "../util";
 
 interface MonthFamilyMarkProps {
   familyName: string;
+  familyRemovedCallback: () => void;
   reportName: string;
 }
 
-function MonthFamilyMark({ familyName, reportName }: MonthFamilyMarkProps) {
+function MonthFamilyMark({
+  familyName,
+  familyRemovedCallback,
+  reportName,
+}: MonthFamilyMarkProps) {
   const receiptStatus = useReceiptStatus(reportName, familyName);
 
   const receiptFormKey = concatArray(
@@ -38,9 +48,34 @@ function MonthFamilyMark({ familyName, reportName }: MonthFamilyMarkProps) {
       });
   }
 
+  function removeFamily() {
+    removeFamilyFromReport(reportName, familyName)
+      .then(() => {
+        toast.success(
+          `המשפחה ${familyName} הוסרה בהצלחה מדוח הקבלה ${reportName}`
+        );
+        familyRemovedCallback();
+      })
+      .catch(() =>
+        toast.error(
+          `קרתה שגיאה בניסיון להסיר את המשפחה ${familyName} מדוח הקבלה ${reportName}`
+        )
+      );
+  }
+
   return (
     <>
-      <h2>{familyName}</h2>
+      <h2>
+        {familyName}
+        <button
+          className="fs-5 p-2 bg-white text-danger rounded border border-3 border-danger button-hover me-5"
+          onClick={removeFamily}
+          type="button"
+        >
+          <span className="ps-2">הסר מדוח הקבלה</span>
+          <IconComponent color="red" icon="removeItem" />
+        </button>
+      </h2>
       <ReceiptForm
         initialReceipt={receiptStatus}
         key={receiptFormKey}
