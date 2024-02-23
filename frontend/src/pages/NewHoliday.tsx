@@ -11,7 +11,7 @@ function NewHoliday() {
 
   function generateHoliday() {
     const title = titleRef.current?.value;
-    if (typeof title === "undefined") {
+    if (typeof title === "undefined" || title.length === 0) {
       toast.warn("לא ניתן לפתוח חג חדש ללא שם החג", {
         toastId: "holidayNameMissingError",
       });

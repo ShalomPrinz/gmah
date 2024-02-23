@@ -75,6 +75,9 @@ const router = createBrowserRouter(
             element={<Pages.EditFamily familyType="holiday" />}
           />
         </Route>
+        <Route path="remove">
+          <Route path=":name" element={<Pages.RemoveFamily />} />
+        </Route>
         <Route path="new" element={<Pages.NewHoliday />} />
         <Route path="manage">
           <Route index element={<Pages.HolidayManagement />} />

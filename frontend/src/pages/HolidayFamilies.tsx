@@ -3,13 +3,7 @@ import Row from "react-bootstrap/Row";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 
-import {
-  BottomMenu,
-  RemoveFamily,
-  SearchRow,
-  Table,
-  getSearchBy,
-} from "../components";
+import { BottomMenu, SearchRow, Table, getSearchBy } from "../components";
 import IconComponent from "../components/Icon";
 import { File, useFamiliesSearch, useFamilySelection } from "../hooks";
 import {
@@ -18,6 +12,7 @@ import {
   holidayFamiliesTableHeaders,
 } from "../modules";
 import { moveHolidayToRegular } from "../services";
+import { RemoveFamilyData } from "../types";
 
 const buttons = [
   {
@@ -81,11 +76,6 @@ function HolidayFamilies() {
     selectedFamilyName,
   } = useFamilySelection();
 
-  const onFamilyRemoveSuccess = () => {
-    setNoSelectedFamily();
-    reloadFamilies();
-  };
-
   const addFamilyWrapper = (familyName: string) => () => {
     permanentAddFamilyWrapper(familyName, reloadFamilies);
     setNoSelectedFamily();
@@ -124,9 +114,10 @@ function HolidayFamilies() {
           addFamilyPermanently={addFamilyWrapper(selectedFamilyName)}
         />
         <RemoveFamily
-          familyName={selectedFamilyName}
-          from="holiday"
-          onRemoveSuccess={onFamilyRemoveSuccess}
+          removeFamilyData={{
+            familyName: selectedFamilyName,
+            from: "holiday",
+          }}
         />
       </BottomMenu>
     </>
@@ -176,4 +167,20 @@ function PermanentAddFamily({
   );
 }
 
+function RemoveFamily({
+  removeFamilyData,
+}: {
+  removeFamilyData: RemoveFamilyData;
+}) {
+  return (
+    <Link
+      className="bottom-menu-item link-decoration bg-danger text-white rounded fs-3 p-3 me-0"
+      to={`remove/${removeFamilyData.familyName}`}
+      state={{ data: removeFamilyData }}
+    >
+      <span className="ps-2">הסרה</span>
+      <IconComponent icon="removeItem" />
+    </Link>
+  );
+}
 export default HolidayFamilies;

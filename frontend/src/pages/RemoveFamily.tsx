@@ -30,6 +30,8 @@ function RemoveFamily() {
       goBack
     );
 
+  const isHolidayFamilyRemove = removeFamilyData.from === "holiday";
+
   return (
     <main className="container my-4 text-center">
       <Row className="my-5">
@@ -49,21 +51,27 @@ function RemoveFamily() {
           />
         </Col>
       </Row>
-      <Row className="py-3 fs-4 align-items-center">
-        <Col sm="3" />
-        <Col sm="2">
-          <span className="mx-0">להסיר מדוח קבלה נוכחי?</span>
-        </Col>
-        <Col sm="2">
-          <BsForm.Switch
-            className="fs-1 my-auto me-2"
-            title={"hello"}
-            ref={monthRemoveRef}
-            style={{ transform: "scaleX(-1)" }}
-          />
-        </Col>
-      </Row>
-      <Row className="py-3 fs-4 align-items-center mx-auto">
+      {!isHolidayFamilyRemove && (
+        <Row className="py-3 fs-4 align-items-center">
+          <Col sm="3" />
+          <Col sm="2">
+            <span className="mx-0">להסיר מדוח קבלה נוכחי?</span>
+          </Col>
+          <Col sm="2">
+            <BsForm.Switch
+              className="fs-1 my-auto me-2"
+              title={"hello"}
+              ref={monthRemoveRef}
+              style={{ transform: "scaleX(-1)" }}
+            />
+          </Col>
+        </Row>
+      )}
+      <Row
+        className={`py-${
+          isHolidayFamilyRemove ? "5" : "3"
+        } fs-4 align-items-center mx-auto`}
+      >
         <Col>
           <button
             className="bg-danger text-white rounded button-hover border border-none border-0 fs-3 p-3 px-5 me-0"
