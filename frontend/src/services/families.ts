@@ -83,7 +83,8 @@ async function removeFamily(
   familyName: string,
   from: "regular" | "holiday",
   exitDate: string,
-  reason: string
+  reason: string,
+  monthRemove: boolean
 ) {
   return remove("family/remove", {
     params: {
@@ -91,6 +92,7 @@ async function removeFamily(
       from,
       exit_date: exitDate,
       reason,
+      month_remove: monthRemove,
     },
   });
 }

@@ -84,13 +84,16 @@ def get_active_report():
     Returns the active report file.
     If no active report found, returns None.
     '''
-    for filepath in glob(month_reports_pattern):
+    report_paths = glob(month_reports_pattern)
+    for filepath in report_paths:
         error, report = load_report_file(filepath)
         if error is not None:
             return error, None
         if is_active_report(report):
             return None, report
-    return None, ActiveReportNotFound("לא נמצא דוח קבלה פעיל")
+    if len(report_paths) == 0:
+        return None, None
+    return ActiveReportNotFound("לא נמצא דוח קבלה פעיל"), None
 
 def get_printable_report(report_name, printable_name):
     '''

@@ -34,6 +34,9 @@ const router = createBrowserRouter(
             element={<Pages.EditFamily familyType="regular" />}
           />
         </Route>
+        <Route path="remove">
+          <Route path=":name" element={<Pages.RemoveFamily />} />
+        </Route>
         <Route path="history" element={<Pages.FamiliesHistory />} />
         <Route path="add">
           <Route index element={<Pages.FamilyManager />} />

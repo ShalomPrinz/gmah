@@ -68,6 +68,9 @@ def error_response(error: Exception):
     result = get_result(error)
     return result_error_response(result)
 
+def boolean_arg(arg):
+    return arg and arg.lower() == 'true'
+
 @api_blueprint.before_request
 def load_files():
     error, families_file = families.load_families_file()
@@ -154,6 +157,7 @@ def remove_family():
     remove_from = request.args.get('from')
     exit_date = request.args.get('exit_date')
     reason = request.args.get('reason')
+    month_remove = boolean_arg(request.args.get('month_remove'))
 
     origin_file = g.families_file
     if remove_from == "holiday":
@@ -165,6 +169,15 @@ def remove_family():
     error = families.remove_family(origin_file, g.families_history_file, family_name, exit_date, reason)
     if error is not None:
         return error_response(error)
+    
+    if month_remove:
+        error, active_report = month.get_active_report()
+        if error is not None:
+            return error_response(error)
+        if active_report is not None:
+            error = report.remove_from_report(active_report, family_name)
+            if error is not None:
+                return error_response(error)
     return jsonify(), 200
 
 @api_blueprint.route('/family/restore', methods=["POST"])

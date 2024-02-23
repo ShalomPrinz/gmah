@@ -1,20 +1,15 @@
 import { useState } from "react";
 import Row from "react-bootstrap/Row";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
-import {
-  BottomMenu,
-  getSearchBy,
-  RemoveFamily,
-  SearchRow,
-  Table,
-} from "../components";
+import { BottomMenu, getSearchBy, SearchRow, Table } from "../components";
 import IconComponent from "../components/Icon";
 import { useFamiliesSearch, useFamilySelection } from "../hooks";
 import { familiesTableHeaders, familyIdProp } from "../modules";
 import type { Family } from "../modules";
 import { moveRegularToHoliday } from "../services";
-import { toast } from "react-toastify";
+import { RemoveFamilyData } from "../types";
 
 const buttons = [
   {
@@ -91,11 +86,6 @@ function Families() {
     selectedFamilyName,
   } = useFamilySelection();
 
-  const onFamilyRemoveSuccess = () => {
-    setNoSelectedFamily();
-    reloadFamilies();
-  };
-
   const moveFamilyToHoliday = (familyName: string) => () => {
     holidayMoveFamilyWrapper(familyName, reloadFamilies);
     setNoSelectedFamily();
@@ -139,9 +129,10 @@ function Families() {
           toHolidayFamily={moveFamilyToHoliday(selectedFamilyName)}
         />
         <RemoveFamily
-          familyName={selectedFamilyName}
-          from="regular"
-          onRemoveSuccess={onFamilyRemoveSuccess}
+          removeFamilyData={{
+            familyName: selectedFamilyName,
+            from: "regular",
+          }}
         />
       </BottomMenu>
     </>
@@ -184,6 +175,23 @@ function MoveToHoliday({ toHolidayFamily }: { toHolidayFamily: () => void }) {
       <span className="ps-2">לחגים</span>
       <IconComponent icon="addFamily" />
     </button>
+  );
+}
+
+function RemoveFamily({
+  removeFamilyData,
+}: {
+  removeFamilyData: RemoveFamilyData;
+}) {
+  return (
+    <Link
+      className="bottom-menu-item link-decoration bg-danger text-white rounded fs-3 p-3 me-0"
+      to={`remove/${removeFamilyData.familyName}`}
+      state={{ data: removeFamilyData }}
+    >
+      <span className="ps-2">הסרה</span>
+      <IconComponent icon="removeItem" />
+    </Link>
   );
 }
 

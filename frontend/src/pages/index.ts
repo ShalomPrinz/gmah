@@ -19,6 +19,7 @@ import MonthReceiptMark from "./MonthReceiptMark";
 import MonthTracker from "./MonthTracker";
 import MonthSettings from "./MonthSettings";
 import NewHoliday from "./NewHoliday";
+import RemoveFamily from "./RemoveFamily";
 import Reports from "./Reports";
 
 import AppErrorBoundary from "./AppErrorBoundary";
@@ -46,6 +47,7 @@ const Pages = {
   MonthTracker,
   MonthSettings,
   NewHoliday,
+  RemoveFamily,
   Reports,
 };
 

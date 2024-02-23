@@ -55,7 +55,13 @@ async function removeFamilyWrapper(
   reason: string,
   onRemoveSuccess: () => void
 ) {
-  return removeFamily(familyName, from, getFormattedToday() ?? "", reason)
+  return removeFamily(
+    familyName,
+    from,
+    getFormattedToday() ?? "",
+    reason,
+    false
+  )
     .then(() => {
       toast.success(`העברת את משפחת ${familyName} להסטוריית הנתמכים`, {
         toastId: `removeSuccess:${familyName}`,
