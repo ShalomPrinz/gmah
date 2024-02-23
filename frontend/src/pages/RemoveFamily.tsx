@@ -9,12 +9,13 @@ import { useLocationState } from "../hooks";
 import { removeFamily } from "../services";
 import { RemoveFamilyData } from "../types";
 import { getFormattedToday } from "../util";
-import { useHistoryContext } from "../contexts";
+import { useHistoryContext, useReportContext } from "../contexts";
 
 function RemoveFamily() {
   const reasonRef = useRef<HTMLInputElement>(null);
   const monthRemoveRef = useRef<HTMLInputElement>(null);
   const { goBack } = useHistoryContext();
+  const { activeReport } = useReportContext();
 
   const removeFamilyData = useLocationState<RemoveFamilyData>(
     "RemoveFamily",
@@ -31,6 +32,7 @@ function RemoveFamily() {
     );
 
   const isHolidayFamilyRemove = removeFamilyData.from === "holiday";
+  const hasActiveReport = activeReport !== "";
 
   return (
     <main className="container my-4 text-center">
@@ -54,17 +56,33 @@ function RemoveFamily() {
       {!isHolidayFamilyRemove && (
         <Row className="py-3 fs-4 align-items-center">
           <Col sm="3" />
-          <Col sm="2">
-            <span className="mx-0">להסיר מדוח קבלה נוכחי?</span>
-          </Col>
-          <Col sm="2">
-            <BsForm.Switch
-              className="fs-1 my-auto me-2"
-              title={"hello"}
-              ref={monthRemoveRef}
-              style={{ transform: "scaleX(-1)" }}
-            />
-          </Col>
+          {hasActiveReport ? (
+            <>
+              <Col sm="2">
+                <span className="mx-0">
+                  להסיר מדוח קבלה נוכחי -{" "}
+                  <span className="fw-bold">{activeReport}</span>?
+                </span>
+              </Col>
+              <Col sm="2">
+                <BsForm.Switch
+                  className="fs-1 my-auto me-2"
+                  title="monthRemove"
+                  ref={monthRemoveRef}
+                  style={{ transform: "scaleX(-1)" }}
+                />
+              </Col>
+            </>
+          ) : (
+            <>
+              <Col sm="2">
+                <span className="mx-0">להסיר מדוח קבלה נוכחי?</span>
+              </Col>
+              <Col sm="4">
+                <span className="mx-0 fw-bold">אין דוח קבלה פעיל במערכת</span>
+              </Col>
+            </>
+          )}
         </Row>
       )}
       <Row
